@@ -4,6 +4,7 @@ import './index.css'
 import App from './App.tsx'
 import Privacy from './Privacy.tsx'
 import Terms from './Terms.tsx'
+import DataDeletion from './DataDeletion.tsx'
 
 function Router() {
   const [path, setPath] = useState(window.location.hash)
@@ -16,6 +17,7 @@ function Router() {
 
   if (path === '#/privacy') return <Privacy />
   if (path === '#/terms') return <Terms />
+  if (path === '#/data-deletion') return <DataDeletion />
   return <App />
 }
 
