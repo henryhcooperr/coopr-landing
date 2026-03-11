@@ -41,6 +41,16 @@ module.exports = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        coopr: {
+          serif: "hsl(var(--coopr-serif))",
+          subtle: "hsl(var(--coopr-subtle))",
+          body: "hsl(var(--coopr-body))",
+          soft: "hsl(var(--coopr-soft))",
+          hover: "hsl(var(--coopr-hover))",
+          success: "hsl(var(--coopr-success))",
+          "success-soft": "hsl(var(--coopr-success-soft))",
+          "success-text": "hsl(var(--coopr-success-text))",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
