@@ -278,6 +278,7 @@ function App() {
           </div>
           <div className="flex items-center gap-6">
             <a href="#/privacy" className="text-[13px] text-[hsl(220,10%,46%)] hover:text-[hsl(220,20%,10%)] transition-colors">Privacy</a>
+            <a href="#/terms" className="text-[13px] text-[hsl(220,10%,46%)] hover:text-[hsl(220,20%,10%)] transition-colors">Terms</a>
             <a href="mailto:henry@getcoopr.com" className="text-[13px] text-[hsl(220,10%,46%)] hover:text-[hsl(220,20%,10%)] transition-colors">Contact</a>
           </div>
         </div>
