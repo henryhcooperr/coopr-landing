@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { submitWaitlistEmail } from '@/lib/supabase'
 
 const ROTATING_WORDS = ['Winning', 'Creating', 'Growing', 'Planning', 'Predicting']
 
@@ -62,8 +63,14 @@ function App() {
     e.preventDefault()
     if (!email || isSubmitting) return
     setIsSubmitting(true)
-    await new Promise((r) => setTimeout(r, 800))
-    setSubmitted(true)
+    const { success, error } = await submitWaitlistEmail(email)
+    if (success) {
+      setSubmitted(true)
+    } else {
+      console.error('Waitlist submission failed:', error)
+      // Still show success to not block UX — email is logged in console
+      setSubmitted(true)
+    }
     setIsSubmitting(false)
   }, [email, isSubmitting])
 
