@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button'
 import { submitWaitlistEmail } from '@/lib/supabase'
 import ChatDemo from '@/components/ChatDemo'
 import { HomeHeroSignalField, HomeWorkflowRail } from '@/components/home/home-sections'
+import { BrandLockup, HeaderActionCluster, HeroBrandStack } from '@/components/shared/Brand'
 
 // ============================================
 // SHARED: Waitlist Form (preserves Supabase integration)
@@ -163,24 +164,11 @@ function App() {
     <div className="min-h-screen bg-[var(--bg)]">
       {/* NAV */}
       <nav className="fixed top-0 left-0 right-0 z-[100]" style={{ background: 'rgba(250,250,249,0.92)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)' }}>
-        <div className="flex items-center justify-between max-w-[1100px] mx-auto px-6 h-14">
+        <div className="flex items-center justify-between max-w-[1100px] mx-auto px-6 h-[72px]">
           <a href="#" className="flex items-center gap-[10px] no-underline text-[var(--text)]">
-            <img src="/coopr-logo.png" alt="Coopr Labs" className="h-9 w-auto" />
+            <BrandLockup />
           </a>
-          <div className="flex items-center gap-5">
-            <a
-              href="#/features"
-              className="font-body text-[13px] font-medium text-[var(--text-2)] no-underline transition-colors hover:text-[var(--text)]"
-            >
-              Features
-            </a>
-            <a
-              href="#cta"
-              className="font-body text-[13px] font-semibold text-[var(--text-inv)] bg-[var(--bg-dark)] py-2 px-5 rounded-full no-underline transition-all duration-200 hover:-translate-y-px hover:shadow-[var(--shadow)]"
-            >
-              Join Waitlist
-            </a>
-          </div>
+          <HeaderActionCluster primaryHref="#/features" primaryLabel="Features" secondaryHref="#cta" secondaryLabel="Join Waitlist" />
         </div>
       </nav>
 
@@ -240,7 +228,7 @@ function Hero() {
     <section className="relative overflow-hidden pt-[140px] pb-[100px] text-center">
       <HomeHeroSignalField />
       <div className="relative max-w-[980px] mx-auto px-6">
-        <img src="/coopr-logo.png" alt="Coopr Labs" className="block h-[110px] w-auto mx-auto mb-10 opacity-[0.88]" />
+        <HeroBrandStack />
 
         <div className="inline-flex items-center gap-2 font-mono text-[11px] font-medium tracking-[0.08em] uppercase text-[var(--text-3)] mb-7">
           <span className="w-2 h-2 rounded-full bg-[var(--teal)]" style={{ animation: 'pulse-dot 2s ease-in-out infinite' }} />

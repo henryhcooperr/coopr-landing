@@ -1,16 +1,14 @@
 import { Button } from '@/components/ui/button'
+import { BrandLockup, BrandMark } from '@/components/shared/Brand'
 
 function Terms() {
   return (
     <div className="min-h-screen bg-background">
       {/* Nav */}
       <nav className="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-md border-b border-border">
-        <div className="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between">
+        <div className="max-w-6xl mx-auto px-6 h-[72px] flex items-center justify-between">
           <a href="#/" className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg bg-primary flex items-center justify-center">
-              <span className="text-primary-foreground text-xs font-semibold tracking-tight">C</span>
-            </div>
-            <span className="text-[15px] font-semibold tracking-[-0.02em] text-foreground">Coopr</span>
+            <BrandLockup />
           </a>
           <Button variant="outline" size="sm"
             className="text-[13px] h-8 px-3 rounded-lg border-border hover:bg-secondary"
@@ -137,9 +135,7 @@ function Terms() {
       <footer className="border-t border-border py-8 px-6">
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-            <div className="w-5 h-5 rounded bg-primary flex items-center justify-center">
-              <span className="text-primary-foreground text-[9px] font-bold">C</span>
-            </div>
+            <BrandMark className="h-5 w-5" />
             <span className="text-[13px] text-muted-foreground">Coopr by Lensofcoop LLC</span>
           </div>
           <div className="flex items-center gap-6">

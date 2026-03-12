@@ -1,7 +1,7 @@
 import type { LucideIcon } from 'lucide-react'
-import { BarChart3, ClipboardList, Clock3, Film, Fingerprint, Radar, Sparkles } from 'lucide-react'
+import { BarChart3, ClipboardList, Clock3, FileText, Film, Radar } from 'lucide-react'
 
-export type FlagshipStepKey = 'discover' | 'dna' | 'generate' | 'cadence'
+export type FlagshipStepKey = 'discover' | 'script' | 'planner' | 'cadence'
 export type WorkspaceModuleKey = 'shoot' | 'editor' | 'review'
 
 export interface FlagshipStep {
@@ -39,24 +39,24 @@ export const FLAGSHIP_STEPS: FlagshipStep[] = [
     Icon: Radar,
   },
   {
-    key: 'dna',
-    label: 'Match it to you',
-    title: 'Filter every opportunity through the creator profile your audience already responds to.',
-    proof: 'Creative DNA cuts away ideas that may trend for others but would feel wrong in your feed.',
-    chips: ['Voice fit', 'Audience memory'],
-    accent: 'var(--slate)',
-    accentSoft: 'rgba(71,85,105,0.12)',
-    Icon: Fingerprint,
+    key: 'script',
+    label: 'Write it in your voice',
+    title: 'Open the script editor, draft in your voice, then rewrite line by line.',
+    proof: 'A creator picks the winning hook, asks Coopr for the draft, and edits each block while voice score and retention stay visible.',
+    chips: ['Editable script', 'Voice score'],
+    accent: 'var(--blue)',
+    accentSoft: 'rgba(37,99,235,0.12)',
+    Icon: FileText,
   },
   {
-    key: 'generate',
-    label: 'Generate and rank',
-    title: 'Build hooks that feel like you, then rank them before you post.',
-    proof: 'Prompt in, hooks out, hold prediction moving, strongest option rising to the top.',
-    chips: ['Hold score', 'Hook rank'],
-    accent: 'var(--green)',
-    accentSoft: 'rgba(22,163,74,0.12)',
-    Icon: Sparkles,
+    key: 'planner',
+    label: 'Plan scenes and shots',
+    title: 'Move from script to scene editor, shot storyboard, and a real shoot plan.',
+    proof: 'The planner keeps dialogue, location, time of day, camera, lighting, audio, and shot order tied to the same draft.',
+    chips: ['Scene editor', 'Shot storyboard'],
+    accent: 'var(--slate)',
+    accentSoft: 'rgba(71,85,105,0.12)',
+    Icon: ClipboardList,
   },
   {
     key: 'cadence',

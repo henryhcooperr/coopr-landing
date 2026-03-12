@@ -1,8 +1,8 @@
 import type { LucideIcon } from 'lucide-react'
-import { Clock3, Fingerprint, Radar, Sparkles } from 'lucide-react'
+import { ClipboardList, Clock3, FileText, Radar } from 'lucide-react'
 
 export interface HomeWorkflowStep {
-  key: 'discover' | 'dna' | 'generate' | 'cadence'
+  key: 'discover' | 'script' | 'planner' | 'cadence'
   label: string
   title: string
   note: string
@@ -24,24 +24,24 @@ export const HOME_WORKFLOW_STEPS: HomeWorkflowStep[] = [
     Icon: Radar,
   },
   {
-    key: 'dna',
-    label: 'Match',
-    title: 'Filter the idea through the creator profile your audience already knows.',
-    note: 'Coopr cuts out ideas that may trend for others but would feel wrong in your feed.',
-    chips: ['Voice fit', 'Audience memory'],
-    accent: 'var(--slate)',
-    accentSoft: 'rgba(71,85,105,0.12)',
-    Icon: Fingerprint,
+    key: 'script',
+    label: 'Write',
+    title: 'Build the script in your voice, then keep it editable.',
+    note: 'Script Builder scores authenticity, projects watch-through, and lays retention cues onto the timeline.',
+    chips: ['Voice score', 'Watch-through'],
+    accent: 'var(--blue)',
+    accentSoft: 'rgba(37,99,235,0.12)',
+    Icon: FileText,
   },
   {
-    key: 'generate',
-    label: 'Generate',
-    title: 'Rank the strongest way to say it before you post.',
-    note: 'Prompt in, hook out, hold prediction moving, strongest option rising to the top.',
-    chips: ['Hold score', 'Hook rank'],
-    accent: 'var(--green)',
-    accentSoft: 'rgba(22,163,74,0.12)',
-    Icon: Sparkles,
+    key: 'planner',
+    label: 'Plan',
+    title: 'Turn the script into scenes, shots, and a real shoot-day plan.',
+    note: 'Shot Planner keeps dialogue, locations, camera notes, and shot order in one editable production surface.',
+    chips: ['Scene tabs', 'Shot plan'],
+    accent: 'var(--slate)',
+    accentSoft: 'rgba(71,85,105,0.12)',
+    Icon: ClipboardList,
   },
   {
     key: 'cadence',

@@ -7,8 +7,8 @@ type WorkflowKey = typeof HOME_WORKFLOW_STEPS[number]['key']
 
 function getWorkflowWash(key: WorkflowKey) {
   if (key === 'discover') return 'radial-gradient(circle at 82% 18%, rgba(13,148,136,0.12), transparent 34%), radial-gradient(circle at 16% 84%, rgba(13,148,136,0.08), transparent 30%)'
-  if (key === 'dna') return 'radial-gradient(circle at 82% 18%, rgba(71,85,105,0.12), transparent 34%), radial-gradient(circle at 16% 84%, rgba(71,85,105,0.08), transparent 30%)'
-  if (key === 'generate') return 'radial-gradient(circle at 82% 18%, rgba(22,163,74,0.12), transparent 34%), radial-gradient(circle at 16% 84%, rgba(22,163,74,0.08), transparent 30%)'
+  if (key === 'script') return 'radial-gradient(circle at 82% 18%, rgba(37,99,235,0.12), transparent 34%), radial-gradient(circle at 16% 84%, rgba(37,99,235,0.08), transparent 30%)'
+  if (key === 'planner') return 'radial-gradient(circle at 82% 18%, rgba(71,85,105,0.12), transparent 34%), radial-gradient(circle at 16% 84%, rgba(71,85,105,0.08), transparent 30%)'
   return 'radial-gradient(circle at 82% 18%, rgba(217,119,6,0.14), transparent 34%), radial-gradient(circle at 16% 84%, rgba(217,119,6,0.08), transparent 30%)'
 }
 
@@ -52,33 +52,50 @@ function DiscoverPreview() {
   )
 }
 
-function DnaPreview() {
+function ScriptPreview() {
   return (
     <div className="grid gap-3 sm:grid-cols-[0.92fr_1.08fr]">
-      <div className="rounded-[22px] border border-[rgba(71,85,105,0.14)] bg-[linear-gradient(180deg,rgba(71,85,105,0.08),rgba(255,255,255,1))] p-4">
-        <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-[var(--slate)]">creator profile</div>
-        <div className="mt-3 flex flex-wrap gap-2">
-          {['direct opener', 'proof-first', 'field footage', 'low fluff'].map(trait => (
-            <span key={trait} className="rounded-full border border-[rgba(71,85,105,0.12)] bg-white px-3 py-1 text-xs font-medium text-[var(--text-2)]">
-              {trait}
-            </span>
-          ))}
+      <div className="space-y-3">
+        <div className="rounded-[22px] border border-[rgba(37,99,235,0.14)] bg-[linear-gradient(180deg,rgba(37,99,235,0.08),rgba(255,255,255,1))] p-4">
+          <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-[var(--blue)]">script builder</div>
+          <div className="mt-3 flex flex-wrap gap-2">
+            {['direct opener', 'proof-first', 'low fluff'].map(trait => (
+              <span key={trait} className="rounded-full border border-[rgba(37,99,235,0.12)] bg-white px-3 py-1 text-xs font-medium text-[var(--text-2)]">
+                {trait}
+              </span>
+            ))}
+          </div>
+          <div className="mt-4 grid grid-cols-2 gap-2 text-xs">
+            {[
+              ['Voice score', '0.86'],
+              ['Watch-through', '81%'],
+            ].map(([label, value]) => (
+              <div key={label} className="rounded-[16px] bg-white px-3 py-3">
+                <div className="text-[10px] uppercase tracking-[0.12em] text-[var(--text-3)]">{label}</div>
+                <div className="mt-1 font-mono text-[var(--text)]">{value}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="rounded-[22px] border border-[var(--border-light)] bg-white p-4">
+          <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-[var(--text-3)]">novelty check</div>
+          <div className="mt-3 rounded-[16px] border border-[rgba(22,163,74,0.18)] bg-[rgba(22,163,74,0.08)] px-3 py-3 text-xs text-[var(--green)]">
+            Fresh enough to test (1 similar existing)
+          </div>
         </div>
       </div>
       <div className="rounded-[22px] border border-[var(--border-light)] bg-white p-4">
-        <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-[var(--text-3)]">concept filter</div>
-        <div className="mt-3 space-y-2">
+        <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-[var(--text-3)]">script timeline</div>
+        <div className="mt-3 space-y-2 font-mono text-[12px]">
           {[
-            ['The reef cleanup myth people still repeat', '97% fit', true],
-            ['A polished montage with voiceover poetry', '42% fit', false],
-          ].map(([title, fit, active]) => (
-            <div key={title} className={cn('rounded-[18px] border px-3 py-3', active ? 'border-[rgba(71,85,105,0.18)] bg-[rgba(71,85,105,0.06)]' : 'border-transparent bg-[var(--bg)]')}>
-              <div className="flex items-center justify-between gap-3">
-                <div className="max-w-[260px] text-sm font-semibold leading-snug text-[var(--text)]">{title}</div>
-                <div className={cn('rounded-full px-2.5 py-1 font-mono text-[10px]', active ? 'bg-white text-[var(--slate)]' : 'bg-white text-[var(--text-3)]')}>
-                  {fit}
-                </div>
-              </div>
+            ['0s', 'Everyone says reef cleanup does nothing.'],
+            ['7s', 'Show the one proof that myth gets wrong.'],
+            ['15s', 'Explain why the reef actually responds.'],
+            ['22s', 'Land on the visual payoff and next dive CTA.'],
+          ].map(([time, cue], idx) => (
+            <div key={time} className={cn('grid grid-cols-[34px_1fr] gap-2 rounded-[16px] px-3 py-3', idx < 2 ? 'bg-[rgba(37,99,235,0.06)]' : 'bg-[var(--bg)]')}>
+              <div className="text-[10px] uppercase tracking-[0.12em] text-[var(--blue)]">{time}</div>
+              <div className="leading-relaxed text-[var(--text)]">{cue}</div>
             </div>
           ))}
         </div>
@@ -87,45 +104,64 @@ function DnaPreview() {
   )
 }
 
-function GeneratePreview() {
+function PlannerPreview() {
   return (
     <div className="grid gap-3 sm:grid-cols-[1.02fr_0.98fr]">
-      <div className="rounded-[22px] border border-[rgba(22,163,74,0.14)] bg-[linear-gradient(180deg,rgba(22,163,74,0.08),rgba(255,255,255,1))] p-4">
-        <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-[var(--green)]">hook prompt</div>
-        <div className="mt-3 rounded-[16px] border border-[var(--border-light)] bg-white px-3 py-3 font-mono text-[13px] text-[var(--text)]">
-          make strangers care about reef cleanup in 1 second
+      <div className="rounded-[22px] border border-[rgba(71,85,105,0.14)] bg-[linear-gradient(180deg,rgba(71,85,105,0.08),rgba(255,255,255,1))] p-4">
+        <div className="flex items-center gap-1 text-[10px] uppercase tracking-[0.16em] text-[var(--text-3)]">
+          <span className="text-[var(--slate)]">overview</span>
+          <span>production</span>
+          <span>shots</span>
+          <span>notes</span>
         </div>
-        <div className="mt-4 rounded-[18px] bg-white p-4">
-          <div className="flex items-start justify-between gap-3">
-            <div className="max-w-[260px] text-[15px] font-semibold leading-snug text-[var(--text)]">
-              Everyone says reef cleanup is pointless. They are wrong.
-            </div>
-            <div className="rounded-full bg-[rgba(22,163,74,0.10)] px-2.5 py-1 font-mono text-[10px] text-[var(--green)]">
-              91 score
-            </div>
-          </div>
-        </div>
-      </div>
-      <div className="rounded-[22px] border border-[var(--border-light)] bg-white p-4">
-        <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-[var(--text-3)]">top pick</div>
-        <div className="mt-3 text-[clamp(1.35rem,2vw,1.8rem)] font-display font-extrabold leading-[1.02] tracking-[-0.05em] text-[var(--text)]">
-          84% predicted hold
-        </div>
-        <div className="mt-4 space-y-3">
+        <div className="mt-3 space-y-2">
           {[
-            ['Curiosity gap', 92],
-            ['Voice fit', 95],
+            ['Script / Dialogue', 'Everyone says reef cleanup does nothing. They are wrong.'],
+            ['Location', 'Monterey breakwall'],
+            ['Time of Day', 'golden hour'],
+            ['Shot Type', 'talking head'],
           ].map(([label, value], idx) => (
-            <div key={label as string}>
-              <div className="mb-1 flex items-center justify-between text-xs text-[var(--text-2)]">
-                <span>{label}</span>
-                <span className="font-mono">{value}%</span>
-              </div>
-              <div className="h-2 rounded-full bg-[var(--bg)]">
-                <div className={cn('h-full rounded-full', idx === 0 ? 'bg-[linear-gradient(90deg,var(--green),#4ade80)]' : 'bg-[linear-gradient(90deg,var(--teal),#2dd4bf)]')} style={{ width: `${value}%` }} />
-              </div>
+            <div key={label} className={cn('rounded-[16px] px-3 py-3', idx === 0 ? 'bg-white' : 'bg-[var(--bg)]')}>
+              <div className="text-[10px] uppercase tracking-[0.12em] text-[var(--text-3)]">{label}</div>
+              <div className="mt-1 text-sm leading-relaxed text-[var(--text)]">{value}</div>
             </div>
           ))}
+        </div>
+        <div className="mt-3 grid grid-cols-2 gap-2">
+          {[
+            ['Camera', 'handheld close follow'],
+            ['Audio', 'lav + backup recorder'],
+          ].map(([label, value]) => (
+            <div key={label} className="rounded-[16px] bg-white px-3 py-3">
+              <div className="text-[10px] uppercase tracking-[0.12em] text-[var(--text-3)]">{label}</div>
+              <div className="mt-1 text-xs text-[var(--text)]">{value}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div className="space-y-3">
+        <div className="rounded-[22px] border border-[var(--border-light)] bg-white p-4">
+          <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-[var(--text-3)]">shot planner</div>
+          <div className="mt-3 space-y-2 text-xs">
+            {[
+              ['1', 'talking head', 'myth opener'],
+              ['2', 'close up', 'proof detail'],
+              ['3', 'wide shot', 'cleanup payoff'],
+            ].map(([num, shot, cue]) => (
+              <div key={num} className="grid grid-cols-[20px_78px_1fr] gap-2 rounded-[16px] bg-[var(--bg)] px-3 py-3 text-[var(--text)]">
+                <div className="font-mono text-[var(--text-3)]">{num}</div>
+                <div>{shot}</div>
+                <div>{cue}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="rounded-[22px] border border-[var(--border-light)] bg-white p-4">
+          <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-[var(--text-3)]">shoot day plan</div>
+          <div className="mt-3 space-y-2 text-xs text-[var(--text)]">
+            <div className="rounded-[16px] bg-[var(--bg)] px-3 py-3">Monterey breakwall • 3 scenes • golden hour</div>
+            <div className="rounded-[16px] bg-[var(--bg)] px-3 py-3">Equipment: lav, backup recorder, wide lens</div>
+          </div>
         </div>
       </div>
     </div>
@@ -187,8 +223,8 @@ function CadencePreview() {
 
 function WorkflowPreview({ activeKey }: { activeKey: WorkflowKey }) {
   if (activeKey === 'discover') return <DiscoverPreview />
-  if (activeKey === 'dna') return <DnaPreview />
-  if (activeKey === 'generate') return <GeneratePreview />
+  if (activeKey === 'script') return <ScriptPreview />
+  if (activeKey === 'planner') return <PlannerPreview />
   return <CadencePreview />
 }
 
@@ -215,7 +251,7 @@ export function HomeWorkflowRail() {
           <div className="text-left">
             <div className="font-mono text-[11px] uppercase tracking-[0.16em] text-[var(--text-3)]">Core workflow</div>
             <div className="mt-2 max-w-[420px] text-[15px] leading-relaxed text-[var(--text-2)]">
-              One clean view of the flagship story. The homepage only shows the core moves. The deeper tour lives on `/features`.
+              One clean view of the production path. The homepage shows the core moves. The deeper tour lives on `/features`.
             </div>
 
             <div className="mt-5 flex flex-wrap gap-2">

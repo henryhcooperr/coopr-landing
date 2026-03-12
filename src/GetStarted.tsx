@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { supabase } from '@/lib/supabase'
+import { BrandBanner, BrandMark } from '@/components/shared/Brand'
 
 // Dev bypass — lets you skip invite code locally or with ?dev=true
 const isDev = window.location.hostname === 'localhost' ||
@@ -66,9 +67,8 @@ function GetStarted() {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center px-6">
         <div className="max-w-sm w-full text-center">
-          <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center mx-auto mb-6">
-            <span className="text-primary-foreground text-sm font-semibold">C</span>
-          </div>
+          <BrandMark className="h-14 mx-auto mb-4" />
+          <BrandBanner className="h-4 mx-auto mb-6 opacity-85" />
           <h1 className="text-2xl font-semibold tracking-[-0.02em] text-foreground mb-2">Dev Mode</h1>
           <p className="text-[15px] text-muted-foreground mb-8">You're in dev bypass — no invite code needed.</p>
           <Button onClick={launchApp}
@@ -89,13 +89,15 @@ function GetStarted() {
 
         <div className="max-w-sm w-full text-center relative z-10">
           {/* Animated check mark */}
-          <div className="relative mx-auto mb-6 w-16 h-16">
+          <div className="relative mx-auto mb-4 w-[72px] h-[72px]">
             <div className="absolute inset-0 rounded-2xl bg-coopr-success/10 animate-[ping_1s_ease-out_1]" />
-            <div className="relative w-16 h-16 rounded-2xl bg-coopr-success flex items-center justify-center animate-fade-in">
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <BrandMark className="relative h-[72px] w-auto mx-auto animate-fade-in" />
+          </div>
+          <BrandBanner className="h-4 mx-auto mb-6 opacity-85" />
+          <div className="absolute left-1/2 top-[50px] -translate-x-1/2 translate-x-[26px]">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-coopr-success">
                 <path d="M20 6 9 17l-5-5" className="animate-[draw_0.5s_ease-out_0.3s_both]" style={{ strokeDasharray: 30, strokeDashoffset: 30, animation: 'draw 0.5s ease-out 0.3s forwards' }} />
               </svg>
-            </div>
           </div>
 
           <h1 className="text-[28px] font-semibold tracking-[-0.03em] text-foreground mb-2 animate-fade-in" style={{ animationDelay: '0.2s', opacity: 0 }}>
@@ -144,9 +146,8 @@ function GetStarted() {
   return (
     <div className="min-h-screen bg-background flex items-center justify-center px-6">
       <div className="max-w-sm w-full text-center">
-        <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center mx-auto mb-6">
-          <span className="text-primary-foreground text-sm font-semibold">C</span>
-        </div>
+        <BrandMark className="h-14 mx-auto mb-4" />
+        <BrandBanner className="h-4 mx-auto mb-6 opacity-85" />
         <h1 className="text-2xl font-semibold tracking-[-0.02em] text-foreground mb-2">Enter your invite code</h1>
         <p className="text-[15px] text-muted-foreground mb-8">Coopr is invite-only right now. Check your email for an access code.</p>
 

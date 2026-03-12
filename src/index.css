@@ -539,12 +539,64 @@
   animation: ft-panel-slide 640ms cubic-bezier(0.16,1,0.3,1);
 }
 
+.ft-flow-target {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border-radius: 999px;
+  border: 2px solid rgba(17,17,17,0.08);
+  background: rgba(255,255,255,0.9);
+  transform: translate(-50%, -50%);
+  transition: opacity 320ms ease, transform 320ms ease, border-color 320ms ease;
+  opacity: 0.55;
+}
+
+.ft-flow-target--active {
+  border-color: rgba(37,99,235,0.3);
+  transform: translate(-50%, -50%) scale(1.16);
+  opacity: 1;
+}
+
+@keyframes ft-cursor-breathe {
+  0%, 100% {
+    box-shadow: 0 16px 36px rgba(17,17,17,0.18);
+  }
+  50% {
+    box-shadow: 0 20px 44px rgba(17,17,17,0.22);
+  }
+}
+
+.ft-flow-cursor {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transform: translate(-8%, -50%);
+  border-radius: 999px;
+  border: 1px solid rgba(17,17,17,0.08);
+  background: rgba(17,17,17,0.92);
+  padding: 8px 12px;
+  color: white;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  box-shadow: 0 18px 40px rgba(17,17,17,0.18);
+  transition-property: left, top, transform, opacity;
+  transition-timing-function: cubic-bezier(0.16,1,0.3,1);
+}
+
+.ft-flow-cursor--animate {
+  animation: ft-cursor-breathe 2.4s ease-in-out infinite;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .ft-stage-in,
   .ft-graph-bar,
   .ft-progress-fill--animate,
   .ft-type-line,
-  .ft-panel-enter {
+  .ft-panel-enter,
+  .ft-flow-cursor--animate {
     animation: none !important;
   }
 
