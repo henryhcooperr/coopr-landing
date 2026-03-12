@@ -1,184 +1,144 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { cn } from '@/lib/utils'
+import { FLAGSHIP_STEPS, STORY_METRICS } from '@/components/features/flagship-data'
+import { FlagshipScene } from '@/components/features/flagship-scenes'
+import { WorkspaceGallery } from '@/components/features/workspace-gallery'
+import { IconBadge } from '@/components/shared/ProductPrimitives'
 
-// ============================================
-// SCROLL REVEAL OBSERVER
-// ============================================
+function useMediaQuery(query: string) {
+  const [matches, setMatches] = useState(() => {
+    if (typeof window === 'undefined') return false
+    return window.matchMedia(query).matches
+  })
 
-function useScrollReveal() {
+  useEffect(() => {
+    if (typeof window === 'undefined') return undefined
+    const media = window.matchMedia(query)
+    const onChange = () => setMatches(media.matches)
+    onChange()
+    media.addEventListener('change', onChange)
+    return () => media.removeEventListener('change', onChange)
+  }, [query])
+
+  return matches
+}
+
+function useScrollReveal(reducedMotion: boolean) {
   const ref = useRef<HTMLDivElement>(null)
+
   useEffect(() => {
     if (!ref.current) return
-    const els = ref.current.querySelectorAll('.feat-reveal')
+    const els = Array.from(ref.current.querySelectorAll<HTMLElement>('.feat-reveal'))
+    if (reducedMotion) {
+      els.forEach(el => el.classList.add('vis'))
+      return
+    }
+
     const obs = new IntersectionObserver(
-      entries => entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('vis') }),
-      { threshold: 0.15 }
+      entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('vis')
+            obs.unobserve(entry.target)
+          }
+        })
+      },
+      { threshold: 0.14, rootMargin: '0px 0px -60px 0px' }
     )
+
     els.forEach(el => obs.observe(el))
     return () => obs.disconnect()
-  }, [])
+  }, [reducedMotion])
+
   return ref
 }
 
-// ============================================
-// FEATURE DATA
-// ============================================
+function useActiveStoryStep(stepCount: number) {
+  const [activeIndex, setActiveIndex] = useState(0)
+  const stepRefs = useRef<(HTMLElement | null)[]>([])
 
-const FEATURES = [
-  {
-    tag: 'Hook Lab',
-    title: 'Generate hooks trained on what actually works — for you.',
-    desc: 'Not templates. Not ChatGPT prompts. Coopr analyzes your top-performing hooks, matches them to your voice, and generates variants with predicted hold rates. Every hook is scored against your audience — not a generic benchmark.',
-    details: [
-      { label: 'Voice matching', note: 'Hooks sound like you, not a robot' },
-      { label: 'Hold rate prediction', note: 'ML model trained on your specific videos' },
-      { label: 'Iterative refinement', note: 'Auto-improves until it exceeds your quality gate' },
-      { label: 'Competitive awareness', note: 'Checks what\'s trending in your niche right now' },
-    ],
-    accent: 'var(--green)',
-    accentBg: 'rgba(22,163,74,0.06)',
-    icon: (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M12 2L2 7l10 5 10-5-10-5z" /><path d="M2 17l10 5 10-5" /><path d="M2 12l10 5 10-5" />
-      </svg>
-    ),
-  },
-  {
-    tag: 'Creative DNA',
-    title: 'Your content fingerprint — auto-derived, always evolving.',
-    desc: 'Coopr watches what you make and learns what makes it yours. Shot types, pacing, lighting, hooks, environments — all distilled into a Creative DNA profile that evolves as you evolve. No surveys. No manual input.',
-    details: [
-      { label: 'Auto-compiled', note: 'Derived from your actual content, not self-reported' },
-      { label: '77+ signals', note: 'Shot diversity, pacing, mood, text overlay, lighting...' },
-      { label: 'Evolving profile', note: 'Updates with every new video you post' },
-      { label: 'Voice Engine', note: 'Learns your writing tone and vocabulary patterns' },
-    ],
-    accent: 'var(--violet)',
-    accentBg: 'rgba(124,58,237,0.06)',
-    icon: (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <circle cx="12" cy="12" r="10" /><path d="M12 16v-4M12 8h.01" />
-      </svg>
-    ),
-  },
-  {
-    tag: 'Competitor Intelligence',
-    title: 'See what\'s working in your niche — without the guesswork.',
-    desc: 'Coopr tracks your competitors\' content automatically. What hooks are they using? When do they post? What formats get engagement? You get the signal without the hours of manual scrolling.',
-    details: [
-      { label: 'Auto-tracking', note: 'Competitors monitored daily, no manual effort' },
-      { label: 'Niche benchmarking', note: 'Your scores compared against your competitive set' },
-      { label: 'Hook analysis', note: 'See which competitor hooks outperform' },
-      { label: 'Timing intelligence', note: 'Know when competitors post and when to avoid overlap' },
-    ],
-    accent: 'var(--teal)',
-    accentBg: 'rgba(13,148,136,0.06)',
-    icon: (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z" /><circle cx="12" cy="12" r="3" />
-      </svg>
-    ),
-  },
-  {
-    tag: 'Trend Radar',
-    title: 'Catch trends early — before they\'re obvious.',
-    desc: 'Cross-referenced signals from Google Trends, competitor activity, and your own content performance. Z-score normalized, changepoint detected, and seasonally validated. Not vibes — statistics.',
-    details: [
-      { label: 'Multi-source signals', note: 'Google Trends + competitor + your own data' },
-      { label: 'Z-score normalization', note: 'Apples-to-apples comparison across signal types' },
-      { label: 'Changepoint detection', note: 'Alerts you when a trend is genuinely inflecting' },
-      { label: 'Seasonal validation', note: 'Separates real trends from annual patterns' },
-    ],
-    accent: 'var(--amber)',
-    accentBg: 'rgba(251,191,36,0.08)',
-    icon: (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
-      </svg>
-    ),
-  },
-  {
-    tag: 'Content Scoring',
-    title: '19 ML models score every video you post.',
-    desc: 'Hold rate prediction, engagement scoring, hook quality, voice match, trend alignment — each powered by a model trained on your data. Scores compound as you create more. The system literally gets smarter with every post.',
-    details: [
-      { label: '19 ML models', note: 'Each trained specifically on your content and audience' },
-      { label: 'Learned weights', note: 'Ridge regression learns which signals matter most for you' },
-      { label: 'Coopr Score', note: 'Single number: where you stand vs. your niche' },
-      { label: 'Compounding', note: 'More data = better predictions = better content' },
-    ],
-    accent: 'var(--green)',
-    accentBg: 'rgba(22,163,74,0.06)',
-    icon: (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M12 20V10M18 20V4M6 20v-4" />
-      </svg>
-    ),
-  },
-  {
-    tag: 'Cadence Engine',
-    title: 'Post at the right time, at the right pace — backed by data.',
-    desc: 'Coopr analyzes your audience\'s activity patterns, your posting history, and competitor schedules to recommend optimal timing. Not generic "best times to post" — your specific audience, your specific niche.',
-    details: [
-      { label: 'Audience-specific', note: 'Based on when your followers are actually active' },
-      { label: 'Burnout detection', note: 'Alerts you if posting pace is unsustainable' },
-      { label: 'Competitor-aware', note: 'Avoids posting when competitors flood the feed' },
-      { label: 'Adherence tracking', note: 'See how sticking to the plan affects performance' },
-    ],
-    accent: 'var(--teal)',
-    accentBg: 'rgba(13,148,136,0.06)',
-    icon: (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
-      </svg>
-    ),
-  },
-]
+  useEffect(() => {
+    const targets = stepRefs.current.slice(0, stepCount).filter(Boolean) as HTMLElement[]
+    if (!targets.length) return
 
-// ============================================
-// FEATURE CARD
-// ============================================
+    const observer = new IntersectionObserver(
+      entries => {
+        const visible = entries
+          .filter(entry => entry.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)
 
-function FeatureSection({ feature, idx }: { feature: typeof FEATURES[0]; idx: number }) {
-  const isEven = idx % 2 === 0
+        if (!visible.length) return
+        const nextIndex = Number((visible[0].target as HTMLElement).dataset.stepIndex)
+        if (!Number.isNaN(nextIndex)) setActiveIndex(nextIndex)
+      },
+      {
+        threshold: [0.2, 0.45, 0.7],
+        rootMargin: '-15% 0px -42% 0px',
+      }
+    )
+
+    targets.forEach(target => observer.observe(target))
+    return () => observer.disconnect()
+  }, [stepCount])
+
+  return {
+    activeIndex,
+    registerStep: (index: number) => (el: HTMLElement | null) => {
+      stepRefs.current[index] = el
+    },
+  }
+}
+
+function getInitialWorkspaceModule() {
+  if (typeof window === 'undefined') return 'shoot' as const
+  const query = window.location.hash.split('?')[1] ?? ''
+  const params = new URLSearchParams(query)
+  const module = params.get('module')
+  if (module === 'editor' || module === 'review' || module === 'shoot') return module
+  return 'shoot' as const
+}
+
+function StoryCopy({ activeIndex, currentIndex }: { activeIndex: number; currentIndex: number }) {
+  const step = FLAGSHIP_STEPS[currentIndex]
+  const isActive = activeIndex === currentIndex
+
   return (
-    <div className="feat-reveal opacity-0 translate-y-6 transition-all duration-700 ease-out [&.vis]:opacity-100 [&.vis]:translate-y-0">
-      <div className={`flex flex-col ${isEven ? 'lg:flex-row' : 'lg:flex-row-reverse'} gap-10 lg:gap-16 items-start`}>
-        {/* Text side */}
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 mb-4">
-            <span
-              className="w-9 h-9 rounded-xl flex items-center justify-center"
-              style={{ background: feature.accentBg, color: feature.accent }}
-            >
-              {feature.icon}
-            </span>
-            <span
-              className="font-mono text-[11px] font-semibold tracking-[0.06em] uppercase py-[3px] px-2.5 rounded-full"
-              style={{ background: feature.accentBg, color: feature.accent }}
-            >
-              {feature.tag}
-            </span>
-          </div>
-          <h3 className="font-display text-[clamp(1.5rem,3vw,2rem)] font-extrabold leading-[1.15] tracking-[-0.03em] mb-3">
-            {feature.title}
-          </h3>
-          <p className="text-base text-[var(--text-2)] leading-relaxed mb-6 max-w-[520px]">
-            {feature.desc}
-          </p>
+    <div className={cn('relative pl-12 transition-all duration-500', isActive ? 'opacity-100' : 'opacity-40 lg:translate-x-1')}>
+      <div className="absolute left-0 top-2 flex flex-col items-center">
+        <div
+          className="flex h-7 w-7 items-center justify-center rounded-full border text-[11px] font-mono font-semibold transition-all duration-500"
+          style={{
+            borderColor: isActive ? step.accent : 'var(--border-raw)',
+            background: isActive ? step.accentSoft : 'white',
+            color: isActive ? step.accent : 'var(--text-3)',
+          }}
+        >
+          0{currentIndex + 1}
         </div>
+        {currentIndex < FLAGSHIP_STEPS.length - 1 ? (
+          <div className="mt-3 h-[calc(100%-1.75rem)] w-px bg-[linear-gradient(180deg,var(--border-raw),transparent)]" />
+        ) : null}
+      </div>
 
-        {/* Detail cards */}
-        <div className="flex-1 min-w-0 w-full">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {feature.details.map((d, i) => (
-              <div
-                key={d.label}
-                className="feat-reveal opacity-0 translate-y-4 transition-all duration-500 ease-out [&.vis]:opacity-100 [&.vis]:translate-y-0 p-4 bg-white border border-[var(--border-raw)] rounded-xl"
-                style={{ transitionDelay: `${i * 80 + 100}ms` }}
-              >
-                <div className="text-sm font-semibold mb-1">{d.label}</div>
-                <div className="text-xs text-[var(--text-3)] leading-relaxed">{d.note}</div>
-              </div>
+      <div className="flex min-h-[72vh] items-center py-10">
+        <div className="max-w-[360px]">
+          <div className="mb-4 flex items-center gap-3">
+            <IconBadge Icon={step.Icon} accent={step.accent} accentSoft={step.accentSoft} />
+            <div className="font-mono text-[11px] uppercase tracking-[0.16em]" style={{ color: step.accent }}>
+              {step.label}
+            </div>
+          </div>
+          <h2 className="text-pretty font-display text-[clamp(2rem,3.2vw,3.15rem)] font-extrabold leading-[1.02] tracking-[-0.05em] text-[var(--text)]">
+            {step.title}
+          </h2>
+          <p className="mt-4 text-[15px] leading-relaxed text-[var(--text-2)]">
+            {step.proof}
+          </p>
+          <div className="mt-5 flex flex-wrap gap-2">
+            {step.chips.map(chip => (
+              <span key={chip} className="rounded-full border border-[var(--border-raw)] bg-white px-3 py-1.5 text-xs font-medium text-[var(--text-2)]">
+                {chip}
+              </span>
             ))}
           </div>
         </div>
@@ -187,95 +147,180 @@ function FeatureSection({ feature, idx }: { feature: typeof FEATURES[0]; idx: nu
   )
 }
 
-// ============================================
-// PAGE
-// ============================================
-
 export default function Features() {
-  const wrapRef = useScrollReveal()
+  const prefersReducedMotion = useMediaQuery('(prefers-reduced-motion: reduce)')
+  const wrapRef = useScrollReveal(prefersReducedMotion)
+  const { activeIndex, registerStep } = useActiveStoryStep(FLAGSHIP_STEPS.length)
+  const [workspaceModule, setWorkspaceModule] = useState(getInitialWorkspaceModule)
 
   useEffect(() => {
     window.scrollTo(0, 0)
   }, [])
 
+  useEffect(() => {
+    const onHashChange = () => setWorkspaceModule(getInitialWorkspaceModule())
+    window.addEventListener('hashchange', onHashChange)
+    return () => window.removeEventListener('hashchange', onHashChange)
+  }, [])
+
+  const activeStep = FLAGSHIP_STEPS[activeIndex]
+
   return (
     <div ref={wrapRef} className="min-h-screen bg-[var(--bg)] text-[var(--text)]">
-      {/* Nav */}
-      <nav className="sticky top-0 z-50 backdrop-blur-md bg-[var(--bg)]/80 border-b border-[var(--border-light)]">
-        <div className="max-w-[1200px] mx-auto px-6 py-4 flex items-center justify-between">
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-[680px] overflow-hidden">
+        <div className="absolute left-[-4rem] top-16 h-[320px] w-[320px] rounded-full bg-[rgba(13,148,136,0.10)] blur-[120px]" />
+        <div className="absolute right-[-5rem] top-28 h-[300px] w-[300px] rounded-full bg-[rgba(37,99,235,0.08)] blur-[120px]" />
+        <div className="absolute left-1/3 top-0 h-[240px] w-[240px] rounded-full bg-[rgba(217,119,6,0.06)] blur-[120px]" />
+      </div>
+
+      <nav className="sticky top-0 z-50 border-b border-[var(--border-light)] bg-[var(--bg)]/80 backdrop-blur-md">
+        <div className="mx-auto flex max-w-[1200px] items-center justify-between px-6 py-4">
           <a href="#" onClick={() => { window.location.hash = ''; window.scrollTo(0, 0) }} className="flex items-center gap-2 no-underline">
             <img src="/coopr-logo.png" alt="Coopr Labs" className="h-8" />
           </a>
           <div className="flex items-center gap-6">
-            <a href="#" onClick={() => { window.location.hash = '' }} className="text-sm font-medium text-[var(--text-2)] hover:text-[var(--text)] no-underline transition-colors">
+            <a href="#" onClick={() => { window.location.hash = '' }} className="text-sm font-medium text-[var(--text-2)] no-underline transition-colors hover:text-[var(--text)]">
               Home
             </a>
-            <a href="#cta" className="font-body text-sm font-semibold text-[var(--text-inv)] bg-[var(--bg-dark)] px-5 py-2.5 rounded-full no-underline transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[var(--shadow)]">
+            <a href="#cta" className="rounded-full bg-[var(--bg-dark)] px-5 py-2.5 font-body text-sm font-semibold text-[var(--text-inv)] no-underline transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[var(--shadow)]">
               Join Waitlist
             </a>
           </div>
         </div>
       </nav>
 
-      {/* Hero */}
-      <header className="max-w-[800px] mx-auto px-6 pt-20 pb-16 text-center">
-        <div className="font-mono text-[11px] font-medium tracking-[0.08em] uppercase text-[var(--teal)] mb-4 flex items-center justify-center gap-2">
-          <span className="w-1.5 h-1.5 rounded-full bg-[var(--teal)]" />
-          166 tools. One conversation.
+      <header className="relative mx-auto max-w-[1040px] px-6 pb-16 pt-20 text-center lg:pb-20 lg:pt-24">
+        <div className="feat-reveal opacity-0 translate-y-5 transition-all duration-700 ease-out [&.vis]:translate-y-0 [&.vis]:opacity-100">
+          <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-[rgba(13,148,136,0.12)] bg-white/85 px-4 py-2 font-mono text-[11px] uppercase tracking-[0.16em] text-[var(--teal)]">
+            <span className="h-1.5 w-1.5 rounded-full bg-[var(--teal)]" />
+            Flagship product tour
+          </div>
+          <h1 className="mx-auto max-w-[880px] text-balance font-display text-[clamp(3rem,7vw,5.5rem)] font-extrabold leading-[0.95] tracking-[-0.06em]">
+            Four product moves from niche signal to publish window.
+          </h1>
+          <p className="mx-auto mt-6 max-w-[650px] text-[17px] leading-relaxed text-[var(--text-2)] sm:text-[18px]">
+            Coopr should not read like a wall of feature copy. It should feel like a guided creator workflow: discover the opportunity, filter it through your DNA, rank what to say, then ship into the right slot.
+          </p>
         </div>
-        <h1 className="font-display text-[clamp(2.5rem,5vw,3.5rem)] font-extrabold leading-[1.05] tracking-[-0.04em] mb-5">
-          Every feature is trained on{' '}
-          <em className="font-accent italic font-normal text-[var(--teal)]">your data</em>
-        </h1>
-        <p className="text-lg text-[var(--text-2)] max-w-[540px] mx-auto leading-relaxed">
-          Not generic. Not one-size-fits-all. Coopr learns from your content, your audience, and your niche — then compounds that knowledge over time.
-        </p>
-      </header>
 
-      {/* Features */}
-      <div className="max-w-[1100px] mx-auto px-6 pb-24">
-        <div className="flex flex-col gap-24">
-          {FEATURES.map((feature, idx) => (
-            <FeatureSection key={feature.tag} feature={feature} idx={idx} />
-          ))}
-        </div>
-      </div>
-
-      {/* Stats bar */}
-      <div className="border-t border-b border-[var(--border-raw)] py-12">
-        <div className="max-w-[900px] mx-auto px-6 grid grid-cols-2 sm:grid-cols-4 gap-8 text-center">
-          {[
-            { num: '19', label: 'ML models' },
-            { num: '77+', label: 'Signals per video' },
-            { num: '166', label: 'Tools available' },
-            { num: '45', label: 'Daily sync steps' },
-          ].map(s => (
-            <div key={s.label} className="feat-reveal opacity-0 translate-y-4 transition-all duration-500 [&.vis]:opacity-100 [&.vis]:translate-y-0">
-              <div className="font-display text-[2.5rem] font-extrabold tracking-[-0.04em] leading-none">{s.num}</div>
-              <div className="text-sm text-[var(--text-3)] mt-1">{s.label}</div>
+        <div className="feat-reveal mt-10 grid grid-cols-2 gap-3 opacity-0 translate-y-5 transition-all duration-700 ease-out delay-100 [&.vis]:translate-y-0 [&.vis]:opacity-100 sm:grid-cols-4">
+          {STORY_METRICS.map(metric => (
+            <div key={metric.label} className="rounded-[22px] border border-[var(--border-light)] bg-white/90 px-4 py-4 shadow-[0_12px_30px_rgba(17,17,17,0.04)]">
+              <div className="font-display text-[2rem] font-extrabold leading-none tracking-[-0.05em] text-[var(--text)]">{metric.value}</div>
+              <div className="mt-1 text-sm text-[var(--text-3)]">{metric.label}</div>
             </div>
           ))}
         </div>
+      </header>
+
+      <section className="mx-auto max-w-[1240px] px-6 pb-24 lg:pb-28">
+        <div className="feat-reveal opacity-0 translate-y-5 transition-all duration-700 ease-out [&.vis]:translate-y-0 [&.vis]:opacity-100">
+          <div className="mb-6 flex items-center justify-between gap-4">
+            <div>
+              <div className="font-mono text-[11px] uppercase tracking-[0.16em] text-[var(--text-3)]">Scroll the flagship story</div>
+              <div className="mt-2 max-w-[540px] text-[15px] leading-relaxed text-[var(--text-2)]">
+                Each chapter explains one decisive product moment instead of trying to list every tool in the stack.
+              </div>
+            </div>
+            <div className="hidden items-center gap-2 rounded-full border border-[var(--border-raw)] bg-white px-4 py-2 lg:inline-flex">
+              <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-[var(--text-3)]">Active</span>
+              <span className="text-sm font-semibold" style={{ color: activeStep.accent }}>{activeStep.label}</span>
+            </div>
+          </div>
+
+          <div className="hidden gap-10 lg:grid lg:grid-cols-[minmax(0,430px)_minmax(0,1fr)] xl:grid-cols-[minmax(0,450px)_minmax(0,1fr)]">
+            <div>
+              {FLAGSHIP_STEPS.map((_, idx) => (
+                <section key={FLAGSHIP_STEPS[idx].key} ref={registerStep(idx)} data-step-index={idx}>
+                  <StoryCopy activeIndex={activeIndex} currentIndex={idx} />
+                </section>
+              ))}
+            </div>
+
+            <div className="relative">
+              <div className="sticky top-24 space-y-4">
+                <div className="rounded-full border border-[var(--border-raw)] bg-white px-4 py-3 shadow-[0_12px_30px_rgba(17,17,17,0.04)]">
+                  <div className="flex items-center gap-3">
+                    <div className="h-2 flex-1 overflow-hidden rounded-full bg-[var(--bg-alt)]">
+                      <div className="h-full rounded-full transition-all duration-500" style={{ width: `${((activeIndex + 1) / FLAGSHIP_STEPS.length) * 100}%`, background: activeStep.accent }} />
+                    </div>
+                    <div className="font-mono text-[11px] uppercase tracking-[0.14em] text-[var(--text-3)]">0{activeIndex + 1}/0{FLAGSHIP_STEPS.length}</div>
+                  </div>
+                </div>
+                <div key={activeStep.key} className="feat-reveal vis ft-panel-enter">
+                  <FlagshipScene stepKey={activeStep.key} animate={!prefersReducedMotion} />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-6 lg:hidden">
+            {FLAGSHIP_STEPS.map(step => (
+              <article key={step.key} className="rounded-[28px] border border-[var(--border-light)] bg-white/90 p-5 shadow-[0_16px_44px_rgba(17,17,17,0.06)]">
+                <div className="mb-5 flex items-center gap-3">
+                  <IconBadge Icon={step.Icon} accent={step.accent} accentSoft={step.accentSoft} />
+                  <div className="font-mono text-[11px] uppercase tracking-[0.16em]" style={{ color: step.accent }}>
+                    {step.label}
+                  </div>
+                </div>
+                <h2 className="text-balance font-display text-[2rem] font-extrabold leading-[1] tracking-[-0.05em] text-[var(--text)]">
+                  {step.title}
+                </h2>
+                <p className="mt-3 text-[15px] leading-relaxed text-[var(--text-2)]">
+                  {step.proof}
+                </p>
+                <div className="mt-4 flex flex-wrap gap-2">
+                  {step.chips.map(chip => (
+                    <span key={chip} className="rounded-full border border-[var(--border-raw)] bg-[var(--bg)] px-3 py-1.5 text-xs font-medium text-[var(--text-2)]">
+                      {chip}
+                    </span>
+                  ))}
+                </div>
+                <div className="mt-5">
+                  <FlagshipScene stepKey={step.key} animate={!prefersReducedMotion} />
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="border-y border-[var(--border-raw)] bg-white/60 py-12">
+        <div className="mx-auto grid max-w-[980px] gap-4 px-6 sm:grid-cols-2 lg:grid-cols-4">
+          {[
+            { title: 'Discover', note: 'Find the opportunity worth chasing.' },
+            { title: 'Filter', note: 'Check it against what already works for you.' },
+            { title: 'Rank', note: 'Generate options and score them before publishing.' },
+            { title: 'Ship', note: 'Pick the window with space to win.' },
+          ].map((item, idx) => (
+            <div key={item.title} className="feat-reveal opacity-0 translate-y-5 rounded-[22px] border border-[var(--border-light)] bg-white p-4 transition-all duration-700 ease-out [&.vis]:translate-y-0 [&.vis]:opacity-100" style={{ transitionDelay: `${idx * 90}ms` }}>
+              <div className="font-display text-[1.4rem] font-extrabold tracking-[-0.04em] text-[var(--text)]">{item.title}</div>
+              <div className="mt-1 text-sm leading-relaxed text-[var(--text-3)]">{item.note}</div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <WorkspaceGallery initialModule={workspaceModule} reducedMotion={prefersReducedMotion} />
+
+      <div className="mx-auto max-w-[620px] px-6 py-20 text-center" id="cta">
+        <div className="feat-reveal opacity-0 translate-y-5 transition-all duration-700 ease-out [&.vis]:translate-y-0 [&.vis]:opacity-100">
+          <div className="font-mono text-[11px] uppercase tracking-[0.16em] text-[var(--teal)]">See your first workflow in motion</div>
+          <h2 className="mt-4 font-display text-[clamp(2.2rem,4vw,2.8rem)] font-extrabold leading-[1.02] tracking-[-0.05em]">
+            Ready to see what your data <em className="font-accent not-italic font-normal text-[var(--teal)]">actually says?</em>
+          </h2>
+          <p className="mt-4 text-base leading-relaxed text-[var(--text-2)]">
+            Join the waitlist. We will show you what Coopr sees in your first 10 videos, not just hand you a blank dashboard.
+          </p>
+          <a href="#" onClick={() => { window.location.hash = ''; setTimeout(() => document.getElementById('cta')?.scrollIntoView({ behavior: 'smooth' }), 100) }} className="mt-8 inline-flex items-center gap-2 rounded-full bg-[var(--bg-dark)] px-8 py-3.5 font-body text-[15px] font-semibold text-[var(--text-inv)] no-underline transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[var(--shadow)]">
+            Join the Waitlist
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 8h10m0 0L9 4m4 4L9 12" stroke="#FAFAF9" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+          </a>
+        </div>
       </div>
 
-      {/* CTA */}
-      <div className="max-w-[600px] mx-auto px-6 py-20 text-center" id="cta">
-        <h2 className="font-display text-[clamp(2rem,4vw,2.5rem)] font-extrabold leading-[1.1] tracking-[-0.04em] mb-4">
-          Ready to see what your data{' '}
-          <em className="font-accent italic font-normal text-[var(--teal)]">actually says?</em>
-        </h2>
-        <p className="text-base text-[var(--text-2)] mb-8">
-          Join the waitlist. We'll show you what Coopr finds in your first 10 videos.
-        </p>
-        <a href="#" onClick={() => { window.location.hash = ''; setTimeout(() => document.getElementById('cta')?.scrollIntoView({ behavior: 'smooth' }), 100) }} className="inline-flex items-center gap-2 font-body text-[15px] font-semibold text-[var(--text-inv)] bg-[var(--bg-dark)] border-none py-3.5 px-8 rounded-full no-underline cursor-pointer transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[var(--shadow)]">
-          Join the Waitlist
-          <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 8h10m0 0L9 4m4 4L9 12" stroke="#FAFAF9" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
-        </a>
-      </div>
-
-      {/* Footer */}
       <footer className="border-t border-[var(--border-raw)] py-8">
-        <div className="max-w-[1200px] mx-auto px-6 flex items-center justify-between text-xs text-[var(--text-3)]">
+        <div className="mx-auto flex max-w-[1200px] flex-col items-center justify-between gap-3 px-6 text-center text-xs text-[var(--text-3)] sm:flex-row sm:text-left">
           <span>&copy; 2026 Coopr Labs. Built in California.</span>
           <div className="flex items-center gap-5">
             <a href="#/privacy" className="text-[var(--text-3)] no-underline hover:text-[var(--text)]">Privacy</a>

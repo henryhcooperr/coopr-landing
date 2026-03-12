@@ -1,0 +1,114 @@
+import type { LucideIcon } from 'lucide-react'
+import { BarChart3, ClipboardList, Clock3, Film, Fingerprint, Radar, Sparkles } from 'lucide-react'
+
+export type FlagshipStepKey = 'discover' | 'dna' | 'generate' | 'cadence'
+export type WorkspaceModuleKey = 'shoot' | 'editor' | 'review'
+
+export interface FlagshipStep {
+  key: FlagshipStepKey
+  label: string
+  title: string
+  proof: string
+  chips: string[]
+  accent: string
+  accentSoft: string
+  Icon: LucideIcon
+}
+
+export interface WorkspaceModule {
+  key: WorkspaceModuleKey
+  label: string
+  title: string
+  proof: string
+  chips: string[]
+  status: 'live' | 'future'
+  accent: string
+  accentSoft: string
+  Icon: LucideIcon
+}
+
+export const FLAGSHIP_STEPS: FlagshipStep[] = [
+  {
+    key: 'discover',
+    label: 'Discover opportunity',
+    title: 'Spot the angle before your niche turns it into background noise.',
+    proof: 'Competitor shifts, trend lift, and your own signal history collapse into one opening worth chasing.',
+    chips: ['Competitor shifts', 'Trend lift', 'Signal confidence'],
+    accent: 'var(--teal)',
+    accentSoft: 'rgba(13,148,136,0.12)',
+    Icon: Radar,
+  },
+  {
+    key: 'dna',
+    label: 'Match it to you',
+    title: 'Filter every opportunity through the creator profile your audience already responds to.',
+    proof: 'Creative DNA and voice signals cut out ideas that might trend for someone else but would land flat in your feed.',
+    chips: ['Voice fit', 'Visual traits', 'Audience memory'],
+    accent: 'var(--slate)',
+    accentSoft: 'rgba(71,85,105,0.12)',
+    Icon: Fingerprint,
+  },
+  {
+    key: 'generate',
+    label: 'Generate and rank',
+    title: 'Build hooks that feel like you, then rank them by predicted hold before you post.',
+    proof: 'This should feel like a real product moment: prompt in, hooks out, confidence bars moving, stronger options rising to the top.',
+    chips: ['Typed workflow', 'Hold prediction', 'Score breakdown'],
+    accent: 'var(--green)',
+    accentSoft: 'rgba(22,163,74,0.12)',
+    Icon: Sparkles,
+  },
+  {
+    key: 'cadence',
+    label: 'Ship at the right time',
+    title: 'Choose the publish window with room to win instead of posting into a crowded feed.',
+    proof: 'Cadence guidance blends follower activity, your pace, and competitor overlap into one recommended slot you can trust.',
+    chips: ['Audience heatmap', 'Crowding alerts', 'Recommended window'],
+    accent: 'var(--amber)',
+    accentSoft: 'rgba(217,119,6,0.12)',
+    Icon: Clock3,
+  },
+]
+
+export const STORY_METRICS = [
+  { value: '4', label: 'flagship moves' },
+  { value: '19', label: 'scoring models' },
+  { value: '77+', label: 'signals per video' },
+  { value: '166', label: 'tools behind it' },
+]
+
+export const WORKSPACE_MODULES: WorkspaceModule[] = [
+  {
+    key: 'shoot',
+    label: 'Shoot Planner',
+    title: 'Turn the winning idea into a real field-ready production brief.',
+    proof: 'Plan the session, lock the shot order, and walk into the day knowing exactly what footage the story needs.',
+    chips: ['Session brief', 'Shot storyboard', 'Capture reminders'],
+    status: 'live',
+    accent: 'var(--blue)',
+    accentSoft: 'rgba(37,99,235,0.12)',
+    Icon: ClipboardList,
+  },
+  {
+    key: 'editor',
+    label: 'Reel Editor',
+    title: 'Preview the future vertical workspace where reel sequencing and AI edit notes stay together.',
+    proof: 'This should read like a short-form editor, not desktop software: portrait preview, beat order, trim guidance, and safe-zone checks in one place.',
+    chips: ['Portrait preview', 'Beat order', 'Concept preview'],
+    status: 'future',
+    accent: 'var(--blue)',
+    accentSoft: 'rgba(37,99,235,0.12)',
+    Icon: Film,
+  },
+  {
+    key: 'review',
+    label: 'Postmortem Review',
+    title: 'Open old videos and inspect the exact moment performance started slipping.',
+    proof: 'Reopen the post, see where viewers fell away, and turn the failure into the next testable change.',
+    chips: ['Past videos', 'Drop-off review', 'Next actions'],
+    status: 'live',
+    accent: 'var(--amber)',
+    accentSoft: 'rgba(217,119,6,0.12)',
+    Icon: BarChart3,
+  },
+]

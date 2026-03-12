@@ -233,9 +233,9 @@ function ReasoningNode({ step, showLine }: { step: StepData; showLine: boolean }
         <div className={`w-[13px] h-[13px] rounded-full flex-shrink-0 mt-[3px] flex items-center justify-center ${
           step.color === 'g'
             ? 'bg-[rgba(22,163,74,0.1)] border-[1.5px] border-[var(--green)]'
-            : 'bg-[rgba(124,58,237,0.1)] border-[1.5px] border-[var(--violet)]'
+            : 'bg-[rgba(37,99,235,0.1)] border-[1.5px] border-[var(--blue)]'
         }`}>
-          <span className={`w-1 h-1 rounded-full ${step.color === 'g' ? 'bg-[var(--green)]' : 'bg-[var(--violet)]'}`} />
+          <span className={`w-1 h-1 rounded-full ${step.color === 'g' ? 'bg-[var(--green)]' : 'bg-[var(--blue)]'}`} />
         </div>
         <span className="text-[13px] text-[var(--text-2)] leading-relaxed">
           {renderTextWithBold(step.text, step.boldParts)}
@@ -757,8 +757,8 @@ export default function ChatDemo() {
                             {/* Iteration bar */}
                             {showItBar && (
                               <div className="anim-fade vis flex items-center gap-1.5 py-1.5 px-0 text-xs">
-                                <svg width="11" height="11" viewBox="0 0 14 14" fill="none"><path d="M11 7A4 4 0 1 1 7 3" stroke="#7C3AED" strokeWidth="1.5" strokeLinecap="round" /><path d="M7 1l2 2-2 2" stroke="#7C3AED" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                                <span className="font-medium text-[var(--violet)]">Iterating on top 2</span>
+                                <svg width="11" height="11" viewBox="0 0 14 14" fill="none"><path d="M11 7A4 4 0 1 1 7 3" stroke="#2563EB" strokeWidth="1.5" strokeLinecap="round" /><path d="M7 1l2 2-2 2" stroke="#2563EB" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                                <span className="font-medium text-[var(--blue)]">Iterating on top 2</span>
                                 <div className="flex items-center gap-1 ml-auto font-mono text-xs font-semibold">
                                   <span ref={itS1Ref} className="text-[var(--text-3)]">0%</span>
                                   <span className="text-[var(--text-3)] text-[10px]">&rarr;</span>
@@ -772,8 +772,8 @@ export default function ChatDemo() {
                             {/* Refinement node */}
                             {showRefNode && (
                               <div className="anim-fade vis flex items-start gap-[10px] py-1.5 relative">
-                                <div className="w-[13px] h-[13px] rounded-full flex-shrink-0 mt-[3px] flex items-center justify-center bg-[rgba(124,58,237,0.1)] border-[1.5px] border-[var(--violet)]">
-                                  <span className="w-1 h-1 rounded-full bg-[var(--violet)]" />
+                                <div className="w-[13px] h-[13px] rounded-full flex-shrink-0 mt-[3px] flex items-center justify-center bg-[rgba(37,99,235,0.1)] border-[1.5px] border-[var(--blue)]">
+                                  <span className="w-1 h-1 rounded-full bg-[var(--blue)]" />
                                 </div>
                                 <span className="text-[13px] text-[var(--text-2)] leading-relaxed">
                                   <strong className="text-[var(--text)] font-semibold">Refined top 2</strong> against your voice profile

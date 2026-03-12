@@ -3,6 +3,7 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { submitWaitlistEmail } from '@/lib/supabase'
 import ChatDemo from '@/components/ChatDemo'
+import { HomeFeatureDock, HomeHeroSignalField, HomeWorkflowRail } from '@/components/home/home-sections'
 
 // ============================================
 // SHARED: Waitlist Form (preserves Supabase integration)
@@ -186,9 +187,6 @@ function App() {
       {/* HERO */}
       <Hero />
 
-      {/* BELIEFS */}
-      <Beliefs />
-
       {/* SEPARATOR */}
       <div className="max-w-[680px] mx-auto px-6 flex items-center gap-4 text-[var(--text-3)]">
         <span className="flex-1 h-px bg-[var(--border-raw)]" />
@@ -199,16 +197,14 @@ function App() {
       {/* CHAT DEMO */}
       <ChatDemo />
 
-      {/* Features link */}
-      <div className="text-center pb-8">
-        <a
-          href="#/features"
-          className="inline-flex items-center gap-2 font-body text-sm font-medium text-[var(--teal)] no-underline transition-all duration-200 hover:gap-3"
-        >
-          Explore all 166 tools
-          <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 8h10m0 0L9 4m4 4L9 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
-        </a>
-      </div>
+      {/* WORKFLOW */}
+      <HomeWorkflowRail />
+
+      {/* Surface previews */}
+      <HomeFeatureDock />
+
+      {/* BELIEFS */}
+      <Beliefs />
 
       {/* FOUNDER */}
       <Founder />
@@ -250,8 +246,9 @@ function App() {
 
 function Hero() {
   return (
-    <section className="pt-[140px] pb-[100px] text-center">
-      <div className="max-w-[680px] mx-auto px-6">
+    <section className="relative overflow-hidden pt-[140px] pb-[100px] text-center">
+      <HomeHeroSignalField />
+      <div className="relative max-w-[980px] mx-auto px-6">
         <img src="/coopr-logo.png" alt="Coopr Labs" className="block h-[110px] w-auto mx-auto mb-10 opacity-[0.88]" />
 
         <div className="inline-flex items-center gap-2 font-mono text-[11px] font-medium tracking-[0.08em] uppercase text-[var(--text-3)] mb-7">
