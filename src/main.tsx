@@ -6,6 +6,7 @@ import Privacy from './Privacy.tsx'
 import Terms from './Terms.tsx'
 import DataDeletion from './DataDeletion.tsx'
 import GetStarted from './GetStarted.tsx'
+import Features from './Features.tsx'
 
 function Router() {
   const [path, setPath] = useState(window.location.hash)
@@ -21,6 +22,7 @@ function Router() {
   if (basePath === '#/terms') return <Terms />
   if (basePath === '#/data-deletion') return <DataDeletion />
   if (basePath === '#/get-started') return <GetStarted />
+  if (basePath === '#/features') return <Features />
   return <App />
 }
 

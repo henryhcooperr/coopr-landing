@@ -7,6 +7,12 @@ module.exports = {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        display: ["'Bricolage Grotesque'", "system-ui", "sans-serif"],
+        body: ["'Space Grotesk'", "system-ui", "sans-serif"],
+        mono: ["'JetBrains Mono'", "monospace"],
+        accent: ["'Fraunces'", "Georgia", "serif"],
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -42,6 +48,11 @@ module.exports = {
           foreground: "hsl(var(--card-foreground))",
         },
         coopr: {
+          teal: "hsl(var(--coopr-teal))",
+          green: "hsl(var(--coopr-green))",
+          violet: "hsl(var(--coopr-violet))",
+          amber: "hsl(var(--coopr-amber))",
+          blue: "hsl(var(--coopr-blue))",
           serif: "hsl(var(--coopr-serif))",
           subtle: "hsl(var(--coopr-subtle))",
           body: "hsl(var(--coopr-body))",
