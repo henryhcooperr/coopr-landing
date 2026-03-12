@@ -37,14 +37,10 @@ function SceneShell({
     <div className="ft-scene-shell relative overflow-hidden rounded-[28px] border border-[var(--border-light)] bg-white p-4 shadow-[0_24px_80px_rgba(17,17,17,0.08)] sm:p-5 lg:min-h-[520px] lg:p-6">
       <div className="ft-scene-shell__glow" />
       <div className="ft-scene-shell__grid" />
-      <div className="relative z-10 flex items-center justify-between gap-3 border-b border-[var(--border-light)] pb-4">
+      <div className="relative z-10 border-b border-[var(--border-light)] pb-4">
         <div>
           <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-[var(--text-3)]">Flagship workflow</div>
           <div className="mt-1 text-sm font-semibold text-[var(--text)]">{caption}</div>
-        </div>
-        <div className="inline-flex items-center gap-2 rounded-full border border-[var(--border-raw)] bg-[var(--bg)] px-3 py-1 font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--text-2)]">
-          <span className="h-1.5 w-1.5 rounded-full bg-[var(--green)]" />
-          Live preview
         </div>
       </div>
       <div className="relative z-10 mt-4">{children}</div>
@@ -62,102 +58,88 @@ function DiscoverScene({ animate }: Omit<FlagshipSceneProps, 'stepKey'>) {
 
   return (
     <SceneShell caption="Competitor Intelligence + Trend Radar">
-      <div className="space-y-4">
-        <Stage
-          animate={animate}
-          delay={80}
-          className="flex flex-wrap gap-2 rounded-[20px] border border-[rgba(13,148,136,0.14)] bg-[rgba(13,148,136,0.06)] p-3"
-        >
-          {['reef cleanup myth', 'thermal stress explainer', 'before-after habitat repair'].map(topic => (
-            <span key={topic} className="ft-floating-pill rounded-full border border-[rgba(13,148,136,0.18)] bg-white/90 px-3 py-1 text-xs font-medium text-[var(--text-2)]">
-              {topic}
-            </span>
-          ))}
+      <div className="grid gap-4 lg:grid-cols-[0.94fr_1.06fr]">
+        <Stage animate={animate} delay={120} className="rounded-[24px] border border-[var(--border-light)] bg-[var(--bg)]/90 p-4">
+          <div className="mb-3 flex items-center justify-between">
+            <div>
+              <div className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--text-3)]">Competitor feed</div>
+              <div className="mt-1 text-sm text-[var(--text-2)]">New hooks moving in your niche</div>
+            </div>
+            <div className="rounded-full bg-white px-2.5 py-1 font-mono text-[10px] text-[var(--teal)]">3 tracked</div>
+          </div>
+          <div className="space-y-2">
+            {competitors.map(competitor => (
+              <div
+                key={competitor.name}
+                className={cn(
+                  'rounded-[18px] border px-3 py-3 transition-all',
+                  competitor.active
+                    ? 'border-[rgba(13,148,136,0.26)] bg-white shadow-[0_10px_30px_rgba(13,148,136,0.10)]'
+                    : 'border-transparent bg-white/70'
+                )}
+              >
+                <div className="flex items-center justify-between gap-3">
+                  <div>
+                    <div className="text-sm font-semibold text-[var(--text)]">{competitor.name}</div>
+                    <div className="mt-1 text-xs text-[var(--text-3)]">{competitor.hook}</div>
+                  </div>
+                  <div className={cn(
+                    'rounded-full px-2.5 py-1 font-mono text-[10px]',
+                    competitor.active ? 'bg-[rgba(13,148,136,0.12)] text-[var(--teal)]' : 'bg-[var(--bg)] text-[var(--text-3)]'
+                  )}>
+                    {competitor.lift}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
         </Stage>
 
-        <div className="grid gap-4 lg:grid-cols-[0.94fr_1.06fr]">
-          <Stage animate={animate} delay={160} className="rounded-[24px] border border-[var(--border-light)] bg-[var(--bg)]/90 p-4">
+        <div className="grid gap-4">
+          <Stage animate={animate} delay={240} className="rounded-[24px] border border-[rgba(13,148,136,0.16)] bg-white p-4 shadow-[0_18px_50px_rgba(13,148,136,0.08)]">
             <div className="mb-3 flex items-center justify-between">
               <div>
-                <div className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--text-3)]">Competitor feed</div>
-                <div className="mt-1 text-sm text-[var(--text-2)]">New hooks moving in your niche</div>
+                <div className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--text-3)]">Opportunity selected</div>
+                <div className="mt-2 max-w-[280px] text-xl font-display font-extrabold leading-[1.05] tracking-[-0.04em] text-[var(--text)]">
+                  Myth-busting reef cleanup is accelerating now.
+                </div>
               </div>
-              <div className="rounded-full bg-white px-2.5 py-1 font-mono text-[10px] text-[var(--teal)]">3 tracked</div>
+              <div className="rounded-[20px] bg-[rgba(13,148,136,0.08)] px-3 py-2 text-right">
+                <div className="font-mono text-[10px] uppercase tracking-[0.14em] text-[var(--text-3)]">Lift</div>
+                <div className="text-2xl font-display font-extrabold tracking-[-0.04em] text-[var(--teal)]">+24%</div>
+              </div>
             </div>
-            <div className="space-y-2">
-              {competitors.map(competitor => (
-                <div
-                  key={competitor.name}
-                  className={cn(
-                    'rounded-[18px] border px-3 py-3 transition-all',
-                    competitor.active
-                      ? 'border-[rgba(13,148,136,0.26)] bg-white shadow-[0_10px_30px_rgba(13,148,136,0.10)]'
-                      : 'border-transparent bg-white/70'
-                  )}
-                >
-                  <div className="flex items-center justify-between gap-3">
-                    <div>
-                      <div className="text-sm font-semibold text-[var(--text)]">{competitor.name}</div>
-                      <div className="mt-1 text-xs text-[var(--text-3)]">{competitor.hook}</div>
-                    </div>
-                    <div className={cn(
-                      'rounded-full px-2.5 py-1 font-mono text-[10px]',
-                      competitor.active ? 'bg-[rgba(13,148,136,0.12)] text-[var(--teal)]' : 'bg-[var(--bg)] text-[var(--text-3)]'
-                    )}>
-                      {competitor.lift}
-                    </div>
-                  </div>
+            <div className="mt-4 grid grid-cols-3 gap-2">
+              {[
+                ['Trend confidence', '0.87'],
+                ['Comp overlap', 'Low'],
+                ['Best angle', 'Reveal + proof'],
+              ].map(([label, value]) => (
+                <div key={label} className="rounded-[18px] bg-[var(--bg)] p-3">
+                  <div className="text-[11px] uppercase tracking-[0.12em] text-[var(--text-3)]">{label}</div>
+                  <div className="mt-1 text-sm font-semibold text-[var(--text)]">{value}</div>
                 </div>
               ))}
             </div>
           </Stage>
 
-          <div className="grid gap-4">
-            <Stage animate={animate} delay={260} className="rounded-[24px] border border-[rgba(13,148,136,0.16)] bg-white p-4 shadow-[0_18px_50px_rgba(13,148,136,0.08)]">
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <div className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--text-3)]">Opportunity selected</div>
-                  <div className="mt-2 max-w-[280px] text-xl font-display font-extrabold leading-[1.05] tracking-[-0.04em] text-[var(--text)]">
-                    Myth-busting reef cleanup is accelerating now.
-                  </div>
+          <Stage animate={animate} delay={340} className="rounded-[24px] border border-[var(--border-light)] bg-[var(--bg)] p-4">
+            <div className="mb-3 flex items-center justify-between gap-3">
+              <div className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--text-3)]">Signal comparison</div>
+              <div className="font-mono text-[10px] text-[var(--text-3)]">7-day normalized score</div>
+            </div>
+            <div className="flex items-end gap-2">
+              {bars.map((value, idx) => (
+                <div key={idx} className="flex-1">
+                  <div className="ft-graph-bar rounded-t-[14px] bg-[linear-gradient(180deg,rgba(13,148,136,0.85),rgba(13,148,136,0.18))]" style={{ ['--ft-bar-height' as string]: `${value}%` } as CSSProperties} />
                 </div>
-                <div className="rounded-[20px] bg-[rgba(13,148,136,0.08)] px-3 py-2 text-right">
-                  <div className="font-mono text-[10px] uppercase tracking-[0.14em] text-[var(--text-3)]">Lift</div>
-                  <div className="text-2xl font-display font-extrabold tracking-[-0.04em] text-[var(--teal)]">+24%</div>
-                </div>
-              </div>
-              <div className="mt-4 grid grid-cols-3 gap-2">
-                {[
-                  ['Trend confidence', '0.87'],
-                  ['Comp overlap', 'Low'],
-                  ['Best angle', 'Reveal + proof'],
-                ].map(([label, value]) => (
-                  <div key={label} className="rounded-[18px] bg-[var(--bg)] p-3">
-                    <div className="text-[11px] uppercase tracking-[0.12em] text-[var(--text-3)]">{label}</div>
-                    <div className="mt-1 text-sm font-semibold text-[var(--text)]">{value}</div>
-                  </div>
-                ))}
-              </div>
-            </Stage>
-
-            <Stage animate={animate} delay={360} className="rounded-[24px] border border-[var(--border-light)] bg-[var(--bg)] p-4">
-              <div className="mb-3 flex items-center justify-between gap-3">
-                <div className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--text-3)]">Signal comparison</div>
-                <div className="font-mono text-[10px] text-[var(--text-3)]">7-day normalized score</div>
-              </div>
-              <div className="flex items-end gap-2">
-                {bars.map((value, idx) => (
-                  <div key={idx} className="flex-1">
-                    <div className="ft-graph-bar rounded-t-[14px] bg-[linear-gradient(180deg,rgba(13,148,136,0.85),rgba(13,148,136,0.18))]" style={{ ['--ft-bar-height' as string]: `${value}%` } as CSSProperties} />
-                  </div>
-                ))}
-              </div>
-              <div className="mt-2 flex justify-between text-[10px] uppercase tracking-[0.12em] text-[var(--text-3)]">
-                <span>Competitors</span>
-                <span>Your backlog</span>
-              </div>
-            </Stage>
-          </div>
+              ))}
+            </div>
+            <div className="mt-2 flex justify-between text-[10px] uppercase tracking-[0.12em] text-[var(--text-3)]">
+              <span>Competitors</span>
+              <span>Your backlog</span>
+            </div>
+          </Stage>
         </div>
       </div>
     </SceneShell>
@@ -240,21 +222,6 @@ function DnaScene({ animate }: Omit<FlagshipSceneProps, 'stepKey'>) {
             </div>
           </Stage>
 
-          <Stage animate={animate} delay={320} className="rounded-[24px] border border-[rgba(71,85,105,0.12)] bg-white p-4">
-            <div className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--text-3)]">Why it survives the filter</div>
-            <div className="mt-3 grid grid-cols-3 gap-2 text-left">
-              {[
-                ['Keeps your direct opener', 'Question + proof in frame one'],
-                ['Fits audience memory', 'Your followers react to field evidence'],
-                ['Avoids style drift', 'Not too polished for your feed'],
-              ].map(([title, note]) => (
-                <div key={title} className="rounded-[18px] bg-[rgba(71,85,105,0.06)] p-3">
-                  <div className="text-sm font-semibold text-[var(--text)]">{title}</div>
-                  <div className="mt-1 text-xs leading-relaxed text-[var(--text-3)]">{note}</div>
-                </div>
-              ))}
-            </div>
-          </Stage>
         </div>
       </div>
     </SceneShell>
@@ -370,16 +337,6 @@ function GenerateScene({ animate }: Omit<FlagshipSceneProps, 'stepKey'>) {
               </div>
             </Stage>
 
-            <Stage animate={animate} delay={380} className="rounded-[24px] border border-[var(--border-light)] bg-[var(--bg)] p-4">
-              <div className="mb-3 text-xs font-semibold uppercase tracking-[0.14em] text-[var(--text-3)]">What the ranker used</div>
-              <div className="grid grid-cols-2 gap-2 text-sm text-[var(--text-2)]">
-                {['top-performing hooks', 'voice profile', 'competitor shifts', 'hold model history'].map(item => (
-                  <div key={item} className="rounded-[18px] bg-white px-3 py-3 font-medium">
-                    {item}
-                  </div>
-                ))}
-              </div>
-            </Stage>
           </div>
         </div>
       </div>

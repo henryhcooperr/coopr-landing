@@ -3,7 +3,7 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { submitWaitlistEmail } from '@/lib/supabase'
 import ChatDemo from '@/components/ChatDemo'
-import { HomeFeatureDock, HomeHeroSignalField, HomeWorkflowRail } from '@/components/home/home-sections'
+import { HomeHeroSignalField, HomeWorkflowRail } from '@/components/home/home-sections'
 
 // ============================================
 // SHARED: Waitlist Form (preserves Supabase integration)
@@ -197,20 +197,11 @@ function App() {
       {/* CHAT DEMO */}
       <ChatDemo />
 
-      {/* WORKFLOW */}
+      {/* COMPACT WORKFLOW */}
       <HomeWorkflowRail />
-
-      {/* Surface previews */}
-      <HomeFeatureDock />
-
-      {/* BELIEFS */}
-      <Beliefs />
 
       {/* FOUNDER */}
       <Founder />
-
-      {/* STATS */}
-      <Stats />
 
       {/* CTA */}
       <section className="max-w-[700px] mx-auto px-6 pt-[60px] pb-[120px] text-center" id="cta">

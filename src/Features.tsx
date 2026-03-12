@@ -1,8 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { cn } from '@/lib/utils'
-import { FLAGSHIP_STEPS, STORY_METRICS } from '@/components/features/flagship-data'
+import { FLAGSHIP_STEPS } from '@/components/features/flagship-data'
 import { FlagshipScene } from '@/components/features/flagship-scenes'
-import { WorkspaceGallery } from '@/components/features/workspace-gallery'
 import { IconBadge } from '@/components/shared/ProductPrimitives'
 
 function useMediaQuery(query: string) {
@@ -43,7 +42,7 @@ function useScrollReveal(reducedMotion: boolean) {
           }
         })
       },
-      { threshold: 0.14, rootMargin: '0px 0px -60px 0px' }
+      { threshold: 0.14, rootMargin: '0px 0px -60px 0px' },
     )
 
     els.forEach(el => obs.observe(el))
@@ -73,8 +72,8 @@ function useActiveStoryStep(stepCount: number) {
       },
       {
         threshold: [0.2, 0.45, 0.7],
-        rootMargin: '-15% 0px -42% 0px',
-      }
+        rootMargin: '-10% 0px -34% 0px',
+      },
     )
 
     targets.forEach(target => observer.observe(target))
@@ -89,22 +88,13 @@ function useActiveStoryStep(stepCount: number) {
   }
 }
 
-function getInitialWorkspaceModule() {
-  if (typeof window === 'undefined') return 'shoot' as const
-  const query = window.location.hash.split('?')[1] ?? ''
-  const params = new URLSearchParams(query)
-  const module = params.get('module')
-  if (module === 'editor' || module === 'review' || module === 'shoot') return module
-  return 'shoot' as const
-}
-
 function StoryCopy({ activeIndex, currentIndex }: { activeIndex: number; currentIndex: number }) {
   const step = FLAGSHIP_STEPS[currentIndex]
   const isActive = activeIndex === currentIndex
 
   return (
-    <div className={cn('relative pl-12 transition-all duration-500', isActive ? 'opacity-100' : 'opacity-40 lg:translate-x-1')}>
-      <div className="absolute left-0 top-2 flex flex-col items-center">
+    <div className={cn('relative pl-12 transition-all duration-500', isActive ? 'opacity-100' : 'opacity-38 lg:translate-x-1')}>
+      <div className="absolute left-0 top-1.5 flex flex-col items-center">
         <div
           className="flex h-7 w-7 items-center justify-center rounded-full border text-[11px] font-mono font-semibold transition-all duration-500"
           style={{
@@ -120,15 +110,15 @@ function StoryCopy({ activeIndex, currentIndex }: { activeIndex: number; current
         ) : null}
       </div>
 
-      <div className="flex min-h-[72vh] items-center py-10">
-        <div className="max-w-[360px]">
+      <div className="flex min-h-[54vh] items-center py-8 lg:min-h-[58vh]">
+        <div className="max-w-[340px]">
           <div className="mb-4 flex items-center gap-3">
             <IconBadge Icon={step.Icon} accent={step.accent} accentSoft={step.accentSoft} />
             <div className="font-mono text-[11px] uppercase tracking-[0.16em]" style={{ color: step.accent }}>
               {step.label}
             </div>
           </div>
-          <h2 className="text-pretty font-display text-[clamp(2rem,3.2vw,3.15rem)] font-extrabold leading-[1.02] tracking-[-0.05em] text-[var(--text)]">
+          <h2 className="text-pretty font-display text-[clamp(1.95rem,3vw,2.9rem)] font-extrabold leading-[1] tracking-[-0.05em] text-[var(--text)]">
             {step.title}
           </h2>
           <p className="mt-4 text-[15px] leading-relaxed text-[var(--text-2)]">
@@ -151,29 +141,21 @@ export default function Features() {
   const prefersReducedMotion = useMediaQuery('(prefers-reduced-motion: reduce)')
   const wrapRef = useScrollReveal(prefersReducedMotion)
   const { activeIndex, registerStep } = useActiveStoryStep(FLAGSHIP_STEPS.length)
-  const [workspaceModule, setWorkspaceModule] = useState(getInitialWorkspaceModule)
 
   useEffect(() => {
     window.scrollTo(0, 0)
-  }, [])
-
-  useEffect(() => {
-    const onHashChange = () => setWorkspaceModule(getInitialWorkspaceModule())
-    window.addEventListener('hashchange', onHashChange)
-    return () => window.removeEventListener('hashchange', onHashChange)
   }, [])
 
   const activeStep = FLAGSHIP_STEPS[activeIndex]
 
   return (
     <div ref={wrapRef} className="min-h-screen bg-[var(--bg)] text-[var(--text)]">
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-[680px] overflow-hidden">
-        <div className="absolute left-[-4rem] top-16 h-[320px] w-[320px] rounded-full bg-[rgba(13,148,136,0.10)] blur-[120px]" />
-        <div className="absolute right-[-5rem] top-28 h-[300px] w-[300px] rounded-full bg-[rgba(37,99,235,0.08)] blur-[120px]" />
-        <div className="absolute left-1/3 top-0 h-[240px] w-[240px] rounded-full bg-[rgba(217,119,6,0.06)] blur-[120px]" />
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-[520px] overflow-hidden">
+        <div className="absolute left-[-4rem] top-20 h-[240px] w-[240px] rounded-full bg-[rgba(13,148,136,0.08)] blur-[120px]" />
+        <div className="absolute right-[-4rem] top-24 h-[220px] w-[220px] rounded-full bg-[rgba(37,99,235,0.06)] blur-[120px]" />
       </div>
 
-      <nav className="sticky top-0 z-50 border-b border-[var(--border-light)] bg-[var(--bg)]/80 backdrop-blur-md">
+      <nav className="sticky top-0 z-50 border-b border-[var(--border-light)] bg-[var(--bg)]/82 backdrop-blur-md">
         <div className="mx-auto flex max-w-[1200px] items-center justify-between px-6 py-4">
           <a href="#" onClick={() => { window.location.hash = ''; window.scrollTo(0, 0) }} className="flex items-center gap-2 no-underline">
             <img src="/coopr-logo.png" alt="Coopr Labs" className="h-8" />
@@ -189,46 +171,31 @@ export default function Features() {
         </div>
       </nav>
 
-      <header className="relative mx-auto max-w-[1040px] px-6 pb-16 pt-20 text-center lg:pb-20 lg:pt-24">
+      <header className="relative mx-auto max-w-[860px] px-6 pb-14 pt-20 text-center lg:pb-16 lg:pt-24">
         <div className="feat-reveal opacity-0 translate-y-5 transition-all duration-700 ease-out [&.vis]:translate-y-0 [&.vis]:opacity-100">
-          <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-[rgba(13,148,136,0.12)] bg-white/85 px-4 py-2 font-mono text-[11px] uppercase tracking-[0.16em] text-[var(--teal)]">
+          <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-[rgba(13,148,136,0.12)] bg-white/86 px-4 py-2 font-mono text-[11px] uppercase tracking-[0.16em] text-[var(--teal)]">
             <span className="h-1.5 w-1.5 rounded-full bg-[var(--teal)]" />
             Flagship product tour
           </div>
-          <h1 className="mx-auto max-w-[880px] text-balance font-display text-[clamp(3rem,7vw,5.5rem)] font-extrabold leading-[0.95] tracking-[-0.06em]">
-            Four product moves from niche signal to publish window.
+          <h1 className="mx-auto max-w-[760px] text-balance font-display text-[clamp(2.8rem,6vw,4.8rem)] font-extrabold leading-[0.96] tracking-[-0.06em]">
+            Four product moves from signal to post.
           </h1>
-          <p className="mx-auto mt-6 max-w-[650px] text-[17px] leading-relaxed text-[var(--text-2)] sm:text-[18px]">
-            Coopr should not read like a wall of feature copy. It should feel like a guided creator workflow: discover the opportunity, filter it through your DNA, rank what to say, then ship into the right slot.
+          <p className="mx-auto mt-5 max-w-[600px] text-[16px] leading-relaxed text-[var(--text-2)] sm:text-[17px]">
+            A shorter, quieter walkthrough of how Coopr discovers the angle, checks it against your profile, ranks what to say, and ships it into the right slot.
           </p>
-        </div>
-
-        <div className="feat-reveal mt-10 grid grid-cols-2 gap-3 opacity-0 translate-y-5 transition-all duration-700 ease-out delay-100 [&.vis]:translate-y-0 [&.vis]:opacity-100 sm:grid-cols-4">
-          {STORY_METRICS.map(metric => (
-            <div key={metric.label} className="rounded-[22px] border border-[var(--border-light)] bg-white/90 px-4 py-4 shadow-[0_12px_30px_rgba(17,17,17,0.04)]">
-              <div className="font-display text-[2rem] font-extrabold leading-none tracking-[-0.05em] text-[var(--text)]">{metric.value}</div>
-              <div className="mt-1 text-sm text-[var(--text-3)]">{metric.label}</div>
-            </div>
-          ))}
         </div>
       </header>
 
-      <section className="mx-auto max-w-[1240px] px-6 pb-24 lg:pb-28">
+      <section className="mx-auto max-w-[1180px] px-6 pb-20 lg:pb-24">
         <div className="feat-reveal opacity-0 translate-y-5 transition-all duration-700 ease-out [&.vis]:translate-y-0 [&.vis]:opacity-100">
-          <div className="mb-6 flex items-center justify-between gap-4">
-            <div>
-              <div className="font-mono text-[11px] uppercase tracking-[0.16em] text-[var(--text-3)]">Scroll the flagship story</div>
-              <div className="mt-2 max-w-[540px] text-[15px] leading-relaxed text-[var(--text-2)]">
-                Each chapter explains one decisive product moment instead of trying to list every tool in the stack.
-              </div>
-            </div>
-            <div className="hidden items-center gap-2 rounded-full border border-[var(--border-raw)] bg-white px-4 py-2 lg:inline-flex">
-              <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-[var(--text-3)]">Active</span>
-              <span className="text-sm font-semibold" style={{ color: activeStep.accent }}>{activeStep.label}</span>
+          <div className="mb-6 max-w-[460px]">
+            <div className="font-mono text-[11px] uppercase tracking-[0.16em] text-[var(--text-3)]">The core story</div>
+            <div className="mt-2 text-[15px] leading-relaxed text-[var(--text-2)]">
+              Four chapters only. No second act. No extra product taxonomy layered underneath.
             </div>
           </div>
 
-          <div className="hidden gap-10 lg:grid lg:grid-cols-[minmax(0,430px)_minmax(0,1fr)] xl:grid-cols-[minmax(0,450px)_minmax(0,1fr)]">
+          <div className="hidden gap-10 lg:grid lg:grid-cols-[minmax(0,410px)_minmax(0,1fr)] xl:grid-cols-[minmax(0,430px)_minmax(0,1fr)]">
             <div>
               {FLAGSHIP_STEPS.map((_, idx) => (
                 <section key={FLAGSHIP_STEPS[idx].key} ref={registerStep(idx)} data-step-index={idx}>
@@ -238,14 +205,12 @@ export default function Features() {
             </div>
 
             <div className="relative">
-              <div className="sticky top-24 space-y-4">
-                <div className="rounded-full border border-[var(--border-raw)] bg-white px-4 py-3 shadow-[0_12px_30px_rgba(17,17,17,0.04)]">
-                  <div className="flex items-center gap-3">
-                    <div className="h-2 flex-1 overflow-hidden rounded-full bg-[var(--bg-alt)]">
-                      <div className="h-full rounded-full transition-all duration-500" style={{ width: `${((activeIndex + 1) / FLAGSHIP_STEPS.length) * 100}%`, background: activeStep.accent }} />
-                    </div>
-                    <div className="font-mono text-[11px] uppercase tracking-[0.14em] text-[var(--text-3)]">0{activeIndex + 1}/0{FLAGSHIP_STEPS.length}</div>
-                  </div>
+              <div className="sticky top-24 space-y-3">
+                <div className="inline-flex items-center gap-3 rounded-full border border-[var(--border-raw)] bg-white px-4 py-2 shadow-[0_10px_24px_rgba(17,17,17,0.04)]">
+                  <span className="font-mono text-[10px] uppercase tracking-[0.16em]" style={{ color: activeStep.accent }}>
+                    {activeStep.label}
+                  </span>
+                  <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[var(--text-3)]">0{activeIndex + 1} / 04</span>
                 </div>
                 <div key={activeStep.key} className="feat-reveal vis ft-panel-enter">
                   <FlagshipScene stepKey={activeStep.key} animate={!prefersReducedMotion} />
@@ -256,7 +221,7 @@ export default function Features() {
 
           <div className="space-y-6 lg:hidden">
             {FLAGSHIP_STEPS.map(step => (
-              <article key={step.key} className="rounded-[28px] border border-[var(--border-light)] bg-white/90 p-5 shadow-[0_16px_44px_rgba(17,17,17,0.06)]">
+              <article key={step.key} className="rounded-[28px] border border-[var(--border-light)] bg-white/92 p-5 shadow-[0_16px_40px_rgba(17,17,17,0.05)]">
                 <div className="mb-5 flex items-center gap-3">
                   <IconBadge Icon={step.Icon} accent={step.accent} accentSoft={step.accentSoft} />
                   <div className="font-mono text-[11px] uppercase tracking-[0.16em]" style={{ color: step.accent }}>
@@ -285,28 +250,10 @@ export default function Features() {
         </div>
       </section>
 
-      <section className="border-y border-[var(--border-raw)] bg-white/60 py-12">
-        <div className="mx-auto grid max-w-[980px] gap-4 px-6 sm:grid-cols-2 lg:grid-cols-4">
-          {[
-            { title: 'Discover', note: 'Find the opportunity worth chasing.' },
-            { title: 'Filter', note: 'Check it against what already works for you.' },
-            { title: 'Rank', note: 'Generate options and score them before publishing.' },
-            { title: 'Ship', note: 'Pick the window with space to win.' },
-          ].map((item, idx) => (
-            <div key={item.title} className="feat-reveal opacity-0 translate-y-5 rounded-[22px] border border-[var(--border-light)] bg-white p-4 transition-all duration-700 ease-out [&.vis]:translate-y-0 [&.vis]:opacity-100" style={{ transitionDelay: `${idx * 90}ms` }}>
-              <div className="font-display text-[1.4rem] font-extrabold tracking-[-0.04em] text-[var(--text)]">{item.title}</div>
-              <div className="mt-1 text-sm leading-relaxed text-[var(--text-3)]">{item.note}</div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <WorkspaceGallery initialModule={workspaceModule} reducedMotion={prefersReducedMotion} />
-
       <div className="mx-auto max-w-[620px] px-6 py-20 text-center" id="cta">
         <div className="feat-reveal opacity-0 translate-y-5 transition-all duration-700 ease-out [&.vis]:translate-y-0 [&.vis]:opacity-100">
           <div className="font-mono text-[11px] uppercase tracking-[0.16em] text-[var(--teal)]">See your first workflow in motion</div>
-          <h2 className="mt-4 font-display text-[clamp(2.2rem,4vw,2.8rem)] font-extrabold leading-[1.02] tracking-[-0.05em]">
+          <h2 className="mt-4 font-display text-[clamp(2.1rem,4vw,2.8rem)] font-extrabold leading-[1.02] tracking-[-0.05em]">
             Ready to see what your data <em className="font-accent not-italic font-normal text-[var(--teal)]">actually says?</em>
           </h2>
           <p className="mt-4 text-base leading-relaxed text-[var(--text-2)]">

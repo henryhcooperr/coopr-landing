@@ -32,8 +32,8 @@ export const FLAGSHIP_STEPS: FlagshipStep[] = [
     key: 'discover',
     label: 'Discover opportunity',
     title: 'Spot the angle before your niche turns it into background noise.',
-    proof: 'Competitor shifts, trend lift, and your own signal history collapse into one opening worth chasing.',
-    chips: ['Competitor shifts', 'Trend lift', 'Signal confidence'],
+    proof: 'Competitor shifts and trend lift collapse into one opening worth chasing.',
+    chips: ['Trend lift', 'Comp shifts'],
     accent: 'var(--teal)',
     accentSoft: 'rgba(13,148,136,0.12)',
     Icon: Radar,
@@ -42,8 +42,8 @@ export const FLAGSHIP_STEPS: FlagshipStep[] = [
     key: 'dna',
     label: 'Match it to you',
     title: 'Filter every opportunity through the creator profile your audience already responds to.',
-    proof: 'Creative DNA and voice signals cut out ideas that might trend for someone else but would land flat in your feed.',
-    chips: ['Voice fit', 'Visual traits', 'Audience memory'],
+    proof: 'Creative DNA cuts away ideas that may trend for others but would feel wrong in your feed.',
+    chips: ['Voice fit', 'Audience memory'],
     accent: 'var(--slate)',
     accentSoft: 'rgba(71,85,105,0.12)',
     Icon: Fingerprint,
@@ -51,9 +51,9 @@ export const FLAGSHIP_STEPS: FlagshipStep[] = [
   {
     key: 'generate',
     label: 'Generate and rank',
-    title: 'Build hooks that feel like you, then rank them by predicted hold before you post.',
-    proof: 'This should feel like a real product moment: prompt in, hooks out, confidence bars moving, stronger options rising to the top.',
-    chips: ['Typed workflow', 'Hold prediction', 'Score breakdown'],
+    title: 'Build hooks that feel like you, then rank them before you post.',
+    proof: 'Prompt in, hooks out, hold prediction moving, strongest option rising to the top.',
+    chips: ['Hold score', 'Hook rank'],
     accent: 'var(--green)',
     accentSoft: 'rgba(22,163,74,0.12)',
     Icon: Sparkles,
@@ -62,19 +62,12 @@ export const FLAGSHIP_STEPS: FlagshipStep[] = [
     key: 'cadence',
     label: 'Ship at the right time',
     title: 'Choose the publish window with room to win instead of posting into a crowded feed.',
-    proof: 'Cadence guidance blends follower activity, your pace, and competitor overlap into one recommended slot you can trust.',
-    chips: ['Audience heatmap', 'Crowding alerts', 'Recommended window'],
+    proof: 'Audience activity, pace, and crowding resolve into one recommended slot you can trust.',
+    chips: ['Heatmap', 'Best slot'],
     accent: 'var(--amber)',
     accentSoft: 'rgba(217,119,6,0.12)',
     Icon: Clock3,
   },
-]
-
-export const STORY_METRICS = [
-  { value: '4', label: 'flagship moves' },
-  { value: '19', label: 'scoring models' },
-  { value: '77+', label: 'signals per video' },
-  { value: '166', label: 'tools behind it' },
 ]
 
 export const WORKSPACE_MODULES: WorkspaceModule[] = [
