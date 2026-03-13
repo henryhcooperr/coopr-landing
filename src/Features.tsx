@@ -73,7 +73,7 @@ function useStoryTimeline(stepCount: number) {
       const targets = stepRefs.current.slice(0, stepCount)
       if (targets.some(target => !target)) return
 
-      const viewportAnchor = window.scrollY + window.innerHeight * 0.34
+      const viewportAnchor = window.scrollY + Math.min(window.innerHeight * 0.2, 180)
       const positions = targets.map(target => window.scrollY + (target?.getBoundingClientRect().top ?? 0))
       const heights = targets.map(target => target?.offsetHeight ?? window.innerHeight * 0.6)
 
@@ -89,7 +89,7 @@ function useStoryTimeline(stepCount: number) {
       const segmentEnd = rawSegmentEnd <= segmentStart ? segmentStart + 1 : rawSegmentEnd
       const transitionProgress = clamp((viewportAnchor - segmentStart) / (segmentEnd - segmentStart), 0, 1)
       const nextIndex = Math.min(segmentIndex + 1, stepCount - 1)
-      const activeIndex = nextIndex !== segmentIndex && transitionProgress > 0.5 ? nextIndex : segmentIndex
+      const activeIndex = nextIndex !== segmentIndex && transitionProgress > 0.74 ? nextIndex : segmentIndex
 
       const sceneWeights = Array.from({ length: stepCount }, () => 0)
       const sceneProgresses = Array.from({ length: stepCount }, () => 0)
@@ -157,10 +157,11 @@ function StoryCopy({
   const plannerChipMap: Record<string, PlannerPreviewKey> = {
     'Scene editor': 'editor',
     'Shot storyboard': 'storyboard',
+    'Production plan': 'plan',
   }
 
   return (
-      <div className={cn('relative pl-12 transition-all duration-500', isActive ? 'opacity-100' : 'opacity-38 lg:translate-x-1')}>
+      <div className={cn('relative pl-12 transition-all duration-500', isActive ? 'opacity-100' : 'opacity-24 lg:translate-x-1')}>
       <div className="absolute left-0 top-1.5 flex flex-col items-center">
         <div
           className="flex h-7 w-7 items-center justify-center rounded-full border text-[11px] font-mono font-semibold transition-all duration-500"
@@ -177,15 +178,21 @@ function StoryCopy({
         ) : null}
       </div>
 
-      <div className="flex min-h-[50vh] items-center py-8 lg:min-h-[56vh]">
-        <div className="max-w-[280px] xl:max-w-[300px]">
+      <div className={cn(
+        'flex items-center py-7 lg:py-8',
+        currentIndex < 2 ? 'min-h-[31vh] lg:min-h-[35vh]' : 'min-h-[16vh] lg:min-h-[18vh]'
+      )}>
+        <div className="max-w-[228px] xl:max-w-[244px]">
           <div className="mb-4 flex items-center gap-3">
             <IconBadge Icon={step.Icon} accent={step.accent} accentSoft={step.accentSoft} />
             <div className="font-mono text-[11px] uppercase tracking-[0.16em]" style={{ color: step.accent }}>
               {step.label}
             </div>
           </div>
-          <h2 className="text-pretty font-display text-[clamp(1.95rem,3vw,2.9rem)] font-extrabold leading-[1] tracking-[-0.05em] text-[var(--text)]">
+          <h2 className={cn(
+            'text-pretty font-display font-extrabold leading-[1] tracking-[-0.05em] text-[var(--text)]',
+            currentIndex < 2 ? 'text-[clamp(1.95rem,3vw,2.9rem)]' : 'text-[clamp(1.6rem,2.4vw,2.2rem)]'
+          )}>
             {step.title}
           </h2>
           <p className="mt-4 text-[15px] leading-relaxed text-[var(--text-2)]">
@@ -258,27 +265,27 @@ export default function Features() {
         <div className="feat-reveal opacity-0 translate-y-5 transition-all duration-700 ease-out [&.vis]:translate-y-0 [&.vis]:opacity-100">
           <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-[rgba(13,148,136,0.12)] bg-white/86 px-4 py-2 font-mono text-[11px] uppercase tracking-[0.16em] text-[var(--teal)]">
             <span className="h-1.5 w-1.5 rounded-full bg-[var(--teal)]" />
-            Flagship product tour
+            Workflow preview
           </div>
           <h1 className="mx-auto max-w-[760px] text-balance font-display text-[clamp(2.8rem,6vw,4.8rem)] font-extrabold leading-[0.96] tracking-[-0.06em]">
-            Four product moves from signal to post.
+            Watch one reel move from angle to post.
           </h1>
           <p className="mx-auto mt-5 max-w-[600px] text-[16px] leading-relaxed text-[var(--text-2)] sm:text-[17px]">
-            Follow one creator from the winning angle into the script editor, the shot planner, and the publish slot that gives the post room to land.
+            The same angle becomes a draft, a shot plan, and a publish decision inside one workspace.
           </p>
         </div>
       </header>
 
-      <section className="mx-auto max-w-[1380px] px-6 pb-24 lg:pb-[34vh]">
+      <section className="mx-auto max-w-[1380px] px-6 pb-16 lg:pb-[12vh]">
         <div className="feat-reveal opacity-0 translate-y-5 transition-all duration-700 ease-out [&.vis]:translate-y-0 [&.vis]:opacity-100">
           <div className="mb-6 max-w-[460px]">
             <div className="font-mono text-[11px] uppercase tracking-[0.16em] text-[var(--text-3)]">The core story</div>
             <div className="mt-2 text-[15px] leading-relaxed text-[var(--text-2)]">
-              Four chapters only. One concrete creator workflow. No extra product taxonomy layered underneath.
+              One creator workflow. Four real product moves. No extra taxonomy layered underneath.
             </div>
           </div>
 
-          <div className="hidden gap-10 lg:grid lg:grid-cols-[minmax(0,300px)_minmax(0,1fr)] xl:grid-cols-[minmax(0,320px)_minmax(0,1fr)]">
+          <div className="hidden gap-10 lg:grid lg:grid-cols-[minmax(0,244px)_minmax(0,1fr)] xl:grid-cols-[minmax(0,260px)_minmax(0,1fr)]">
             <div>
               {FLAGSHIP_STEPS.map((_, idx) => (
                 <section key={FLAGSHIP_STEPS[idx].key} ref={registerStep(idx)} data-step-index={idx}>
@@ -300,8 +307,8 @@ export default function Features() {
                   </span>
                   <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[var(--text-3)]">0{activeIndex + 1} / 04</span>
                 </div>
-                <div className="feat-reveal vis relative min-h-[620px]">
-                  <div key={activeStep.key} className={cn(!prefersReducedMotion && 'ft-panel-enter')}>
+                <div className="feat-reveal vis relative h-[590px] xl:h-[610px]">
+                  <div>
                     <FlagshipScene
                       stepKey={activeStep.key}
                       animate={!prefersReducedMotion}
@@ -336,10 +343,10 @@ export default function Features() {
                       <button
                         key={chip}
                         type="button"
-                        onClick={() => setPlannerPreview(chip === 'Scene editor' ? 'editor' : 'storyboard')}
+                        onClick={() => setPlannerPreview(chip === 'Scene editor' ? 'editor' : chip === 'Shot storyboard' ? 'storyboard' : 'plan')}
                         className={cn(
                           'rounded-full border px-3 py-1.5 text-xs font-medium transition-colors',
-                          plannerPreview === (chip === 'Scene editor' ? 'editor' : 'storyboard')
+                          plannerPreview === (chip === 'Scene editor' ? 'editor' : chip === 'Shot storyboard' ? 'storyboard' : 'plan')
                             ? 'border-[rgba(71,85,105,0.18)] bg-[rgba(71,85,105,0.10)] text-[var(--slate)]'
                             : 'border-[var(--border-raw)] bg-[var(--bg)] text-[var(--text-2)]'
                         )}

@@ -26,13 +26,101 @@ interface CursorStop {
   label: string
 }
 
+interface SceneShellMetric {
+  label: string
+  value: string
+  delta?: string
+  tone?: 'up' | 'neutral'
+}
+
+interface SceneShellMeta {
+  navKey: 'hook' | 'script' | 'plan' | 'engine'
+  workspace: string
+  status: string
+  metrics: SceneShellMetric[]
+  score: string
+  scoreCopy: string
+  chips: string[]
+}
+
+const STUDIO_NAV = [
+  { key: 'chat', label: 'Chat', section: null },
+  { key: 'content', label: 'Content', section: null },
+  { key: 'trends', label: 'Trends', section: null },
+  { key: 'competitors', label: 'Competitors', section: null },
+  { key: 'hook', label: 'Hook Lab', section: 'Create' },
+  { key: 'script', label: 'Scripts', section: null },
+  { key: 'plan', label: 'Shot Lists', section: null },
+  { key: 'engine', label: 'Engine', section: 'Analyze' },
+  { key: 'settings', label: 'Settings', section: null },
+] as const
+
+const SHELL_META: Record<FlagshipStepKey, SceneShellMeta> = {
+  discover: {
+    navKey: 'engine',
+    workspace: 'Concept evaluation',
+    status: 'Opportunity locked',
+    metrics: [
+      { label: 'Trend lift', value: '+24%', delta: 'up', tone: 'up' },
+      { label: 'Comp overlap', value: 'Low', tone: 'neutral' },
+      { label: 'Voice fit', value: 'High', tone: 'up' },
+      { label: 'Signals', value: '7 active', tone: 'neutral' },
+    ],
+    score: '87',
+    scoreCopy: 'Best opening this week',
+    chips: ['Myth-busting', 'Proof-first', 'Low overlap', 'Direct fit'],
+  },
+  script: {
+    navKey: 'script',
+    workspace: 'Script Builder',
+    status: 'Draft ready',
+    metrics: [
+      { label: 'Voice fit', value: '0.87', tone: 'up' },
+      { label: 'Watch-through', value: '84%', tone: 'up' },
+      { label: 'Weak beat', value: 'None', tone: 'neutral' },
+      { label: 'Blocks ready', value: '3', tone: 'neutral' },
+    ],
+    score: '86',
+    scoreCopy: 'Ready for teleprompter',
+    chips: ['Direct hooks', 'Short lines', 'Proof first', 'Editable draft'],
+  },
+  planner: {
+    navKey: 'plan',
+    workspace: 'Shot Planner',
+    status: 'Shoot plan ready',
+    metrics: [
+      { label: 'Scenes', value: '3', tone: 'neutral' },
+      { label: 'Shots', value: '12', tone: 'neutral' },
+      { label: 'Locations', value: '2', tone: 'neutral' },
+      { label: 'Complexity', value: 'Low', tone: 'up' },
+    ],
+    score: '88',
+    scoreCopy: 'Fastest filmable version',
+    chips: ['Scene editor', 'Storyboard', 'Shoot day', 'Low gear'],
+  },
+  cadence: {
+    navKey: 'engine',
+    workspace: 'Publish',
+    status: 'Best slot picked',
+    metrics: [
+      { label: 'Best slot', value: 'Thu 8:10', tone: 'up' },
+      { label: 'Audience', value: 'High', tone: 'up' },
+      { label: 'Crowding', value: 'Low', tone: 'up' },
+      { label: 'Cadence', value: 'On pace', tone: 'neutral' },
+    ],
+    score: '85',
+    scoreCopy: 'Room to win this week',
+    chips: ['Audience-first', 'Low overlap', 'On pace', 'Proof-led'],
+  },
+}
+
 function Stage({ children, className, animate, delay = 0 }: StageProps) {
   const style = animate
     ? ({ '--ft-delay': `${delay}ms` } as CSSProperties)
     : undefined
 
   return (
-    <div className={cn(className, animate && 'ft-stage-in')} style={style}>
+    <div className={className} style={style}>
       {children}
     </div>
   )
@@ -41,21 +129,115 @@ function Stage({ children, className, animate, delay = 0 }: StageProps) {
 function SceneShell({
   children,
   caption,
+  stepKey,
 }: {
   children: ReactNode
   caption: string
+  stepKey: FlagshipStepKey
 }) {
+  const meta = SHELL_META[stepKey]
+
   return (
-    <div className="ft-scene-shell relative overflow-hidden rounded-[28px] border border-[var(--border-light)] bg-white p-4 shadow-[0_24px_80px_rgba(17,17,17,0.08)] sm:p-5 lg:min-h-[520px] lg:p-6">
+    <div className="ft-scene-shell relative flex flex-col overflow-hidden rounded-[28px] border border-[var(--border-light)] bg-white shadow-[0_24px_80px_rgba(17,17,17,0.08)] lg:h-[590px] xl:h-[610px]">
       <div className="ft-scene-shell__glow" />
       <div className="ft-scene-shell__grid" />
-      <div className="relative z-10 border-b border-[var(--border-light)] pb-4">
-        <div>
-          <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-[var(--text-3)]">Flagship workflow</div>
-          <div className="mt-1 text-sm font-semibold text-[var(--text)]">{caption}</div>
+      <div className="relative z-10 flex items-center gap-2 border-b border-[var(--border-light)] bg-[var(--bg-alt)] px-4 py-3">
+        <div className="flex gap-1.5">
+          <span className="h-[10px] w-[10px] rounded-full bg-[#FF5F57]" />
+          <span className="h-[10px] w-[10px] rounded-full bg-[#FEBC2E]" />
+          <span className="h-[10px] w-[10px] rounded-full bg-[#28C840]" />
         </div>
+        <div className="flex-1 text-center font-mono text-[11px] text-[var(--text-3)]">app.coopr.studio</div>
       </div>
-      <div className="relative z-10 mt-4">{children}</div>
+
+      <div className="relative z-10 grid min-h-0 flex-1 grid-cols-[176px_minmax(0,1fr)_224px] max-[1180px]:grid-cols-[168px_minmax(0,1fr)] max-[900px]:grid-cols-1">
+        <aside className="bg-[var(--bg-dark)] p-3 text-[var(--text-inv)] max-[900px]:hidden">
+          <div className="mb-3.5 flex items-center gap-[10px] border-b border-white/[0.06] px-3 pb-4">
+            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-white font-display text-xs font-extrabold text-[var(--bg-dark)]">C</div>
+            <span className="font-display text-[15px] font-bold tracking-[-0.03em]">Coopr</span>
+          </div>
+          {STUDIO_NAV.map((item, index) => {
+            const active = item.key === meta.navKey
+            const showSection = item.section && (index === 0 || STUDIO_NAV[index - 1]?.section !== item.section)
+            return (
+              <Fragment key={item.key}>
+                {showSection ? (
+                  <div className="mb-2 mt-4 px-3 font-mono text-[10px] font-medium uppercase tracking-[0.08em] text-white/20">
+                    {item.section}
+                  </div>
+                ) : null}
+                <div className={cn(
+                  'flex items-center gap-3 rounded-lg px-3 py-[9px] text-sm font-[450] transition-all duration-200',
+                  active ? 'bg-white/[0.08] text-white' : 'text-white/40'
+                )}>
+                  <span className={cn('h-2 w-2 rounded-full', active ? 'bg-white/85' : 'bg-white/18')} />
+                  {item.label}
+                </div>
+              </Fragment>
+            )
+          })}
+        </aside>
+
+        <div className="flex min-h-0 min-w-0 flex-col border-r border-[var(--border-light)] bg-[var(--bg)] max-[1180px]:border-r-0">
+          <div className="flex items-center gap-[10px] border-b border-[var(--border-light)] px-5 py-3.5">
+            <div className="flex h-7 w-7 items-center justify-center rounded-[7px] bg-[var(--bg-dark)] text-xs font-bold text-[var(--text-inv)]">C</div>
+            <span className="text-[15px] font-semibold tracking-[-0.01em]">Coopr</span>
+            <span className="text-xs text-[var(--text-3)]">{meta.workspace}</span>
+          </div>
+          <div className="flex-1 min-h-0 overflow-hidden px-4 py-4 sm:px-5">
+            <div className="flex h-full min-h-0 flex-col rounded-[22px] border border-[rgba(17,17,17,0.06)] bg-white shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
+              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--border-light)] px-4 py-3">
+                <div>
+                  <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-[var(--text-3)]">Flagship workflow</div>
+                  <div className="mt-1 text-sm font-semibold text-[var(--text)]">{caption}</div>
+                </div>
+                <div className="rounded-full border border-[rgba(13,148,136,0.12)] bg-[rgba(13,148,136,0.08)] px-3 py-1 font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--teal)]">
+                  {meta.status}
+                </div>
+              </div>
+              <div className="min-h-0 overflow-hidden p-3 sm:p-4">{children}</div>
+            </div>
+          </div>
+        </div>
+
+        <aside className="grid content-start gap-4 bg-white px-4 py-4 max-[1180px]:hidden">
+          <div className="inline-flex items-center gap-2 rounded-full border border-[rgba(13,148,136,0.12)] bg-white/88 px-4 py-2 font-mono text-[11px] uppercase tracking-[0.16em] text-[var(--teal)] shadow-[0_8px_24px_rgba(17,17,17,0.04)]">
+            <span className="h-1.5 w-1.5 rounded-full bg-[var(--teal)]" />
+            Live studio preview
+          </div>
+          <div className="grid gap-3">
+            <div className="grid gap-3 border-t border-[var(--border-light)] pt-3">
+              <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-[var(--text-3)]">Stage metrics</div>
+              {meta.metrics.map(metric => (
+                <div key={metric.label} className="flex items-center justify-between gap-3 border-b border-[var(--border-light)] pb-3 text-[13px] last:border-b-0 last:pb-0">
+                  <span className="text-[var(--text-2)]">{metric.label}</span>
+                  <strong className="text-right text-[var(--text)]">
+                    {metric.value}
+                    {metric.delta ? <em className={`ml-1 not-italic ${metric.tone === 'up' ? 'text-[var(--green)]' : 'text-[var(--text-3)]'}`}>{metric.delta}</em> : null}
+                  </strong>
+                </div>
+              ))}
+            </div>
+
+            <div className="rounded-[18px] border border-[var(--border-light)] bg-[rgba(244,240,232,0.75)] px-4 py-4">
+              <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-[var(--text-3)]">Coopr score</div>
+              <div className="mt-2 text-[58px] font-display font-extrabold leading-none tracking-[-0.07em] text-[var(--text)]">{meta.score}</div>
+              <div className="mt-1 text-[13px] text-[var(--text-2)]">{meta.scoreCopy}</div>
+            </div>
+
+            <div className="grid gap-3 border-t border-[var(--border-light)] pt-3">
+              <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-[var(--text-3)]">Creative DNA</div>
+              <div className="flex flex-wrap gap-2">
+                {meta.chips.map(chip => (
+                  <span key={chip} className="rounded-full border border-[var(--border-light)] bg-[var(--bg-alt)] px-3 py-2 text-[11px] font-semibold text-[var(--text-2)]">
+                    {chip}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
+        </aside>
+      </div>
     </div>
   )
 }
@@ -116,89 +298,114 @@ function FlowCursor({
 }
 
 function DiscoverScene({ animate, progress = 0 }: Omit<FlagshipSceneProps, 'stepKey'>) {
-  const competitors = [
-    { name: 'Ocean Almanac', handle: '@oceanalmanac', hook: 'Debunking reef myths', lift: '+18%', hold: '79%', active: false },
-    { name: 'Wild Lens Daily', handle: '@wildlensdaily', hook: 'Cleanup before/after reveal', lift: '+24%', hold: '91%', active: true },
-    { name: 'Blue Planet Notes', handle: '@blueplanetnotes', hook: 'Fast fact carousel reel', lift: '+11%', hold: '74%', active: false },
+  const evaluations = [
+    ['Opportunity', 'HIGH', 'Low competition in the niche'],
+    ['Content gap', '82', 'Fills a hole in Maya’s catalog'],
+    ['Timing', 'NOW', 'Cleanup discourse is active this week'],
+  ] as const
+  const winners = [
+    ['Cleanup myth reel', '89 score · 24K views'],
+    ['Coral before and after', '84 score · 18K views'],
+    ['What the divers missed', '78 score · 12K views'],
+  ] as const
+  const signalNotes = [
+    'Direct myth-busting hooks are rising faster than generic cleanup explainers.',
+    'Maya’s proof-first reels hold better when the visual contrast lands before 8s.',
+    'The niche is active, but the before/after reveal format still looks underused.',
   ]
-  const bars = [62, 84, 58, 76, 93, 71]
   const flowStops: CursorStop[] = [
-    { x: '23%', y: '41%', label: 'compare hooks' },
-    { x: '73%', y: '28%', label: 'pick angle' },
-    { x: '68%', y: '78%', label: 'check lift' },
+    { x: '31%', y: '28%', label: 'evaluate idea' },
+    { x: '72%', y: '34%', label: 'pick angle' },
+    { x: '73%', y: '82%', label: 'lock concept' },
   ]
 
   return (
-    <SceneShell caption="Intelligence workspace -> winning angle selected">
-      <Stage animate={animate} delay={110} className="relative rounded-[26px] border border-[rgba(17,17,17,0.08)] bg-[linear-gradient(180deg,#fcfcfb,#f4f4f1)] p-3 shadow-[0_18px_48px_rgba(17,17,17,0.08)]">
-        <FlowCursor stops={flowStops} animate={animate} progress={progress} />
+    <SceneShell stepKey="discover" caption="Concept evaluation -> winning angle selected">
+      <Stage animate={animate} delay={110} className="relative rounded-[26px] border border-[rgba(17,17,17,0.08)] bg-[linear-gradient(180deg,#fcfcfb,#f4f4f1)] p-3 shadow-[0_18px_48px_rgba(17,17,17,0.08)] lg:h-full">
+        <FlowCursor stops={[]} animate={animate} progress={progress} />
         <div className="rounded-[22px] border border-[rgba(17,17,17,0.06)] bg-white p-3">
           <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--border-light)] pb-3">
             <div>
-              <div className="text-[10px] font-semibold uppercase tracking-[0.16em] text-[var(--text-3)]">Intelligence</div>
-              <div className="mt-1 text-sm font-semibold text-[var(--text)]">Maya Chen • cleanup myth research</div>
+              <div className="text-[10px] font-semibold uppercase tracking-[0.16em] text-[var(--text-3)]">Concept stage</div>
+              <div className="mt-1 text-sm font-semibold text-[var(--text)]">What should Maya’s next cleanup reel be about?</div>
             </div>
-            <div className="flex flex-wrap gap-2">
-              {['Competitors', 'Trends', 'Angles'].map(tab => (
-                <span
-                  key={tab}
-                  className={cn(
-                    'rounded-full px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.12em]',
-                    tab === 'Competitors' ? 'bg-[rgba(13,148,136,0.12)] text-[var(--teal)]' : 'bg-[var(--bg)] text-[var(--text-3)]'
-                  )}
-                >
-                  {tab}
-                </span>
-              ))}
-            </div>
+            <button type="button" className="rounded-full border border-[rgba(13,148,136,0.16)] bg-[rgba(13,148,136,0.08)] px-3 py-2 text-xs font-medium text-[var(--teal)]">
+              Evaluate idea
+            </button>
           </div>
 
-          <div className="mt-3 grid gap-3 xl:grid-cols-[minmax(0,1.05fr)_340px]">
-            <div className="space-y-2">
-              {competitors.map(competitor => (
-                <div
-                  key={competitor.name}
-                  className={cn(
-                    'rounded-[20px] border px-3 py-3 transition-all',
-                    competitor.active
-                      ? 'border-[rgba(13,148,136,0.24)] bg-[rgba(13,148,136,0.05)] shadow-[0_10px_26px_rgba(13,148,136,0.08)]'
-                      : 'border-[var(--border-light)] bg-[var(--bg)]'
-                  )}
-                >
-                  <div className="flex items-start justify-between gap-3">
-                    <div>
-                      <div className="text-sm font-semibold text-[var(--text)]">{competitor.name}</div>
-                      <div className="text-xs text-[var(--text-3)]">{competitor.handle}</div>
-                      <div className="mt-2 text-sm leading-relaxed text-[var(--text-2)]">{competitor.hook}</div>
-                    </div>
-                    <div className="text-right">
-                      <div className={cn(
-                        'rounded-full px-2.5 py-1 font-mono text-[10px]',
-                        competitor.active ? 'bg-[rgba(13,148,136,0.12)] text-[var(--teal)]' : 'bg-white text-[var(--text-3)]'
-                      )}>
-                        {competitor.lift}
-                      </div>
-                      <div className="mt-2 text-[10px] uppercase tracking-[0.12em] text-[var(--text-3)]">hold {competitor.hold}</div>
-                    </div>
-                  </div>
+          <div className="mt-3 grid gap-3 xl:grid-cols-[minmax(0,1.05fr)_300px]">
+            <div className="space-y-3">
+              <div className="rounded-[20px] border border-[var(--border-light)] bg-[var(--bg)] px-4 py-4">
+                <div className="text-[11px] font-medium uppercase tracking-[0.16em] text-[var(--text-3)]">Draft concept</div>
+                <div className="mt-3 rounded-[18px] border border-[var(--border-light)] bg-white px-4 py-4 text-[15px] leading-relaxed text-[var(--text)]">
+                  Reef cleanup myths people still believe, but filmed with a before-and-after proof cut from the exact same dive spot.
                 </div>
-              ))}
+                <div className="mt-3 flex flex-wrap gap-2">
+                  <button type="button" className="rounded-full border border-[rgba(13,148,136,0.16)] bg-white px-3 py-2 text-xs font-medium text-[var(--teal)]">
+                    Compare against library
+                  </button>
+                  <button type="button" className="rounded-full border border-[var(--border-raw)] bg-white px-3 py-2 text-xs font-medium text-[var(--text-2)]">
+                    Check voice fit
+                  </button>
+                </div>
+              </div>
+
+              <div className="grid gap-2 sm:grid-cols-3">
+                {evaluations.map(([label, value, copy], index) => (
+                  <div
+                    key={label}
+                    className={cn(
+                      'rounded-[18px] border px-4 py-4',
+                      index === 0 ? 'border-[rgba(13,148,136,0.16)] bg-[rgba(13,148,136,0.06)]' : 'border-[var(--border-light)] bg-white'
+                    )}
+                  >
+                    <div className="text-[10px] uppercase tracking-[0.12em] text-[var(--text-3)]">{label}</div>
+                    <div className="mt-2 text-[24px] font-display font-extrabold leading-none tracking-[-0.05em] text-[var(--text)]">{value}</div>
+                    <div className="mt-2 text-xs leading-relaxed text-[var(--text-2)]">{copy}</div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="rounded-[20px] border border-[var(--border-light)] bg-white px-4 py-4">
+                <div className="flex items-center justify-between gap-3">
+                  <div className="text-[10px] uppercase tracking-[0.12em] text-[var(--text-3)]">Similar winners from Maya’s library</div>
+                  <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--text-3)]">Top performance matches</div>
+                </div>
+                <div className="mt-3 grid gap-2 sm:grid-cols-3">
+                  {winners.map(([title, meta], index) => (
+                    <div
+                      key={title}
+                      className={cn(
+                        'rounded-[18px] border px-3 py-3',
+                        index === 0 ? 'border-[rgba(13,148,136,0.16)] bg-[rgba(13,148,136,0.05)]' : 'border-[var(--border-light)] bg-[var(--bg)]'
+                      )}
+                    >
+                      <div className="text-sm font-semibold text-[var(--text)]">{title}</div>
+                      <div className="mt-1 text-xs text-[var(--text-3)]">{meta}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
 
             <div className="space-y-2">
-              <div className="rounded-[20px] border border-[rgba(13,148,136,0.18)] bg-[rgba(13,148,136,0.05)] px-3 py-3">
+              <div className="rounded-[20px] border border-[rgba(13,148,136,0.18)] bg-[rgba(13,148,136,0.06)] px-4 py-4 shadow-[0_16px_40px_rgba(13,148,136,0.08)]">
                 <div className="flex items-center justify-between gap-3">
                   <div className="text-[10px] uppercase tracking-[0.12em] text-[var(--text-3)]">Angle selected for Maya</div>
-                  <div className="rounded-full bg-white px-2.5 py-1 font-mono text-[10px] text-[var(--teal)]">+24%</div>
+                  <div className="rounded-full bg-white px-2.5 py-1 font-mono text-[10px] text-[var(--teal)]">0.87 fit</div>
                 </div>
-                <div className="mt-2 text-xl font-display font-extrabold leading-[1.02] tracking-[-0.04em] text-[var(--text)]">
-                  Myth-busting reef cleanup is accelerating now.
+                <div className="mt-2 text-[28px] font-display font-extrabold leading-[0.96] tracking-[-0.05em] text-[var(--text)]">
+                  Myth-busting reef cleanup is spiking now.
                 </div>
-                <div className="mt-3 grid gap-2 sm:grid-cols-3">
+                <div className="mt-3 text-sm leading-relaxed text-[var(--text-2)]">
+                  Matches Maya’s direct explainer tone, leaves room for a visual proof cut, and still looks underused by nearby competitors.
+                </div>
+                <div className="mt-4 grid grid-cols-3 gap-2">
                   {[
-                    ['Trend confidence', '0.87'],
-                    ['Comp overlap', 'Low'],
-                    ['Voice fit', 'High'],
+                    ['Trend lift', '+24%'],
+                    ['Overlap', 'Low'],
+                    ['Hook shape', 'Proof-first'],
                   ].map(([label, value]) => (
                     <div key={label} className="rounded-[16px] bg-white px-3 py-3">
                       <div className="text-[10px] uppercase tracking-[0.12em] text-[var(--text-3)]">{label}</div>
@@ -206,37 +413,22 @@ function DiscoverScene({ animate, progress = 0 }: Omit<FlagshipSceneProps, 'step
                     </div>
                   ))}
                 </div>
-                <div className="mt-3 rounded-[16px] bg-white px-3 py-3 text-sm leading-relaxed text-[var(--text-2)]">
-                  The reveal-plus-proof format matches Maya’s direct style and still feels underused in the current competitor set.
-                </div>
               </div>
 
-              <div className="rounded-[20px] border border-[var(--border-light)] bg-[var(--bg)] px-3 py-3">
-                <div className="flex items-center justify-between gap-3">
-                  <div className="text-[10px] uppercase tracking-[0.12em] text-[var(--text-3)]">Signal comparison</div>
-                  <div className="font-mono text-[10px] text-[var(--text-3)]">7-day normalized score</div>
-                </div>
-                <div className="mt-3 flex items-end gap-2">
-                  {bars.map((value, idx) => (
-                    <div key={idx} className="flex-1">
-                      <div className="ft-graph-bar rounded-t-[14px] bg-[linear-gradient(180deg,rgba(13,148,136,0.85),rgba(13,148,136,0.18))]" style={{ ['--ft-bar-height' as string]: `${value}%` } as CSSProperties} />
+              <div className="rounded-[20px] border border-[var(--border-light)] bg-[var(--bg)] px-4 py-4">
+                <div className="text-[10px] uppercase tracking-[0.12em] text-[var(--text-3)]">Why Coopr is choosing it</div>
+                <div className="mt-3 space-y-2">
+                  {signalNotes.map(note => (
+                    <div key={note} className="rounded-[14px] bg-white px-3 py-2 text-xs leading-relaxed text-[var(--text-2)]">
+                      {note}
                     </div>
                   ))}
                 </div>
-                <div className="mt-2 flex justify-between text-[10px] uppercase tracking-[0.12em] text-[var(--text-3)]">
-                  <span>competitors</span>
-                  <span>your backlog</span>
-                </div>
               </div>
 
-              <div className="flex flex-wrap gap-2">
-                <button type="button" className="rounded-full border border-[rgba(13,148,136,0.16)] bg-[rgba(13,148,136,0.08)] px-3 py-2 text-xs font-medium text-[var(--teal)]">
-                  Send to Hook Lab
-                </button>
-                <button type="button" className="rounded-full border border-[var(--border-raw)] bg-white px-3 py-2 text-xs font-medium text-[var(--text-2)]">
-                  Save opportunity
-                </button>
-              </div>
+              <button type="button" className="w-full rounded-[18px] border border-[rgba(13,148,136,0.16)] bg-white px-4 py-3 text-left text-sm font-semibold text-[var(--teal)]">
+                Lock concept and continue to Hook Lab →
+              </button>
             </div>
           </div>
         </div>
@@ -271,7 +463,7 @@ function ScriptScene({ animate, progress = 0 }: Omit<FlagshipSceneProps, 'stepKe
           label: 'Body',
           range: '0:04 - 0:24',
           color: 'var(--blue)',
-          text: 'Show the coral wall from last month, then cut to the same patch after volunteers pulled the fishing line and trash out. Explain why flow and light return first.',
+          text: 'Show the coral wall from last month, then cut to the same patch after volunteers pulled the line and trash out. Explain why flow and light return first.',
           actions: ['Shorten', 'Expand'],
         },
         {
@@ -283,9 +475,9 @@ function ScriptScene({ animate, progress = 0 }: Omit<FlagshipSceneProps, 'stepKe
         },
       ],
       notes: [
-        'Hook pulled from Maya’s top 5 direct-address openers.',
+        'Hook pulled from Maya’s best direct-address openers.',
         'Scene 2 tightened after retention analysis flagged drag at 13s.',
-        'Teleprompter and shot plan stay linked to the same draft.',
+        'Teleprompter and shot planner stay tied to the same approved draft.',
       ],
     },
     {
@@ -324,9 +516,9 @@ function ScriptScene({ animate, progress = 0 }: Omit<FlagshipSceneProps, 'stepKe
         },
       ],
       notes: [
-        'Liv’s audience saves mobility posts when the count overlay appears by 2s.',
+        'Save-heavy mobility posts work best when the count overlay appears by 2s.',
         'The body copy was shortened to keep the demo visual first.',
-        'This draft outperformed her 30-day baseline by 9 points.',
+        'This draft outperformed Liv’s 30-day baseline by 9 points.',
       ],
     },
     {
@@ -337,7 +529,7 @@ function ScriptScene({ animate, progress = 0 }: Omit<FlagshipSceneProps, 'stepKe
       status: 'Review',
       prompt: 'Draft a 35 second lighting breakdown with one fast prop reveal and no filler.',
       stats: [
-        ['Voice score', '0.9'],
+        ['Voice score', '0.90'],
         ['Watch-through', '81%'],
         ['Weakest beat', 'hook alt 2'],
       ],
@@ -365,7 +557,7 @@ function ScriptScene({ animate, progress = 0 }: Omit<FlagshipSceneProps, 'stepKe
         },
       ],
       notes: [
-        'Theo’s direct gear-price hooks hold best with prop reveal at 1s.',
+        'Theo’s direct gear-price hooks hold best when the prop reveal lands at 1s.',
         'The CTA was softened to keep the tutorial tone intact.',
         'Shot planner can reuse the same scene timing markers.',
       ],
@@ -374,106 +566,66 @@ function ScriptScene({ animate, progress = 0 }: Omit<FlagshipSceneProps, 'stepKe
   const [activeCreatorIndex, setActiveCreatorIndex] = useState(0)
   const activeCreator = creators[activeCreatorIndex]
   const flowStops: CursorStop[] = [
-    { x: '18%', y: '18%', label: 'open creator draft' },
-    { x: '47%', y: '43%', label: 'edit script' },
-    { x: '78%', y: '84%', label: 'open teleprompter' },
+    { x: '18%', y: '18%', label: 'open draft' },
+    { x: '39%', y: '43%', label: 'rewrite block' },
+    { x: '73%', y: '80%', label: 'open teleprompter' },
   ]
 
   return (
-    <SceneShell caption="Real creator draft -> Script Builder -> teleprompter handoff">
-      <div className="relative space-y-4">
+    <SceneShell stepKey="script" caption="Selected hook -> Script editor -> teleprompter handoff">
+      <div className="relative">
         <FlowCursor stops={flowStops} animate={animate} progress={progress} />
-        <Stage animate={animate} delay={90} className="relative rounded-[26px] border border-[rgba(17,17,17,0.08)] bg-[#171717] p-3 text-white shadow-[0_20px_60px_rgba(17,17,17,0.14)]">
-          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/8 pb-3">
-            <div>
-              <div className="text-[10px] font-semibold uppercase tracking-[0.16em] text-white/45">Studio examples</div>
-              <div className="mt-1 text-sm font-medium text-white/82">Real creator drafts moving through script builder</div>
-            </div>
-            <div className="rounded-full border border-white/10 bg-white/6 px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.12em] text-white/60">
-              {creators.length} live examples
-            </div>
-          </div>
-
-          <div className="mt-3 grid gap-2 lg:grid-cols-3">
-            {creators.map((creator, idx) => (
-              <button
-                key={creator.name}
-                type="button"
-                onClick={() => setActiveCreatorIndex(idx)}
-                className={cn(
-                  'rounded-[20px] border px-3 py-3 text-left transition-all',
-                  idx === activeCreatorIndex
-                    ? 'border-[rgba(59,130,246,0.32)] bg-[linear-gradient(180deg,rgba(255,255,255,0.12),rgba(255,255,255,0.05))] shadow-[0_12px_28px_rgba(0,0,0,0.18)]'
-                    : 'border-white/8 bg-white/[0.04] hover:bg-white/[0.06]'
-                )}
-              >
-                <div className="flex items-start justify-between gap-3">
-                  <div className="flex min-w-0 gap-3">
-                    <div className={cn(
-                      'flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-xs font-semibold',
-                      idx === activeCreatorIndex ? 'bg-[rgba(37,99,235,0.18)] text-white' : 'bg-white/8 text-white/72'
-                    )}>
-                      {creator.name.split(' ').map(part => part[0]).join('')}
-                    </div>
-                    <div className="min-w-0">
-                      <div className="truncate text-sm font-semibold text-white">{creator.name}</div>
-                      <div className="text-xs text-white/52">{creator.handle} • {creator.role}</div>
-                    </div>
-                  </div>
-                  <div className={cn(
-                    'rounded-full px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.12em]',
-                    creator.status === 'Draft' && 'bg-[rgba(217,119,6,0.14)] text-[rgb(251,191,36)]',
-                    creator.status === 'Published' && 'bg-[rgba(22,163,74,0.14)] text-[rgb(74,222,128)]',
-                    creator.status === 'Review' && 'bg-[rgba(37,99,235,0.14)] text-[rgb(96,165,250)]',
-                  )}>
-                    {creator.status}
-                  </div>
-                </div>
-                <div className="mt-3 rounded-[16px] bg-black/18 px-3 py-2.5">
-                  <div className="truncate text-sm font-medium text-white/90">{creator.project}</div>
-                  <div className="mt-1 text-xs leading-relaxed text-white/48">
-                    {idx === activeCreatorIndex ? 'Selected for script editing' : 'Open example'}
-                  </div>
-                </div>
-              </button>
-            ))}
-          </div>
-        </Stage>
-
-        <Stage animate={animate} delay={210} className="min-w-0 rounded-[26px] border border-[rgba(17,17,17,0.08)] bg-[linear-gradient(180deg,#fcfcfb,#f4f4f1)] p-3 shadow-[0_18px_48px_rgba(17,17,17,0.08)]">
+        <Stage animate={animate} delay={120} className="min-h-0 min-w-0 rounded-[26px] border border-[rgba(17,17,17,0.08)] bg-[linear-gradient(180deg,#fcfcfb,#f4f4f1)] p-3 shadow-[0_18px_48px_rgba(17,17,17,0.08)] lg:h-full">
           <div className="rounded-[22px] border border-[rgba(17,17,17,0.06)] bg-white p-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.8)]">
             <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--border-light)] pb-3">
               <div>
-                <div className="text-[10px] font-semibold uppercase tracking-[0.16em] text-[var(--text-3)]">Script Builder</div>
+                <div className="text-[10px] font-semibold uppercase tracking-[0.16em] text-[var(--text-3)]">Script editor</div>
                 <div className="mt-1 text-sm font-semibold text-[var(--text)]">{activeCreator.name} • {activeCreator.project}</div>
               </div>
-              <div className="flex flex-wrap items-center gap-2">
-                {['Concept', 'Hooks', 'Script', 'Shots', 'Notes'].map(stage => (
-                  <span
-                    key={stage}
-                    className={cn(
-                      'rounded-full px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.12em]',
-                      stage === 'Script'
-                        ? 'bg-[rgba(37,99,235,0.12)] text-[var(--blue)]'
-                        : 'bg-[var(--bg)] text-[var(--text-3)]'
-                    )}
-                  >
-                    {stage}
-                  </span>
-                ))}
-              </div>
+              <button type="button" className="rounded-full border border-[var(--border-raw)] bg-white px-3 py-2 text-xs font-medium text-[var(--text-2)]">
+                Open teleprompter
+              </button>
             </div>
 
-            <div className="mt-3 rounded-[18px] border border-[var(--border-light)] bg-[var(--bg)] px-3 py-3">
-              <div className="flex items-center justify-between gap-3">
-                <div className="text-[10px] uppercase tracking-[0.12em] text-[var(--text-3)]">{activeCreator.name} asks Coopr</div>
-                <div className="rounded-full bg-white px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--text-3)]">hook approved</div>
-              </div>
-              <div className="mt-2 text-sm leading-relaxed text-[var(--text)]">{activeCreator.prompt}</div>
+            <div className="mt-3 grid gap-2 lg:grid-cols-3">
+              {creators.map((creator, idx) => (
+                <button
+                  key={creator.name}
+                  type="button"
+                  onClick={() => setActiveCreatorIndex(idx)}
+                  className={cn(
+                    'rounded-[18px] border px-3 py-3 text-left transition-all',
+                    idx === activeCreatorIndex
+                      ? 'border-[rgba(37,99,235,0.18)] bg-[rgba(37,99,235,0.06)]'
+                      : 'border-[var(--border-light)] bg-[var(--bg)]'
+                  )}
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <div className="truncate text-sm font-semibold text-[var(--text)]">{creator.name}</div>
+                      <div className="truncate text-xs text-[var(--text-3)]">{creator.handle} • {creator.role}</div>
+                    </div>
+                    <div className={cn(
+                      'rounded-full px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.12em]',
+                      creator.status === 'Draft' && 'bg-[rgba(217,119,6,0.14)] text-[var(--amber)]',
+                      creator.status === 'Published' && 'bg-[rgba(22,163,74,0.14)] text-[var(--green)]',
+                      creator.status === 'Review' && 'bg-[rgba(37,99,235,0.14)] text-[var(--blue)]',
+                    )}>
+                      {creator.status}
+                    </div>
+                  </div>
+                  <div className="mt-2 text-xs text-[var(--text-2)]">{creator.project}</div>
+                </button>
+              ))}
             </div>
 
             <div className="mt-3 grid gap-3 xl:grid-cols-[minmax(0,1fr)_260px]">
               <div className="space-y-2">
+                <div className="rounded-[18px] border border-[rgba(37,99,235,0.14)] bg-[rgba(37,99,235,0.06)] px-3 py-3">
+                  <div className="text-[10px] uppercase tracking-[0.12em] text-[var(--text-3)]">Selected hook</div>
+                  <div className="mt-2 text-sm leading-relaxed text-[var(--text)]">“Everyone says reef cleanup does nothing. They are wrong.”</div>
+                </div>
+
                 {activeCreator.blocks.map(block => (
                   <div key={block.label} className="rounded-[18px] border border-[var(--border-light)] bg-[var(--bg)] px-3 py-3 min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
@@ -482,9 +634,7 @@ function ScriptScene({ animate, progress = 0 }: Omit<FlagshipSceneProps, 'stepKe
                       </span>
                       <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--text-3)]">{block.range}</span>
                     </div>
-                    <div className="mt-2 text-sm leading-relaxed text-[var(--text)] break-words">
-                      {block.text}
-                    </div>
+                    <div className="mt-2 text-sm leading-relaxed text-[var(--text)] break-words">{block.text}</div>
                     <div className="mt-3 flex flex-wrap gap-2">
                       {block.actions.map(action => (
                         <button key={action} type="button" className="rounded-full border border-[var(--border-raw)] bg-white px-3 py-1.5 text-[11px] font-medium text-[var(--text-2)]">
@@ -496,6 +646,9 @@ function ScriptScene({ animate, progress = 0 }: Omit<FlagshipSceneProps, 'stepKe
                 ))}
 
                 <div className="flex flex-wrap gap-2 border-t border-[var(--border-light)] pt-3">
+                  <button type="button" className="rounded-full border border-[var(--border-raw)] bg-white px-3 py-2 text-xs font-medium text-[var(--text-2)]">
+                    AI critique
+                  </button>
                   <button type="button" className="rounded-full border border-[rgba(37,99,235,0.14)] bg-[rgba(37,99,235,0.08)] px-3 py-2 text-xs font-medium text-[var(--blue)]">
                     Open teleprompter
                   </button>
@@ -506,6 +659,11 @@ function ScriptScene({ animate, progress = 0 }: Omit<FlagshipSceneProps, 'stepKe
               </div>
 
               <div className="space-y-2">
+                <div className="rounded-[18px] border border-[var(--border-light)] bg-white px-3 py-3">
+                  <div className="text-[10px] uppercase tracking-[0.12em] text-[var(--text-3)]">{activeCreator.name} asks Coopr</div>
+                  <div className="mt-2 text-sm leading-relaxed text-[var(--text)]">{activeCreator.prompt}</div>
+                </div>
+
                 {activeCreator.stats.map(([label, value], idx) => (
                   <div
                     key={label}
@@ -518,6 +676,7 @@ function ScriptScene({ animate, progress = 0 }: Omit<FlagshipSceneProps, 'stepKe
                     <div className="mt-1 text-lg font-semibold tracking-[-0.03em] text-[var(--text)]">{value}</div>
                   </div>
                 ))}
+
                 <div className="rounded-[18px] border border-[var(--border-light)] bg-white px-3 py-3">
                   <div className="text-[10px] uppercase tracking-[0.12em] text-[var(--text-3)]">Coopr notes</div>
                   <div className="mt-2 space-y-2">
@@ -551,46 +710,57 @@ function PlannerScene({
     ['2', 'Proof', 'Close-up coral detail'],
     ['3', 'Payoff', 'Wide cleanup reveal'],
   ]
-  const fields = [
+  const editorFields = [
     ['Script / Dialogue', 'Everyone says reef cleanup does nothing. They are wrong.'],
     ['Location', 'Monterey breakwall'],
     ['Time of day', 'Golden hour'],
     ['Camera setup', 'Handheld follow + lav'],
   ]
-  const shots = [
+  const storyboardFrames = [
     {
       step: '01',
-      title: 'Direct opener',
-      note: 'Chest-up frame. Maya waves the trash bag into frame before the line.',
-      accent: 'rgba(217,119,6,0.12)',
+      title: 'POV opener',
+      note: 'Maya lifts the trash bag into frame before the first line lands.',
+      cue: '0:03 · Close-up',
+      tint: 'rgba(217,119,6,0.14)',
     },
     {
       step: '02',
       title: 'Proof cut',
-      note: 'Macro shot on coral patch. Match cut to last month for contrast.',
-      accent: 'rgba(37,99,235,0.12)',
+      note: 'Macro pass on the coral patch, then match cut to the same reef from last month.',
+      cue: '0:05 · Macro',
+      tint: 'rgba(37,99,235,0.14)',
     },
     {
       step: '03',
       title: 'Payoff walk-out',
-      note: 'Wide shot back to water. Tag the next dive CTA on-screen.',
-      accent: 'rgba(13,148,136,0.12)',
+      note: 'Wide reveal back to the waterline with the CTA tagged on-screen.',
+      cue: '0:06 · Wide',
+      tint: 'rgba(13,148,136,0.14)',
+    },
+    {
+      step: '04',
+      title: 'CTA plate',
+      note: 'Direct-to-camera outro with calm delivery and one save-focused CTA.',
+      cue: '0:04 · Talking head',
+      tint: 'rgba(71,85,105,0.12)',
     },
   ]
   const planGroups = [
     {
-      location: 'Monterey breakwall',
+      label: 'Shoot order',
       entries: [
-        'Hook • 12s • golden hour',
-        'Proof • 10s • macro coral close-up',
-        'Payoff • 9s • walk-out reveal',
+        'Breakwall • hook, proof, payoff in one light window',
+        'Parking lot • bag insert and reset shot',
+        'Wrap with direct CTA take before sunset drops',
       ],
     },
     {
-      location: 'Parking lot pickup',
+      label: 'Prep notes',
       entries: [
-        'Gear reset • spare lav battery',
-        'B-roll • bag, gloves, cleanup line',
+        'Wide lens + lav + backup recorder',
+        'Record opener clean before wind picks up',
+        'Hold two extra seconds on the proof cut',
       ],
     },
   ]
@@ -602,26 +772,26 @@ function PlannerScene({
   const flowStopsByPreview: Record<PlannerPreviewKey, CursorStop[]> = {
     editor: [
       { x: '80%', y: '16%', label: 'open scene editor' },
-      { x: '31%', y: '42%', label: 'edit scene' },
-      { x: '78%', y: '45%', label: 'review scene stack' },
+      { x: '41%', y: '46%', label: 'edit scene' },
+      { x: '78%', y: '44%', label: 'review shot handoff' },
     ],
     storyboard: [
       { x: '80%', y: '16%', label: 'open storyboard' },
-      { x: '34%', y: '39%', label: 'review shot card' },
-      { x: '77%', y: '48%', label: 'check shot table' },
+      { x: '37%', y: '36%', label: 'review frame' },
+      { x: '76%', y: '77%', label: 'check timeline' },
     ],
     plan: [
       { x: '83%', y: '16%', label: 'open production plan' },
-      { x: '21%', y: '33%', label: 'scan stats' },
-      { x: '63%', y: '40%', label: 'group by location' },
+      { x: '36%', y: '38%', label: 'scan checklist' },
+      { x: '79%', y: '42%', label: 'export plan' },
     ],
   }
 
   return (
-    <SceneShell caption="Planner workspace -> Scene editor / Shot storyboard / Production plan">
-      <div className="space-y-4">
-        <Stage animate={animate} delay={100} className="relative rounded-[26px] border border-[rgba(17,17,17,0.08)] bg-[linear-gradient(180deg,#fcfcfb,#f4f4f1)] p-3 shadow-[0_18px_48px_rgba(17,17,17,0.08)]">
-          <FlowCursor stops={flowStopsByPreview[activePreview]} animate={animate} progress={progress} />
+    <SceneShell stepKey="planner" caption="Planner workspace -> Scene editor / Shot storyboard / Production plan">
+      <div className="lg:h-full">
+        <Stage animate={animate} delay={100} className="relative rounded-[26px] border border-[rgba(17,17,17,0.08)] bg-[linear-gradient(180deg,#fcfcfb,#f4f4f1)] p-3 shadow-[0_18px_48px_rgba(17,17,17,0.08)] lg:h-full">
+          <FlowCursor stops={activePreview === 'plan' ? [] : flowStopsByPreview[activePreview]} animate={animate} progress={progress} />
           <div className="rounded-[22px] border border-[rgba(17,17,17,0.06)] bg-white p-3">
             <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--border-light)] pb-3">
               <div>
@@ -647,56 +817,9 @@ function PlannerScene({
               </div>
             </div>
 
-            <div key={activePreview} className={cn('mt-3 min-w-0', animate && 'ft-panel-enter')}>
+            <div key={activePreview} className="mt-3 min-h-0 min-w-0 overflow-hidden">
               {activePreview === 'editor' ? (
-                <div className="grid gap-3 xl:grid-cols-[minmax(0,1fr)_260px]">
-                  <div className="space-y-3">
-                    <div className="flex flex-wrap items-center gap-2">
-                      {['Overview', 'Production', 'Shots', 'Notes'].map(tab => (
-                        <span
-                          key={tab}
-                          className={cn(
-                            'rounded-full px-3 py-1.5 text-[11px] font-medium',
-                            tab === 'Overview'
-                              ? 'bg-[rgba(71,85,105,0.12)] text-[var(--slate)]'
-                              : 'border border-[var(--border-raw)] bg-white text-[var(--text-2)]'
-                          )}
-                        >
-                          {tab}
-                        </span>
-                      ))}
-                    </div>
-
-                    <div className="space-y-2">
-                      {fields.map(([label, value], idx) => (
-                        <div
-                          key={label}
-                          className={cn(
-                            'rounded-[18px] border px-3 py-3',
-                            idx === 0 ? 'border-[rgba(71,85,105,0.12)] bg-[var(--bg)]' : 'border-[var(--border-light)] bg-white'
-                          )}
-                        >
-                          <div className="text-[10px] uppercase tracking-[0.12em] text-[var(--text-3)]">{label}</div>
-                          <div className="mt-1 text-sm leading-relaxed text-[var(--text)]">{value}</div>
-                        </div>
-                      ))}
-                    </div>
-
-                    <div className="grid gap-2 sm:grid-cols-2">
-                      {[
-                        ['Lighting notes', 'Natural light back to water. Bounce card on face.'],
-                        ['Audio notes', 'Lav on hoodie plus backup recorder.'],
-                        ['Performance direction', 'Calm authority. Pause before the proof cut.'],
-                        ['Hook text', 'Trash bag enters frame before the opener lands.'],
-                      ].map(([label, value]) => (
-                        <div key={label} className="rounded-[16px] border border-[var(--border-light)] bg-[var(--bg)] px-3 py-3">
-                          <div className="text-[10px] uppercase tracking-[0.12em] text-[var(--text-3)]">{label}</div>
-                          <div className="mt-1 text-xs leading-relaxed text-[var(--text)]">{value}</div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
+                <div className="grid gap-3 2xl:grid-cols-[180px_minmax(0,1fr)_230px] xl:grid-cols-[180px_minmax(0,1fr)]">
                   <div className="space-y-2">
                     <div className="rounded-[18px] border border-[var(--border-light)] bg-[var(--bg)] px-3 py-3">
                       <div className="text-[10px] uppercase tracking-[0.12em] text-[var(--text-3)]">Scene stack</div>
@@ -718,11 +841,70 @@ function PlannerScene({
                         ))}
                       </div>
                     </div>
-                    <div className="rounded-[18px] border border-[rgba(13,148,136,0.14)] bg-[rgba(13,148,136,0.06)] px-3 py-3">
-                      <div className="text-[10px] uppercase tracking-[0.12em] text-[var(--text-3)]">AI chat handoff</div>
-                      <div className="mt-1 text-sm font-semibold text-[var(--text)]">Generate shot list for this scene</div>
-                      <div className="mt-2 text-xs leading-relaxed text-[var(--text-2)]">
-                        If the shots tab is empty, Coopr can fill it from the approved dialogue and the production notes.
+                  </div>
+
+                  <div className="space-y-3">
+                    <div className="flex flex-wrap items-center gap-2">
+                      {['Concept', 'Hooks', 'Script', 'Shots', 'Notes', 'Review'].map(tab => (
+                        <span
+                          key={tab}
+                          className={cn(
+                            'rounded-full px-3 py-1.5 text-[11px] font-medium',
+                            tab === 'Shots'
+                              ? 'bg-[rgba(71,85,105,0.12)] text-[var(--slate)]'
+                              : 'border border-[var(--border-raw)] bg-white text-[var(--text-2)]'
+                          )}
+                        >
+                          {tab}
+                        </span>
+                      ))}
+                    </div>
+
+                    <div className="space-y-2">
+                      {editorFields.map(([label, value], idx) => (
+                        <div
+                          key={label}
+                          className={cn(
+                            'rounded-[18px] border px-3 py-3',
+                            idx === 0 ? 'border-[rgba(71,85,105,0.12)] bg-[var(--bg)]' : 'border-[var(--border-light)] bg-white'
+                          )}
+                        >
+                          <div className="text-[10px] uppercase tracking-[0.12em] text-[var(--text-3)]">{label}</div>
+                          <div className="mt-1 text-sm leading-relaxed text-[var(--text)]">{value}</div>
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="grid gap-2 sm:grid-cols-2">
+                      {[
+                        ['Lighting notes', 'Natural light back to water. Bounce card on Maya’s face.'],
+                        ['Audio notes', 'Lav on hoodie plus backup recorder.'],
+                        ['Performance direction', 'Calm authority. Pause before the proof cut.'],
+                        ['Hook text', 'Trash bag enters frame before the opener lands.'],
+                      ].map(([label, value]) => (
+                        <div key={label} className="rounded-[16px] border border-[var(--border-light)] bg-[var(--bg)] px-3 py-3">
+                          <div className="text-[10px] uppercase tracking-[0.12em] text-[var(--text-3)]">{label}</div>
+                          <div className="mt-1 text-xs leading-relaxed text-[var(--text)]">{value}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="space-y-2 2xl:block xl:col-span-2">
+                    <div className="grid gap-2 sm:grid-cols-2 2xl:grid-cols-1">
+                      <div className="rounded-[18px] border border-[rgba(13,148,136,0.14)] bg-[rgba(13,148,136,0.06)] px-3 py-3">
+                        <div className="text-[10px] uppercase tracking-[0.12em] text-[var(--text-3)]">AI handoff</div>
+                        <div className="mt-1 text-sm font-semibold text-[var(--text)]">Generate the shot list for this scene</div>
+                        <div className="mt-2 text-xs leading-relaxed text-[var(--text-2)]">
+                          Coopr fills the shots tab from the approved dialogue and the production notes.
+                        </div>
+                      </div>
+                      <div className="rounded-[18px] border border-[var(--border-light)] bg-[var(--bg)] px-3 py-3">
+                        <div className="text-[10px] uppercase tracking-[0.12em] text-[var(--text-3)]">Production reminders</div>
+                        <div className="mt-2 space-y-2 text-xs leading-relaxed text-[var(--text-2)]">
+                          <div>Pause after the opener before cutting to the proof shot.</div>
+                          <div>Keep natural backlight and use the bounce card on Maya’s face.</div>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -730,45 +912,70 @@ function PlannerScene({
               ) : null}
 
               {activePreview === 'storyboard' ? (
-                <div className="grid gap-3 xl:grid-cols-[minmax(0,1fr)_280px]">
-                  <div className="space-y-2">
-                    {shots.map(shot => (
-                      <div key={shot.step} className="overflow-hidden rounded-[22px] border border-[var(--border-light)] bg-[var(--bg)]">
-                        <div className="grid gap-0 sm:grid-cols-[1.2fr_0.8fr]">
-                          <div className="border-b border-[var(--border-light)] px-4 py-4 sm:border-b-0 sm:border-r">
-                            <div className="text-[10px] uppercase tracking-[0.12em] text-[var(--text-3)]">Shot {shot.step}</div>
-                            <div className="mt-1 text-lg font-semibold tracking-[-0.03em] text-[var(--text)]">{shot.title}</div>
-                            <div className="mt-3 text-sm leading-relaxed text-[var(--text-2)]">{shot.note}</div>
+                <div className="grid gap-3 xl:grid-cols-[minmax(0,1fr)_260px]">
+                  <div>
+                    <div className="grid gap-3 sm:grid-cols-2">
+                      {storyboardFrames.map(frame => (
+                        <div key={frame.step} className="overflow-hidden rounded-[22px] border border-[var(--border-light)] bg-[var(--bg)]">
+                          <div className="border-b border-[var(--border-light)] px-4 py-3">
+                            <div className="flex items-center justify-between gap-3">
+                              <div className="text-[10px] uppercase tracking-[0.12em] text-[var(--text-3)]">Frame {frame.step}</div>
+                              <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--text-3)]">{frame.cue}</div>
+                            </div>
+                            <div className="mt-1 text-sm font-semibold text-[var(--text)]">{frame.title}</div>
                           </div>
-                          <div className="flex items-center justify-center px-4 py-4">
-                            <div className="h-28 w-full max-w-[180px] rounded-[20px] border border-white/70" style={{ background: `linear-gradient(135deg, ${shot.accent}, rgba(17,17,17,0.08))` }} />
+                          <div className="px-4 py-4">
+                            <div className="flex h-[132px] items-center justify-center rounded-[18px] border border-white/70" style={{ background: `linear-gradient(135deg, ${frame.tint}, rgba(17,17,17,0.04))` }}>
+                              <div className="h-[92px] w-[132px] rounded-[16px] border border-[rgba(17,17,17,0.08)] bg-white/75" />
+                            </div>
+                            <div className="mt-3 text-sm leading-relaxed text-[var(--text-2)]">{frame.note}</div>
                           </div>
                         </div>
+                      ))}
+                    </div>
+
+                    <div className="mt-3 rounded-[20px] border border-[var(--border-light)] bg-white px-4 py-4">
+                      <div className="flex items-center justify-between gap-3">
+                        <div className="text-[10px] uppercase tracking-[0.12em] text-[var(--text-3)]">Timeline</div>
+                        <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--text-3)]">28s total</div>
                       </div>
-                    ))}
+                      <div className="mt-3 flex h-7 gap-2">
+                        {[
+                          ['10%', 'rgba(217,119,6,0.2)', 'var(--amber)'],
+                          ['18%', 'rgba(37,99,235,0.18)', 'var(--blue)'],
+                          ['50%', 'rgba(13,148,136,0.18)', 'var(--teal)'],
+                          ['22%', 'rgba(71,85,105,0.16)', 'var(--slate)'],
+                        ].map(([width, bg, color], index) => (
+                          <div
+                            key={index}
+                            className="flex items-center justify-center rounded-[12px] text-[10px] font-semibold"
+                            style={{ width, background: bg, color }}
+                          >
+                            {index + 1}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
                   </div>
 
                   <div className="space-y-2">
                     <div className="rounded-[18px] border border-[var(--border-light)] bg-white px-3 py-3">
                       <div className="text-[10px] uppercase tracking-[0.12em] text-[var(--text-3)]">Shot table</div>
                       <div className="mt-2 space-y-2">
-                        {[
-                          ['1', 'talking_head', 'trash bag enters frame'],
-                          ['2', 'close_up', 'macro proof cut'],
-                          ['3', 'wide_shot', 'cleanup payoff'],
-                        ].map(([num, type, cue]) => (
-                          <div key={num} className="grid grid-cols-[22px_96px_1fr] gap-2 rounded-[14px] bg-[var(--bg)] px-3 py-2 text-xs">
-                            <div className="font-mono text-[var(--text-3)]">{num}</div>
-                            <div className="text-[var(--text)]">{type}</div>
-                            <div className="text-[var(--text-2)]">{cue}</div>
+                        {storyboardFrames.map(frame => (
+                          <div key={`row-${frame.step}`} className="grid grid-cols-[22px_92px_1fr] gap-2 rounded-[14px] bg-[var(--bg)] px-3 py-2 text-xs">
+                            <div className="font-mono text-[var(--text-3)]">{frame.step}</div>
+                            <div className="text-[var(--text)]">{frame.title.toLowerCase()}</div>
+                            <div className="text-[var(--text-2)]">{frame.note}</div>
                           </div>
                         ))}
                       </div>
                     </div>
                     <div className="rounded-[18px] border border-[var(--border-light)] bg-[var(--bg)] px-3 py-3">
-                      <div className="text-[10px] uppercase tracking-[0.12em] text-[var(--text-3)]">Storyboard prompt</div>
+                      <div className="text-[10px] uppercase tracking-[0.12em] text-[var(--text-3)]">Pattern match</div>
+                      <div className="mt-2 text-sm font-semibold text-[var(--text)]">POV → proof cut → reveal → direct CTA</div>
                       <div className="mt-2 text-xs leading-relaxed text-[var(--text-2)]">
-                        Generate a detailed shot list from the approved script. Include angle, visual action, prop, and text overlay guidance.
+                        Pulls from Maya’s top-performing explainer structure without making the reel feel scripted.
                       </div>
                     </div>
                   </div>
@@ -776,8 +983,8 @@ function PlannerScene({
               ) : null}
 
               {activePreview === 'plan' ? (
-                <div className="grid gap-3 xl:grid-cols-[220px_minmax(0,1fr)]">
-                  <div className="space-y-2">
+                <div className="space-y-3">
+                  <div className="grid gap-2 sm:grid-cols-3">
                     {[
                       ['Scenes', '3'],
                       ['Total duration', '31s'],
@@ -789,41 +996,38 @@ function PlannerScene({
                       </div>
                     ))}
                   </div>
-                  <div className="space-y-2">
-                    <div className="rounded-[18px] border border-[var(--border-light)] bg-white px-3 py-3">
-                      <div className="text-[10px] uppercase tracking-[0.12em] text-[var(--text-3)]">Shoot day plan by location</div>
-                      <div className="mt-2 space-y-3">
-                        {planGroups.map(group => (
-                          <div key={group.location}>
-                            <div className="text-sm font-semibold text-[var(--text)]">{group.location}</div>
-                            <div className="mt-2 space-y-2">
-                              {group.entries.map(entry => (
-                                <div key={entry} className="rounded-[14px] bg-[var(--bg)] px-3 py-2 text-xs text-[var(--text-2)]">
-                                  {entry}
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
 
-                    <div className="grid gap-2 sm:grid-cols-2">
-                      <div className="rounded-[18px] border border-[var(--border-light)] bg-[var(--bg)] px-3 py-3">
-                        <div className="text-[10px] uppercase tracking-[0.12em] text-[var(--text-3)]">Equipment checklist</div>
-                        <div className="mt-2 space-y-1 text-xs text-[var(--text)]">
-                          {['Lav mic', 'Backup recorder', 'Wide lens', 'Gloves', 'Dry towel'].map(item => (
-                            <div key={item}>□ {item}</div>
+                  <div className="grid gap-3 xl:grid-cols-2">
+                    {planGroups.map(group => (
+                      <div key={group.label} className="rounded-[20px] border border-[var(--border-light)] bg-white px-4 py-4">
+                        <div className="text-[10px] uppercase tracking-[0.12em] text-[var(--text-3)]">{group.label}</div>
+                        <div className="mt-3 space-y-2">
+                          {group.entries.map(entry => (
+                            <div key={entry} className="flex gap-3 rounded-[14px] bg-[var(--bg)] px-3 py-2 text-sm text-[var(--text-2)]">
+                              <span className="mt-[3px] text-[var(--text-3)]">□</span>
+                              <span>{entry}</span>
+                            </div>
                           ))}
                         </div>
                       </div>
-                      <div className="rounded-[18px] border border-[var(--border-light)] bg-[var(--bg)] px-3 py-3">
-                        <div className="text-[10px] uppercase tracking-[0.12em] text-[var(--text-3)]">Production notes</div>
-                        <div className="mt-2 space-y-2 text-xs leading-relaxed text-[var(--text-2)]">
-                          <div>Text overlay on shot 2: “1 month later”.</div>
-                          <div>Pause after the opener before the proof cut.</div>
-                          <div>Return to this draft after filming for edit notes.</div>
-                        </div>
+                    ))}
+                  </div>
+
+                  <div className="grid gap-3 xl:grid-cols-[minmax(0,1fr)_250px]">
+                    <div className="rounded-[18px] border border-[rgba(13,148,136,0.14)] bg-[rgba(13,148,136,0.06)] px-4 py-4">
+                      <div className="text-[10px] uppercase tracking-[0.12em] text-[var(--text-3)]">Production note</div>
+                      <div className="mt-2 text-sm leading-relaxed text-[var(--text-2)]">
+                        The shoot plan stays tied to the approved script, so edit notes and reshoots can come back into the same project later.
+                      </div>
+                    </div>
+                    <div className="rounded-[18px] border border-[var(--border-light)] bg-white px-3 py-3">
+                      <div className="text-[10px] uppercase tracking-[0.12em] text-[var(--text-3)]">Export</div>
+                      <div className="mt-3 flex flex-col gap-2">
+                        {['Export PDF', 'Print plan', 'Share project'].map(action => (
+                          <button key={action} type="button" className="rounded-full border border-[var(--border-raw)] bg-[var(--bg)] px-3 py-2 text-left text-xs font-medium text-[var(--text-2)]">
+                            {action}
+                          </button>
+                        ))}
                       </div>
                     </div>
                   </div>
@@ -838,110 +1042,47 @@ function PlannerScene({
 }
 
 function CadenceScene({ animate, progress = 0 }: Omit<FlagshipSceneProps, 'stepKey'>) {
-  const heatmap = [
-    [1, 2, 3, 2, 1, 0, 0],
-    [2, 3, 3, 2, 2, 1, 0],
-    [1, 2, 3, 3, 2, 1, 0],
-    [0, 1, 2, 3, 2, 1, 0],
-  ]
-  const posts = [
-    ['Tue', '7:12p', 'good'],
-    ['Thu', '8:10p', 'best'],
-    ['Sat', '5:45p', 'crowded'],
+  const windows = [
+    ['Tue', '7:12 PM', 'good'],
+    ['Thu', '8:10 PM', 'best'],
+    ['Sat', '5:45 PM', 'crowded'],
   ] as const
   const flowStops: CursorStop[] = [
-    { x: '28%', y: '44%', label: 'scan heatmap' },
-    { x: '76%', y: '27%', label: 'lock slot' },
-    { x: '76%', y: '72%', label: 'review schedule' },
+    { x: '34%', y: '28%', label: 'review forecast' },
+    { x: '72%', y: '28%', label: 'pick slot' },
+    { x: '74%', y: '78%', label: 'export caption' },
   ]
 
   return (
-    <SceneShell caption="Cadence workspace -> slot recommendation">
-      <Stage animate={animate} delay={100} className="relative rounded-[26px] border border-[rgba(17,17,17,0.08)] bg-[linear-gradient(180deg,#fffaf4,#f4f4f1)] p-3 shadow-[0_18px_48px_rgba(17,17,17,0.08)]">
-        <FlowCursor stops={flowStops} animate={animate} progress={progress} />
+    <SceneShell stepKey="cadence" caption="Publish step -> best slot selected">
+      <Stage animate={animate} delay={100} className="relative rounded-[26px] border border-[rgba(17,17,17,0.08)] bg-[linear-gradient(180deg,#fffaf4,#f4f4f1)] p-3 shadow-[0_18px_48px_rgba(17,17,17,0.08)] lg:h-full">
+        <FlowCursor stops={[]} animate={animate} progress={progress} />
         <div className="rounded-[22px] border border-[rgba(17,17,17,0.06)] bg-white p-3">
           <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--border-light)] pb-3">
             <div>
-              <div className="text-[10px] font-semibold uppercase tracking-[0.16em] text-[var(--text-3)]">Cadence</div>
+              <div className="text-[10px] font-semibold uppercase tracking-[0.16em] text-[var(--text-3)]">Ready to publish</div>
               <div className="mt-1 text-sm font-semibold text-[var(--text)]">Cleanup myth reel • ready to ship</div>
             </div>
-            <div className="flex flex-wrap gap-2">
-              {['Audience', 'Crowding', 'Schedule'].map(tab => (
-                <span
-                  key={tab}
-                  className={cn(
-                    'rounded-full px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.12em]',
-                    tab === 'Schedule' ? 'bg-[rgba(217,119,6,0.12)] text-[var(--amber)]' : 'bg-[var(--bg)] text-[var(--text-3)]'
-                  )}
-                >
-                  {tab}
-                </span>
-              ))}
-            </div>
+            <button type="button" className="rounded-full border border-[rgba(217,119,6,0.16)] bg-[rgba(217,119,6,0.08)] px-3 py-2 text-xs font-medium text-[var(--amber)]">
+              Schedule post
+            </button>
           </div>
 
-          <div className="mt-3 grid gap-3 xl:grid-cols-[minmax(0,1.02fr)_330px]">
+          <div className="mt-3 grid gap-3 xl:grid-cols-[minmax(0,1fr)_270px]">
             <div className="space-y-3">
-              <div className="rounded-[20px] border border-[rgba(217,119,6,0.16)] bg-[rgba(217,119,6,0.06)] px-3 py-3">
-                <div className="mb-3 flex items-center justify-between gap-3">
+              <div className="rounded-[20px] border border-[rgba(217,119,6,0.16)] bg-[rgba(217,119,6,0.06)] px-4 py-4">
+                <div className="flex items-center justify-between gap-3">
                   <div>
-                    <div className="text-[10px] uppercase tracking-[0.12em] text-[var(--text-3)]">Audience activity heatmap</div>
-                    <div className="mt-1 text-sm text-[var(--text-2)]">Best windows after accounting for crowding</div>
+                    <div className="text-[10px] uppercase tracking-[0.12em] text-[var(--text-3)]">Predicted performance</div>
+                    <div className="mt-1 text-sm text-[var(--text-2)]">Audience, pace, and crowding resolved into one publish call</div>
                   </div>
-                  <div className="rounded-full bg-white px-2.5 py-1 font-mono text-[10px] text-[var(--amber)]">PST</div>
+                  <div className="rounded-full bg-white px-2.5 py-1 font-mono text-[10px] text-[var(--amber)]">high confidence</div>
                 </div>
-                <div className="grid grid-cols-[52px_repeat(7,minmax(0,1fr))] gap-2 text-center">
-                  <div />
-                  {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(day => (
-                    <div key={day} className="text-[10px] font-mono uppercase tracking-[0.12em] text-[var(--text-3)]">{day}</div>
-                  ))}
-                  {heatmap.map((row, rowIdx) => (
-                    <Fragment key={`row-${rowIdx}`}>
-                      <div className="flex items-center text-[10px] font-mono uppercase tracking-[0.12em] text-[var(--text-3)]">
-                        {['6p', '7p', '8p', '9p'][rowIdx]}
-                      </div>
-                      {row.map((value, colIdx) => (
-                        <div
-                          key={`${rowIdx}-${colIdx}`}
-                          className={cn(
-                            'ft-heat-cell h-12 rounded-[16px] border border-white/60',
-                            value === 3 && 'ft-heat-cell--hot',
-                            value === 2 && 'ft-heat-cell--warm',
-                            value <= 1 && 'ft-heat-cell--cool'
-                          )}
-                        />
-                      ))}
-                    </Fragment>
-                  ))}
-                </div>
-              </div>
-
-              <div className="rounded-[20px] border border-[var(--border-light)] bg-[var(--bg)] px-3 py-3">
-                <div className="text-[10px] uppercase tracking-[0.12em] text-[var(--text-3)]">Queue note</div>
-                <div className="mt-2 text-sm leading-relaxed text-[var(--text-2)]">
-                  This post can go out Thursday night without colliding with the two recent cleanup explainers already sitting in the niche feed.
-                </div>
-                <div className="mt-3 flex flex-wrap gap-2">
-                  <button type="button" className="rounded-full border border-[rgba(217,119,6,0.16)] bg-white px-3 py-2 text-xs font-medium text-[var(--amber)]">
-                    Schedule post
-                  </button>
-                  <button type="button" className="rounded-full border border-[var(--border-raw)] bg-white px-3 py-2 text-xs font-medium text-[var(--text-2)]">
-                    Hold for Friday
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <div className="rounded-[20px] border border-[rgba(217,119,6,0.18)] bg-[rgba(217,119,6,0.06)] px-3 py-3 shadow-[0_16px_40px_rgba(217,119,6,0.08)]">
-                <div className="text-[10px] uppercase tracking-[0.12em] text-[var(--text-3)]">Recommended slot</div>
-                <div className="mt-2 text-[30px] font-display font-extrabold leading-none tracking-[-0.04em] text-[var(--text)]">Thu 8:10 PM</div>
-                <div className="mt-2 text-sm text-[var(--text-2)]">Your audience is peaking, competitor overlap is low, and your pace stays sustainable.</div>
-                <div className="mt-4 grid grid-cols-3 gap-2">
+                <div className="mt-4 grid gap-2 sm:grid-cols-3">
                   {[
-                    ['Audience', 'High'],
-                    ['Crowding', 'Low'],
-                    ['Cadence', 'On pace'],
+                    ['Score', '84/100'],
+                    ['Expected views', '15K–22K'],
+                    ['Best time', 'Thu 8:10 PM'],
                   ].map(([label, value]) => (
                     <div key={label} className="rounded-[16px] bg-white px-3 py-3">
                       <div className="text-[10px] uppercase tracking-[0.12em] text-[var(--text-3)]">{label}</div>
@@ -949,13 +1090,24 @@ function CadenceScene({ animate, progress = 0 }: Omit<FlagshipSceneProps, 'stepK
                     </div>
                   ))}
                 </div>
+                <div className="mt-4 text-sm leading-relaxed text-[var(--text-2)]">
+                  Thursday evening gives Maya the cleanest audience peak without colliding with the two nearby cleanup explainers already in feed.
+                </div>
               </div>
 
-              <div className="rounded-[20px] border border-[var(--border-light)] bg-[var(--bg)] px-3 py-3">
-                <div className="mb-3 text-[10px] uppercase tracking-[0.12em] text-[var(--text-3)]">Recent schedule decisions</div>
-                <div className="space-y-2">
-                  {posts.map(([day, time, state]) => (
-                    <div key={`${day}-${time}`} className="flex items-center justify-between rounded-[16px] bg-white px-3 py-3 text-sm">
+              <div className="rounded-[20px] border border-[var(--border-light)] bg-white px-4 py-4">
+                <div className="text-[10px] uppercase tracking-[0.12em] text-[var(--text-3)]">Caption</div>
+                <div className="mt-2 text-sm leading-relaxed text-[var(--text-2)]">
+                  Everyone says reef cleanup does nothing. Then they see the same coral patch thirty days later. Save this before the next person tells you cleanup is pointless.
+                </div>
+                <div className="mt-3 text-xs text-[var(--blue)]">#reefcleanup #oceancreator #conservation</div>
+              </div>
+
+              <div className="rounded-[20px] border border-[var(--border-light)] bg-white px-4 py-4">
+                <div className="text-[10px] uppercase tracking-[0.12em] text-[var(--text-3)]">Posting windows</div>
+                <div className="mt-3 space-y-2">
+                  {windows.map(([day, time, state]) => (
+                    <div key={`${day}-${time}`} className="flex items-center justify-between rounded-[16px] bg-[var(--bg)] px-3 py-3 text-sm">
                       <div className="font-semibold text-[var(--text)]">{day}</div>
                       <div className="font-mono text-[var(--text-2)]">{time}</div>
                       <div className={cn(
@@ -967,6 +1119,42 @@ function CadenceScene({ animate, progress = 0 }: Omit<FlagshipSceneProps, 'stepK
                         {state}
                       </div>
                     </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <div className="rounded-[20px] border border-[rgba(217,119,6,0.18)] bg-[rgba(217,119,6,0.06)] px-3 py-3 shadow-[0_16px_40px_rgba(217,119,6,0.08)]">
+                <div className="text-[10px] uppercase tracking-[0.12em] text-[var(--text-3)]">Recommended slot</div>
+                <div className="mt-2 text-[30px] font-display font-extrabold leading-none tracking-[-0.04em] text-[var(--text)]">Thu 8:10 PM</div>
+                <div className="mt-2 text-sm text-[var(--text-2)]">High audience activity, low crowding, and still on pace for Maya’s week.</div>
+              </div>
+
+              <div className="rounded-[18px] border border-[var(--border-light)] bg-white px-3 py-3">
+                <div className="text-[10px] uppercase tracking-[0.12em] text-[var(--text-3)]">Publish checklist</div>
+                <div className="mt-3 space-y-2 text-xs text-[var(--text-2)]">
+                  {[
+                    'Caption approved',
+                    'Thumbnail frame selected',
+                    'Hook block tested',
+                    'Project marked ready',
+                  ].map(item => (
+                    <div key={item} className="flex gap-2 rounded-[14px] bg-[var(--bg)] px-3 py-2">
+                      <span className="text-[var(--green)]">●</span>
+                      <span>{item}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="rounded-[18px] border border-[var(--border-light)] bg-[var(--bg)] px-3 py-3">
+                <div className="text-[10px] uppercase tracking-[0.12em] text-[var(--text-3)]">Export options</div>
+                <div className="mt-3 flex flex-col gap-2">
+                  {['Copy caption', 'Export to scheduler', 'Share project'].map(action => (
+                    <button key={action} type="button" className="rounded-full border border-[var(--border-raw)] bg-white px-3 py-2 text-left text-xs font-medium text-[var(--text-2)]">
+                      {action}
+                    </button>
                   ))}
                 </div>
               </div>

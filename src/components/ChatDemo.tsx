@@ -1,1060 +1,1029 @@
-import { useRef, useState, useEffect, useCallback } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
+import {
+  ArrowRight,
+  BarChart3,
+  Check,
+  CheckCircle2,
+  Clock3,
+  Compass,
+  Gauge,
+  GitBranch,
+  LineChart,
+  LoaderCircle,
+  MessageSquare,
+  PenSquare,
+  Radar,
+  Search,
+  Send,
+  Settings2,
+  Sparkles,
+  TrendingUp,
+  Users2,
+  WandSparkles,
+  type LucideIcon,
+} from 'lucide-react'
 
-// ============================================
-// ANIMATION HELPERS
-// ============================================
+type NavKey = 'chat' | 'content' | 'trends' | 'competitors' | 'hook' | 'script' | 'plan' | 'engine' | 'settings'
+type MetricTone = 'up' | 'neutral'
+type ToolTone = 'search' | 'analyze' | 'generate' | 'score' | 'compare'
 
-const noMotion = typeof window !== 'undefined'
-  ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
-  : false
-
-function wait(ms: number): Promise<void> {
-  if (noMotion) return Promise.resolve()
-  return new Promise(r => setTimeout(r, ms))
-}
-
-function charDelay(ch: string, baseSpeed: number): number {
-  if (ch === ',' || ch === ';') return baseSpeed + 60
-  if (ch === '.' || ch === '!' || ch === '?') return baseSpeed + 100
-  if (ch === ' ') return baseSpeed - 8
-  return baseSpeed + Math.random() * 18
-}
-
-function typeInto(
-  el: HTMLElement,
-  text: string,
-  speed: number,
-  cursorDark: boolean,
-  abortRef: { current: boolean }
-): Promise<void> {
-  if (noMotion) {
-    el.textContent = text
-    return Promise.resolve()
-  }
-  return new Promise(resolve => {
-    const cur = document.createElement('span')
-    cur.className = cursorDark ? 'tcur tcur--dark' : 'tcur'
-    el.textContent = ''
-    el.appendChild(cur)
-    let i = 0
-    function tick() {
-      if (abortRef.current || i >= text.length) {
-        setTimeout(() => { cur.remove(); resolve() }, 280)
-        return
-      }
-      const ch = text[i]
-      el.insertBefore(document.createTextNode(ch), cur)
-      i++
-      setTimeout(tick, charDelay(ch, speed))
-    }
-    tick()
-  })
-}
-
-function countTo(
-  el: HTMLElement,
-  from: number,
-  to: number,
-  ms: number,
-  suffix: string = '%'
-): Promise<void> {
-  if (noMotion) { el.textContent = to + suffix; return Promise.resolve() }
-  return new Promise(resolve => {
-    const start = performance.now()
-    function tick(now: number) {
-      const p = Math.min((now - start) / ms, 1)
-      const e = 1 - Math.pow(1 - p, 4)
-      let val = from + (to - from) * e
-      if (p > 0.85 && p < 0.97) val = Math.min(to + (to - from) * 0.04, val)
-      el.textContent = Math.round(Math.min(val, to)) + suffix
-      if (p < 1) requestAnimationFrame(tick)
-      else { el.textContent = to + suffix; resolve() }
-    }
-    requestAnimationFrame(tick)
-  })
-}
-
-// ============================================
-// DATA
-// ============================================
-
-interface StepData {
-  color: 'g' | 'v'
-  text: string
-  boldParts: string[]
+interface ToolStep {
+  Icon: LucideIcon
+  tone: ToolTone
+  title: string
+  sub: string
   time: string
-  sub?: string
-  subEmParts?: string[]
-  delay: number
 }
 
-const REASONING_STEPS: StepData[] = [
+interface ParallelItem {
+  Icon: LucideIcon
+  tone: ToolTone
+  label: string
+  time: string
+  state: 'done' | 'running'
+}
+
+interface GateItem {
+  label: string
+  value: string
+  state: 'pass' | 'fail' | 'pending'
+}
+
+interface RailMetric {
+  label: string
+  value: string
+  delta?: string
+  tone?: MetricTone
+}
+
+interface RailState {
+  metrics: RailMetric[]
+  score: string
+  scoreCopy: string
+  dna: string[]
+  session: {
+    tools: string
+    data: string
+    models: string
+  }
+}
+
+interface HookResult {
+  kind: 'hook'
+  title: string
+  hold: string
+  subtitle: string
+  bars: Array<{ label: string; value: string; width: number; tone: 'green' | 'amber' }>
+}
+
+interface ScriptResult {
+  kind: 'script'
+  lines: Array<{ ts: string; title: string; note: string }>
+  note: string
+  voiceFit: string
+}
+
+interface PlanResult {
+  kind: 'plan'
+  scenes: Array<{ label: string; title: string; note: string }>
+  summary: string
+}
+
+interface TimingResult {
+  kind: 'timing'
+  slot: string
+  rows: Array<{ label: string; note: string; value: string }>
+}
+
+type ResultState = HookResult | ScriptResult | PlanResult | TimingResult
+
+interface DemoTurn {
+  nav: NavKey
+  ask: string
+  intro: string
+  toolCount: string
+  elapsed: string
+  steps: ToolStep[]
+  parallel?: ParallelItem[]
+  gates?: GateItem[]
+  reply: string
+  result: ResultState
+  rail: RailState
+}
+
+type UserMessage = {
+  id: string
+  type: 'user'
+  text: string
+}
+
+type ReasoningMessage = {
+  id: string
+  type: 'reasoning'
+  intro: string
+  toolCount: string
+  elapsed: string
+  steps: ToolStep[]
+  visibleSteps: number
+  parallel?: ParallelItem[]
+  showParallel: boolean
+  gates?: GateItem[]
+  visibleGates: number
+  complete: boolean
+}
+
+type AssistantMessage = {
+  id: string
+  type: 'assistant'
+  text: string
+}
+
+type ResultMessage = {
+  id: string
+  type: 'result'
+  result: ResultState
+}
+
+type Message = UserMessage | ReasoningMessage | AssistantMessage | ResultMessage
+
+function usePrefersReducedMotion() {
+  const [reduced, setReduced] = useState(false)
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return undefined
+    const media = window.matchMedia('(prefers-reduced-motion: reduce)')
+    const onChange = () => setReduced(media.matches)
+    onChange()
+    media.addEventListener('change', onChange)
+    return () => media.removeEventListener('change', onChange)
+  }, [])
+
+  return reduced
+}
+
+function wait(ms: number, reducedMotion: boolean) {
+  if (reducedMotion) return Promise.resolve()
+  return new Promise(resolve => window.setTimeout(resolve, ms))
+}
+
+function charDelay(ch: string, baseSpeed: number) {
+  if (',;'.includes(ch)) return baseSpeed + 55
+  if ('.!?'.includes(ch)) return baseSpeed + 95
+  if (ch === ' ') return Math.max(12, baseSpeed - 8)
+  return baseSpeed + Math.random() * 16
+}
+
+const NAV_ITEMS: Array<{ key: NavKey; label: string; Icon: LucideIcon; section?: string }> = [
+  { key: 'chat', label: 'Chat', Icon: MessageSquare },
+  { key: 'content', label: 'Content', Icon: PenSquare },
+  { key: 'trends', label: 'Trends', Icon: TrendingUp },
+  { key: 'competitors', label: 'Competitors', Icon: Users2 },
+  { key: 'hook', label: 'Hook Lab', Icon: Sparkles, section: 'Create' },
+  { key: 'script', label: 'Scripts', Icon: PenSquare },
+  { key: 'plan', label: 'Shot Lists', Icon: Compass },
+  { key: 'engine', label: 'Engine', Icon: Radar, section: 'Analyze' },
+  { key: 'settings', label: 'Settings', Icon: Settings2 },
+]
+
+const TURN_SEQUENCE: DemoTurn[] = [
   {
-    color: 'g',
-    text: 'Analyzed your {top-performing hooks}',
-    boldParts: ['top-performing hooks'],
-    time: '0.3s',
-    sub: 'Your {question + reveal} hooks hold at 83%',
-    subEmParts: ['question + reveal'],
-    delay: 440,
+    nav: 'hook',
+    ask: 'Write me a killer hook for my next reel.',
+    intro: 'Working through the hook request with the same tool chain COOPR uses in studio.',
+    toolCount: '8 tools',
+    elapsed: '4.1s',
+    steps: [
+      { Icon: BarChart3, tone: 'search', title: 'Loaded your last 5 reels', sub: 'Avg hold rate 71% · best opener 86%', time: '0.2s' },
+      { Icon: Users2, tone: 'compare', title: 'Pulled competitor benchmark data', sub: 'Comparing against 8 tracked cleanup creators', time: '0.8s' },
+      { Icon: Radar, tone: 'analyze', title: 'Ran niche benchmark model', sub: 'Looking for myth-busting openings with proof in frame', time: '1.1s' },
+      { Icon: Sparkles, tone: 'generate', title: 'Generated hook variants', sub: 'Built 5 candidates matched to Maya’s direct voice', time: '1.2s' },
+      { Icon: Gauge, tone: 'score', title: 'Scored predicted hold rate', sub: 'Ranking variants against your recent audience pattern', time: '0.8s' },
+    ],
+    parallel: [
+      { Icon: Search, tone: 'search', label: 'Hook analysis', time: '0.3s ✓', state: 'done' },
+      { Icon: TrendingUp, tone: 'analyze', label: 'Trend check', time: '0.5s ✓', state: 'done' },
+      { Icon: WandSparkles, tone: 'generate', label: 'Generating variants', time: '1.2s', state: 'running' },
+      { Icon: Gauge, tone: 'score', label: 'Scoring predictions', time: '0.8s', state: 'running' },
+    ],
+    gates: [
+      { label: 'Hold rate exceeds 85% target', value: '87%', state: 'pass' },
+      { label: 'Voice match above threshold', value: '94%', state: 'pass' },
+      { label: 'Trend alignment', value: '3 signals', state: 'pass' },
+      { label: 'Competitor differentiation check', value: 'pending', state: 'pending' },
+    ],
+    reply: 'Top hook is ready. It beats Maya’s current baseline without sounding like a different person.',
+    result: {
+      kind: 'hook',
+      title: 'People keep saying reef cleanup does nothing. Look at this patch 30 days later.',
+      hold: '87% predicted hold',
+      subtitle: '+15% vs Maya’s average proof-first opener',
+      bars: [
+        { label: 'Curiosity gap', value: '9/10', width: 90, tone: 'green' },
+        { label: 'Pattern interrupt', value: '8/10', width: 82, tone: 'green' },
+        { label: 'Voice match', value: '9/10', width: 91, tone: 'green' },
+        { label: 'Trend alignment', value: '7/10', width: 72, tone: 'amber' },
+      ],
+    },
+    rail: {
+      metrics: [
+        { label: 'Hold Rate', value: '61%', delta: '+19%', tone: 'up' },
+        { label: 'Engagement', value: '4.7%', delta: '+1.2%', tone: 'up' },
+        { label: 'Reach (7d)', value: '18.4K', delta: '+52%', tone: 'up' },
+        { label: 'Velocity', value: '3.2/wk', tone: 'neutral' },
+      ],
+      score: '84',
+      scoreCopy: 'Top 15% of your niche',
+      dna: ['Direct hooks', 'Fast pacing', 'Natural light', 'Tutorial style'],
+      session: { tools: '11', data: '47 videos', models: '3' },
+    },
   },
   {
-    color: 'g',
-    text: '{Scanned competitor hooks} in your niche',
-    boldParts: ['Scanned competitor hooks'],
-    time: '0.5s',
-    sub: '{3 competitors} shifted to myth-busting this week',
-    subEmParts: ['3 competitors'],
-    delay: 380,
+    nav: 'script',
+    ask: 'Open the winning hook in Script Builder and keep the proof in the first five seconds.',
+    intro: 'Moving the selected hook into the draft while keeping the proof-first structure visible.',
+    toolCount: '5 tools',
+    elapsed: '2.8s',
+    steps: [
+      { Icon: PenSquare, tone: 'generate', title: 'Opened Script Builder from the winning hook', sub: 'Locked the top opener so the draft inherits the exact same premise', time: '0.4s' },
+      { Icon: MessageSquare, tone: 'analyze', title: 'Pulled Maya’s voice profile', sub: 'Short lines, direct claims, and proof before explanation', time: '0.5s' },
+      { Icon: GitBranch, tone: 'compare', title: 'Checked pacing against top-performing reels', sub: 'Compressed the middle so the proof still lands early', time: '0.7s' },
+      { Icon: Gauge, tone: 'score', title: 'Scored the updated draft', sub: 'Voice fit and watch-through stay above the current threshold', time: '1.2s' },
+    ],
+    gates: [
+      { label: 'Voice fit above threshold', value: '0.85', state: 'pass' },
+      { label: 'Watch-through estimate', value: '84%', state: 'pass' },
+      { label: 'Weak beat', value: 'none', state: 'pass' },
+    ],
+    reply: 'Draft is tighter now. The proof lands early and the script is ready for teleprompter or shot planning.',
+    result: {
+      kind: 'script',
+      voiceFit: '0.85 voice fit',
+      lines: [
+        { ts: '0s', title: 'People keep saying reef cleanup does nothing.', note: 'Open on the restored patch before Maya enters frame.' },
+        { ts: '6s', title: 'This is the same reef after volunteers pulled the line and trash out.', note: 'Keep the sentence short enough to land in one breath.' },
+        { ts: '16s', title: 'Save this and I’ll show what changes next month too.', note: 'Close on the next-proof promise, not a generic CTA.' },
+      ],
+      note: 'Shorter draft. Same voice. Ready for teleprompter and filming.',
+    },
+    rail: {
+      metrics: [
+        { label: 'Hold Rate', value: '63%', delta: '+14%', tone: 'up' },
+        { label: 'Engagement', value: '5.1%', delta: '+1.0%', tone: 'up' },
+        { label: 'Reach (7d)', value: '21.2K', delta: '+31%', tone: 'up' },
+        { label: 'Velocity', value: '3.6/wk', tone: 'neutral' },
+      ],
+      score: '87',
+      scoreCopy: 'Voice locked for filming',
+      dna: ['Direct hooks', 'Tutorial style', 'Short lines', 'Proof cuts early'],
+      session: { tools: '14', data: '47 videos', models: '3' },
+    },
   },
   {
-    color: 'v',
-    text: '{Matched to your voice} — direct, conversational',
-    boldParts: ['Matched to your voice'],
-    time: '0.4s',
-    delay: 420,
+    nav: 'plan',
+    ask: 'Open shot planning and give me the fastest version I can film today.',
+    intro: 'Turning the approved draft into a production-ready shot plan without leaving the same workspace.',
+    toolCount: '6 tools',
+    elapsed: '3.1s',
+    steps: [
+      { Icon: Compass, tone: 'generate', title: 'Mapped the draft into scenes', sub: 'Hook, proof, payoff — same order as the approved script', time: '0.5s' },
+      { Icon: Search, tone: 'search', title: 'Pulled the last successful reef shoot setup', sub: 'Same location, same golden-hour lighting, same handheld rhythm', time: '0.7s' },
+      { Icon: GitBranch, tone: 'compare', title: 'Collapsed the plan to today’s constraints', sub: 'One location, one handheld follow, one optional pickup', time: '0.8s' },
+      { Icon: Gauge, tone: 'score', title: 'Checked filmability against the draft', sub: 'Plan stays inside Maya’s normal shoot complexity threshold', time: '1.1s' },
+    ],
+    parallel: [
+      { Icon: PenSquare, tone: 'generate', label: 'Scene editor', time: '0.4s ✓', state: 'done' },
+      { Icon: Compass, tone: 'generate', label: 'Shot storyboard', time: '0.9s ✓', state: 'done' },
+      { Icon: Clock3, tone: 'analyze', label: 'Shoot day plan', time: '1.1s', state: 'running' },
+      { Icon: Gauge, tone: 'score', label: 'Complexity check', time: '0.8s', state: 'running' },
+    ],
+    reply: 'Shot plan is ready. Scene order, storyboard, and shoot-day notes are all tied back to the same draft.',
+    result: {
+      kind: 'plan',
+      scenes: [
+        { label: 'Scene editor', title: 'Hook scene', note: 'Talking head opener with the trash bag already in frame.' },
+        { label: 'Shot storyboard', title: 'Proof cut', note: 'Macro coral detail matched against last month’s angle.' },
+        { label: 'Shoot day', title: 'Payoff close', note: 'Wide cleanup reveal while Maya lands the save-worthy CTA.' },
+      ],
+      summary: '3 scenes · 12 shots · Monterey breakwall · golden hour',
+    },
+    rail: {
+      metrics: [
+        { label: 'Hold Rate', value: '65%', delta: '+16%', tone: 'up' },
+        { label: 'Engagement', value: '5.0%', delta: '+0.9%', tone: 'up' },
+        { label: 'Reach (7d)', value: '20.8K', delta: '+28%', tone: 'up' },
+        { label: 'Velocity', value: '3.4/wk', tone: 'neutral' },
+      ],
+      score: '86',
+      scoreCopy: 'Fastest filmable version',
+      dna: ['Natural light', 'Proof shots', 'Low gear', 'Fast film days'],
+      session: { tools: '16', data: '47 videos', models: '3' },
+    },
   },
   {
-    color: 'g',
-    text: 'Generated {5 hook variants}',
-    boldParts: ['5 hook variants'],
-    time: '1.2s',
-    delay: 500,
-  },
-  {
-    color: 'g',
-    text: '{Predicted hold rate} for each variant',
-    boldParts: ['Predicted hold rate'],
-    time: '0.8s',
-    sub: 'Trained on {your 47 videos} — not generic data',
-    subEmParts: ['your 47 videos'],
-    delay: 360,
+    nav: 'engine',
+    ask: 'Pick the best post slot once this reel is ready.',
+    intro: 'Checking timing, overlap, and cadence before sending the reel out.',
+    toolCount: '4 tools',
+    elapsed: '1.9s',
+    steps: [
+      { Icon: Clock3, tone: 'analyze', title: 'Checked audience activity patterns', sub: 'Peak engagement is clustered on Thursday night for Maya’s cleanup audience', time: '0.2s' },
+      { Icon: Users2, tone: 'compare', title: 'Scanned competitor overlap', sub: 'Two similar cleanup explainers already landed earlier in the week', time: '0.4s' },
+      { Icon: LineChart, tone: 'analyze', title: 'Cross-referenced posting cadence', sub: 'Thursday keeps the schedule on pace without bunching the content mix', time: '0.5s' },
+      { Icon: Gauge, tone: 'score', title: 'Ranked release windows', sub: 'Primary and fallback slots both scored against the same reel profile', time: '0.8s' },
+    ],
+    reply: 'Primary slot is clear. Thursday wins, Tuesday stays as the backup if the edit slips.',
+    result: {
+      kind: 'timing',
+      slot: 'Thursday · 8:10 PM PST',
+      rows: [
+        { label: 'Best slot', note: 'Highest audience concentration with lower overlap from cleanup creators this week.', value: 'Thu 8:10 PM' },
+        { label: 'Backup slot', note: 'Tuesday still works, but the feed is denser and the opener has to work harder.', value: 'Tue 7:12 PM' },
+        { label: 'Why now', note: 'Proof-first reels perform best when the niche is quieter and the audience is peaking.', value: 'Low overlap' },
+      ],
+    },
+    rail: {
+      metrics: [
+        { label: 'Hold Rate', value: '60%', delta: '+12%', tone: 'up' },
+        { label: 'Engagement', value: '4.6%', delta: '+1.0%', tone: 'up' },
+        { label: 'Reach (7d)', value: '17.9K', delta: '+24%', tone: 'up' },
+        { label: 'Velocity', value: '3.7/wk', tone: 'neutral' },
+      ],
+      score: '85',
+      scoreCopy: 'Best release window picked',
+      dna: ['Audience-first timing', 'Cleaner release windows', 'Same voice', 'Proof-led posts'],
+      session: { tools: '18', data: '47 videos', models: '3' },
+    },
   },
 ]
 
-const TIMING_STEPS: StepData[] = [
-  {
-    color: 'g',
-    text: 'Checked {your audience activity} patterns',
-    boldParts: ['your audience activity'],
-    time: '0.2s',
-    sub: 'Peak engagement: {Tue 7pm, Thu 8pm} PST',
-    subEmParts: ['Tue 7pm, Thu 8pm'],
-    delay: 380,
-  },
-  {
-    color: 'g',
-    text: 'Analyzed {competitor posting schedule}',
-    boldParts: ['competitor posting schedule'],
-    time: '0.4s',
-    sub: '{2 competitors} posted similar hooks Mon — avoid overlap',
-    subEmParts: ['2 competitors'],
-    delay: 340,
-  },
-  {
-    color: 'v',
-    text: 'Cross-referenced {your cadence pattern}',
-    boldParts: ['your cadence pattern'],
-    time: '0.3s',
-    sub: "You post {3.2/wk} — Thursday slot is open",
-    subEmParts: ['3.2/wk'],
-    delay: 360,
-  },
-]
+function toneStyles(tone: ToolTone) {
+  if (tone === 'search') return 'border-[rgba(37,99,235,0.22)] bg-[rgba(37,99,235,0.09)] text-[var(--blue)]'
+  if (tone === 'analyze') return 'border-[rgba(124,58,237,0.22)] bg-[rgba(124,58,237,0.08)] text-[var(--blue)]'
+  if (tone === 'generate') return 'border-[rgba(22,163,74,0.22)] bg-[rgba(22,163,74,0.08)] text-[var(--green)]'
+  if (tone === 'score') return 'border-[rgba(217,119,6,0.22)] bg-[rgba(217,119,6,0.08)] text-[var(--amber)]'
+  return 'border-[rgba(225,29,72,0.22)] bg-[rgba(225,29,72,0.08)] text-[var(--rose)]'
+}
 
-const SCORE_BARS = [
-  { name: 'Curiosity gap', width: 90, value: '9/10', color: 'h' as const },
-  { name: 'Pattern interrupt', width: 80, value: '8/10', color: 'h' as const },
-  { name: 'Voice match', width: 90, value: '9/10', color: 'h' as const },
-  { name: 'Trend alignment', width: 70, value: '7/10', color: 'm' as const },
-]
+function SectionBadge({ children }: { children: ReactNode }) {
+  return (
+    <span className="inline-flex items-center gap-2 rounded-full border border-[rgba(13,148,136,0.12)] bg-white/88 px-4 py-2 font-mono text-[11px] uppercase tracking-[0.16em] text-[var(--teal)] shadow-[0_8px_24px_rgba(17,17,17,0.04)]">
+      <span className="h-1.5 w-1.5 rounded-full bg-[var(--teal)]" style={{ animation: 'pulse-dot 2s ease-in-out infinite' }} />
+      {children}
+    </span>
+  )
+}
 
-// ============================================
-// SUBCOMPONENTS
-// ============================================
+function ToolChain({ message }: { message: ReasoningMessage }) {
+  return (
+    <div className="space-y-0">
+      {message.steps.slice(0, message.visibleSteps).map((step, index) => {
+        const isRunning = !message.complete && index === message.visibleSteps - 1
+        const Icon = step.Icon
+        return (
+          <div key={`${step.title}-${index}`} className="relative flex gap-3">
+            {index < message.visibleSteps - 1 ? (
+              <div className="absolute left-[19px] top-10 bottom-[-10px] w-px bg-[linear-gradient(180deg,rgba(37,99,235,0.55),rgba(37,99,235,0.08))]" />
+            ) : null}
+            <div className={`relative z-[1] mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-2 bg-white ${isRunning ? 'border-[rgba(217,119,6,0.32)] text-[var(--amber)] animate-pulse' : 'border-[rgba(37,99,235,0.26)] bg-[rgba(37,99,235,0.08)] text-[var(--blue)]'}`}>
+              <Icon className="h-4 w-4" strokeWidth={1.8} />
+            </div>
+            <div className="min-w-0 flex-1 pb-5 pt-1">
+              <div className="flex items-start justify-between gap-3">
+                <div className="text-[13px] font-medium text-[var(--text)]">{step.title}</div>
+                <div className="font-mono text-[11px] text-[var(--text-3)]">{step.time}</div>
+              </div>
+              <div className="mt-1 text-xs leading-relaxed text-[var(--text-2)]">{step.sub}</div>
+            </div>
+          </div>
+        )
+      })}
+    </div>
+  )
+}
 
-function ThinkingDots() {
+function ToolParallel({ items }: { items: ParallelItem[] }) {
+  return (
+    <div className="mt-3 rounded-[14px] border border-[var(--border-light)] bg-[var(--bg)] px-3 py-3">
+      <div className="mb-2 flex items-center gap-2 text-xs text-[var(--text-3)]">
+        <GitBranch className="h-3.5 w-3.5 text-[var(--blue)]" strokeWidth={1.8} />
+        Running analyses in parallel
+      </div>
+      <div className="grid gap-2 sm:grid-cols-2">
+        {items.map(item => {
+          const Icon = item.Icon
+          return (
+            <div key={item.label} className="flex items-center gap-2 rounded-[10px] border border-[var(--border-light)] bg-white px-3 py-2 text-xs">
+              <span className={`h-2 w-2 rounded-full ${item.state === 'done' ? 'bg-[var(--green)]' : 'bg-[var(--amber)] animate-pulse'}`} />
+              <span className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-md border ${toneStyles(item.tone)}`}>
+                <Icon className="h-3.5 w-3.5" strokeWidth={1.8} />
+              </span>
+              <span className="min-w-0 flex-1 text-[var(--text)]">{item.label}</span>
+              <span className={`font-mono ${item.state === 'done' ? 'text-[var(--text-3)]' : 'text-[var(--amber)]'}`}>{item.time}</span>
+            </div>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
+function QualityGates({ gates, visibleGates }: { gates: GateItem[]; visibleGates: number }) {
+  return (
+    <div className="mt-3 space-y-2">
+      {gates.slice(0, visibleGates).map(gate => (
+        <div key={gate.label} className="flex items-center gap-3 rounded-[12px] border border-[var(--border-light)] bg-[var(--bg)] px-3 py-2 text-xs">
+          <span className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full ${gate.state === 'pass' ? 'bg-[rgba(22,163,74,0.12)] text-[var(--green)]' : gate.state === 'fail' ? 'bg-[rgba(225,29,72,0.12)] text-[var(--rose)]' : 'bg-white text-[var(--text-3)]'}`}>
+            {gate.state === 'pass' ? <Check className="h-3.5 w-3.5" strokeWidth={2.4} /> : gate.state === 'fail' ? <ArrowRight className="h-3.5 w-3.5 rotate-45" strokeWidth={2} /> : <span className="font-mono text-[10px]">○</span>}
+          </span>
+          <span className="flex-1 text-[var(--text-2)]">{gate.label}</span>
+          <span className={`font-mono font-medium ${gate.state === 'pass' ? 'text-[var(--green)]' : gate.state === 'fail' ? 'text-[var(--rose)]' : 'text-[var(--text-3)]'}`}>{gate.value}</span>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+function ReasoningCard({ message }: { message: ReasoningMessage }) {
+  return (
+    <div className="anim-fade vis overflow-hidden rounded-xl border border-[var(--border-raw)] bg-white shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
+      <div className="flex items-center gap-2 border-b border-[var(--border-light)] bg-[rgba(250,248,244,0.82)] px-4 py-3 text-sm font-[550]">
+        {message.complete ? (
+          <>
+            <span className="rc-check-pulse inline-flex text-[var(--green)]"><CheckCircle2 className="h-[13px] w-[13px]" strokeWidth={2.1} /></span>
+            <span>Finished reasoning</span>
+          </>
+        ) : (
+          <>
+            <span className="inline-flex text-[var(--teal)]"><LoaderCircle className="h-[13px] w-[13px] animate-spin" strokeWidth={1.8} /></span>
+            <span>Reasoning...</span>
+          </>
+        )}
+        <div className="ml-auto flex gap-1">
+          <span className="rounded-full bg-[rgba(22,163,74,0.07)] px-2 py-[3px] font-mono text-[11px] font-medium text-[var(--green)]">{message.toolCount}</span>
+          <span className="rounded-full bg-[var(--bg-alt)] px-2 py-[3px] font-mono text-[11px] font-medium text-[var(--text-3)]">{message.elapsed}</span>
+        </div>
+      </div>
+      <div className="px-4 py-3">
+        <div className="mb-3 text-xs leading-relaxed text-[var(--text-2)]">{message.intro}</div>
+        <ToolChain message={message} />
+        {message.parallel && message.showParallel ? <ToolParallel items={message.parallel} /> : null}
+        {message.gates ? <QualityGates gates={message.gates} visibleGates={message.visibleGates} /> : null}
+      </div>
+    </div>
+  )
+}
+
+function HookResultCard({ result }: { result: HookResult }) {
+  return (
+    <div className="anim-fade vis my-2 rounded-xl border border-[var(--border-raw)] bg-white p-4 shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
+      <div className="mb-2 flex items-center justify-between gap-3">
+        <span className="text-[11px] font-semibold uppercase tracking-[0.06em] text-[var(--text-3)]">Top Hook</span>
+        <span className="rounded-full bg-[rgba(22,163,74,0.08)] px-[9px] py-[3px] font-mono text-[11px] font-semibold text-[var(--green)]">{result.hold}</span>
+      </div>
+      <div className="text-base font-semibold leading-snug text-[var(--text)]">“{result.title}”</div>
+      <div className="mt-2 text-xs text-[var(--green)]">{result.subtitle}</div>
+      <div className="mt-3 flex flex-col gap-[6px]">
+        {result.bars.map(bar => (
+          <div key={bar.label} className="flex items-center gap-2">
+            <span className="w-[102px] shrink-0 text-xs text-[var(--text-3)]">{bar.label}</span>
+            <div className="h-1 flex-1 overflow-hidden rounded-sm bg-[var(--bg-alt)]">
+              <div
+                className={`h-full rounded-sm ${bar.tone === 'green' ? 'bg-[var(--green)]' : 'bg-[var(--amber)]'}`}
+                style={{ width: `${bar.width}%`, transition: 'width 0.55s cubic-bezier(0.22,0.61,0.36,1)' }}
+              />
+            </div>
+            <span className="w-[34px] text-right font-mono text-xs font-semibold text-[var(--text-2)]">{bar.value}</span>
+          </div>
+        ))}
+      </div>
+      <div className="mt-3 flex gap-1.5">
+        <button className="rounded-full bg-[var(--bg-dark)] px-3.5 py-2 text-xs font-semibold text-[var(--text-inv)]">Use this hook</button>
+        <button className="rounded-full border border-[var(--border-raw)] bg-[var(--bg-alt)] px-3.5 py-2 text-xs font-semibold text-[var(--text-2)]">Iterate more</button>
+      </div>
+    </div>
+  )
+}
+
+function ScriptResultCard({ result }: { result: ScriptResult }) {
+  return (
+    <div className="anim-fade vis my-2 rounded-xl border border-[var(--border-raw)] bg-white shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
+      <div className="flex items-center justify-between gap-3 border-b border-[var(--border-light)] bg-[rgba(250,248,244,0.82)] px-4 py-3">
+        <span className="text-[11px] font-semibold uppercase tracking-[0.06em] text-[var(--text-3)]">Script Builder</span>
+        <span className="rounded-full bg-[rgba(13,148,136,0.08)] px-[9px] py-[3px] font-mono text-[11px] font-semibold text-[var(--teal)]">{result.voiceFit}</span>
+      </div>
+      <div className="space-y-0">
+        {result.lines.map(line => (
+          <div key={line.ts} className="grid grid-cols-[42px_1fr] gap-3 border-t border-[var(--border-light)] px-4 py-3 first:border-t-0">
+            <span className="inline-flex h-[26px] w-[42px] items-center justify-center rounded-full bg-[var(--bg-alt)] font-mono text-[11px] text-[var(--text-3)]">{line.ts}</span>
+            <div>
+              <div className="text-[14px] font-semibold leading-relaxed text-[var(--text)]">{line.title}</div>
+              <div className="mt-1 text-xs leading-relaxed text-[var(--text-2)]">{line.note}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+      <div className="border-t border-[var(--border-light)] bg-[rgba(250,248,244,0.82)] px-4 py-3 text-sm text-[var(--text-2)]">{result.note}</div>
+    </div>
+  )
+}
+
+function PlanResultCard({ result }: { result: PlanResult }) {
+  return (
+    <div className="anim-fade vis my-2 rounded-xl border border-[var(--border-raw)] bg-white p-4 shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
+      <div className="mb-3 flex items-center justify-between gap-3">
+        <span className="text-[11px] font-semibold uppercase tracking-[0.06em] text-[var(--text-3)]">Shot Planner</span>
+        <span className="rounded-full bg-[rgba(13,148,136,0.08)] px-[9px] py-[3px] font-mono text-[11px] font-semibold text-[var(--teal)]">{result.summary}</span>
+      </div>
+      <div className="grid gap-2 md:grid-cols-3">
+        {result.scenes.map(scene => (
+          <div key={scene.label} className="rounded-[14px] border border-[var(--border-light)] bg-[var(--bg)] p-3">
+            <div className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[var(--text-3)]">{scene.label}</div>
+            <div className="mt-2 text-sm font-semibold text-[var(--text)]">{scene.title}</div>
+            <div className="mt-1 text-xs leading-relaxed text-[var(--text-2)]">{scene.note}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+function TimingResultCard({ result }: { result: TimingResult }) {
+  return (
+    <div className="anim-fade vis my-2 rounded-xl border border-[var(--border-raw)] bg-white shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
+      <div className="flex items-center justify-between gap-3 border-b border-[var(--border-light)] bg-[rgba(250,248,244,0.82)] px-4 py-3">
+        <span className="text-[11px] font-semibold uppercase tracking-[0.06em] text-[var(--text-3)]">Post Timing</span>
+        <span className="rounded-full bg-[rgba(217,119,6,0.08)] px-[9px] py-[3px] font-mono text-[11px] font-semibold text-[var(--amber)]">{result.slot}</span>
+      </div>
+      <div className="space-y-0">
+        {result.rows.map(row => (
+          <div key={row.label} className="flex items-start justify-between gap-3 border-t border-[var(--border-light)] px-4 py-3 first:border-t-0">
+            <div>
+              <div className="text-[13px] font-semibold text-[var(--text)]">{row.label}</div>
+              <div className="mt-1 text-xs leading-relaxed text-[var(--text-2)]">{row.note}</div>
+            </div>
+            <div className="font-mono text-[11px] text-[var(--text-3)]">{row.value}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+function ResultCard({ result }: { result: ResultState }) {
+  if (result.kind === 'hook') return <HookResultCard result={result} />
+  if (result.kind === 'script') return <ScriptResultCard result={result} />
+  if (result.kind === 'plan') return <PlanResultCard result={result} />
+  return <TimingResultCard result={result} />
+}
+
+function ChatMessage({ message }: { message: Message }) {
+  if (message.type === 'user') {
+    return (
+      <div className="anim-slide-r vis flex flex-col items-end gap-1">
+        <div className="flex flex-row-reverse items-start gap-[10px]">
+          <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-[7px] bg-[var(--blue)] text-xs font-bold text-white">H</div>
+          <div className="max-w-[460px] rounded-[14px] rounded-br bg-[var(--bg-dark)] px-4 py-3 text-sm leading-relaxed text-[var(--text-inv)]">
+            {message.text}
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  if (message.type === 'reasoning') {
+    return (
+      <div className="flex items-start gap-[10px]">
+        <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-[7px] bg-[var(--bg-dark)] text-xs font-bold text-[var(--text-inv)]">C</div>
+        <div className="min-w-0 flex-1">
+          <ReasoningCard message={message} />
+        </div>
+      </div>
+    )
+  }
+
+  if (message.type === 'assistant') {
+    return (
+      <div className="flex items-start gap-[10px]">
+        <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-[7px] bg-[var(--bg-dark)] text-xs font-bold text-[var(--text-inv)]">C</div>
+        <div className="max-w-full rounded-[14px] rounded-bl bg-[var(--bg-alt)] px-4 py-3 text-sm leading-relaxed text-[var(--text)]">
+          {message.text}
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="flex items-start gap-[10px]">
-      <div className="w-7 h-7 rounded-[7px] bg-[var(--bg-dark)] flex items-center justify-center text-xs font-bold text-[var(--text-inv)] flex-shrink-0">C</div>
-      <div className="py-[14px] px-5 rounded-[14px] bg-[var(--bg-alt)] rounded-bl inline-flex items-center gap-1 min-w-[60px]">
-        <span className="w-[7px] h-[7px] rounded-full bg-[var(--text-3)]" style={{ animation: 'think-bounce 1.2s ease-in-out infinite' }} />
-        <span className="w-[7px] h-[7px] rounded-full bg-[var(--text-3)]" style={{ animation: 'think-bounce 1.2s ease-in-out infinite 0.15s' }} />
-        <span className="w-[7px] h-[7px] rounded-full bg-[var(--text-3)]" style={{ animation: 'think-bounce 1.2s ease-in-out infinite 0.3s' }} />
+      <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-[7px] bg-[var(--bg-dark)] text-xs font-bold text-[var(--text-inv)]">C</div>
+      <div className="min-w-0 flex-1">
+        <ResultCard result={message.result} />
       </div>
     </div>
   )
 }
-
-function renderTextWithBold(text: string, boldParts: string[]) {
-  let remaining = text
-  const elements: React.ReactNode[] = []
-  let key = 0
-  for (const part of boldParts) {
-    const placeholder = `{${part}}`
-    const idx = remaining.indexOf(placeholder)
-    if (idx >= 0) {
-      if (idx > 0) elements.push(<span key={key++}>{remaining.slice(0, idx)}</span>)
-      elements.push(<strong key={key++} className="text-[var(--text)] font-semibold">{part}</strong>)
-      remaining = remaining.slice(idx + placeholder.length)
-    }
-  }
-  if (remaining) elements.push(<span key={key++}>{remaining}</span>)
-  return elements
-}
-
-function renderTextWithEm(text: string, emParts: string[]) {
-  let remaining = text
-  const elements: React.ReactNode[] = []
-  let key = 0
-  for (const part of emParts) {
-    const placeholder = `{${part}}`
-    const idx = remaining.indexOf(placeholder)
-    if (idx >= 0) {
-      if (idx > 0) elements.push(<span key={key++}>{remaining.slice(0, idx)}</span>)
-      elements.push(<em key={key++} className="not-italic font-mono font-medium text-[var(--green)]">{part}</em>)
-      remaining = remaining.slice(idx + placeholder.length)
-    }
-  }
-  if (remaining) elements.push(<span key={key++}>{remaining}</span>)
-  return elements
-}
-
-function ReasoningNode({ step, showLine }: { step: StepData; showLine: boolean }) {
-  return (
-    <div>
-      <div className="anim-fade vis flex items-start gap-[10px] py-1.5 relative">
-        {showLine && (
-          <div
-            className="absolute left-[6px] top-5 bottom-[-6px] w-px bg-[var(--border-raw)]"
-            style={{ transformOrigin: 'top', animation: 'line-grow 0.4s cubic-bezier(0.16,1,0.3,1) forwards' }}
-          />
-        )}
-        <div className={`w-[13px] h-[13px] rounded-full flex-shrink-0 mt-[3px] flex items-center justify-center ${
-          step.color === 'g'
-            ? 'bg-[rgba(22,163,74,0.1)] border-[1.5px] border-[var(--green)]'
-            : 'bg-[rgba(37,99,235,0.1)] border-[1.5px] border-[var(--blue)]'
-        }`}>
-          <span className={`w-1 h-1 rounded-full ${step.color === 'g' ? 'bg-[var(--green)]' : 'bg-[var(--blue)]'}`} />
-        </div>
-        <span className="text-[13px] text-[var(--text-2)] leading-relaxed">
-          {renderTextWithBold(step.text, step.boldParts)}
-        </span>
-        <span className="font-mono text-[11px] text-[var(--text-3)] ml-auto flex-shrink-0">{step.time}</span>
-      </div>
-      {step.sub && step.subEmParts && (
-        <div className="anim-fade vis text-xs text-[var(--text-3)] mt-0.5 pl-[23px]">
-          {renderTextWithEm(step.sub, step.subEmParts)}
-        </div>
-      )}
-    </div>
-  )
-}
-
-// ============================================
-// MAIN COMPONENT
-// ============================================
 
 export default function ChatDemo() {
-  const chatBodyRef = useRef<HTMLDivElement>(null)
+  const prefersReducedMotion = usePrefersReducedMotion()
   const browserRef = useRef<HTMLDivElement>(null)
-  const holdValRef = useRef<HTMLSpanElement>(null)
-  const scoreNumRef = useRef<HTMLDivElement>(null)
-  const abortRef = useRef(false)
-  const playedRef = useRef(false)
+  const chatBodyRef = useRef<HTMLDivElement>(null)
+  const loopAbortRef = useRef(false)
   const playingRef = useRef(false)
+  const playedRef = useRef(false)
+  const idRef = useRef(0)
 
-  // Turn 1 state
-  const [phase, setPhase] = useState<string>('idle')
+  const [messages, setMessages] = useState<Message[]>([])
+  const [activeNav, setActiveNav] = useState<NavKey>('hook')
+  const [flashNav, setFlashNav] = useState<NavKey | null>(null)
+  const [inputText, setInputText] = useState('Ask COOPR to sharpen the hook, rewrite the draft, open shot planning, or pick the post slot.')
+  const [inputPlaceholder, setInputPlaceholder] = useState(true)
+  const [sendReady, setSendReady] = useState(false)
+  const [sendPressed, setSendPressed] = useState(false)
+  const [rail, setRail] = useState<RailState>(TURN_SEQUENCE[0].rail)
   const [showReplay, setShowReplay] = useState(false)
-  const [showThinking, setShowThinking] = useState(false)
-  const [showAgentBlock, setShowAgentBlock] = useState(false)
-  const [visibleNodes, setVisibleNodes] = useState<number>(0)
-  const [showItBar, setShowItBar] = useState(false)
-  const [showRefNode, setShowRefNode] = useState(false)
-  const [showQualityGate, setShowQualityGate] = useState(false)
-  const [rcFinished, setRcFinished] = useState(false)
-  const [showResponseBub, setShowResponseBub] = useState(false)
-  const [showHookCard, setShowHookCard] = useState(false)
-  const [showTrail, setShowTrail] = useState(false)
 
-  // Turn 2 state
-  const [showUserMsg2, setShowUserMsg2] = useState(false)
-  const [showThinking2, setShowThinking2] = useState(false)
-  const [showAgentBlock2, setShowAgentBlock2] = useState(false)
-  const [visibleTimingNodes, setVisibleTimingNodes] = useState(0)
-  const [rcFinished2, setRcFinished2] = useState(false)
-  const [showResponseBub2, setShowResponseBub2] = useState(false)
-  const [showTimingCard, setShowTimingCard] = useState(false)
+  const makeId = useCallback(() => `msg-${idRef.current++}` , [])
 
-  // Proactive insight
-  const [showInsight, setShowInsight] = useState(false)
-
-  // Sidebar
-  const [activeSidebarIdx, setActiveSidebarIdx] = useState(0)
-  const [flashSidebarIdx, setFlashSidebarIdx] = useState<number | null>(null)
-
-  // Refs for imperative DOM manipulation
-  const userTypeRef = useRef<HTMLSpanElement>(null)
-  const userType2Ref = useRef<HTMLSpanElement>(null)
-  const itS1Ref = useRef<HTMLSpanElement>(null)
-  const itS2Ref = useRef<HTMLSpanElement>(null)
-  const itS3Ref = useRef<HTMLSpanElement>(null)
-  const qgFillRef = useRef<HTMLDivElement>(null)
-  const qgValRef = useRef<HTMLSpanElement>(null)
-  const responseTypeRef = useRef<HTMLSpanElement>(null)
-  const responseType2Ref = useRef<HTMLSpanElement>(null)
-  const barRefs = useRef<(HTMLDivElement | null)[]>([])
-
-  const scroll = useCallback(() => {
-    if (chatBodyRef.current) {
-      chatBodyRef.current.scrollTo({
+  const scrollToBottom = useCallback((behavior?: ScrollBehavior) => {
+    if (!chatBodyRef.current) return
+    const mode = behavior ?? (prefersReducedMotion ? 'auto' : 'smooth')
+    window.requestAnimationFrame(() => {
+      chatBodyRef.current?.scrollTo({
         top: chatBodyRef.current.scrollHeight,
-        behavior: noMotion ? 'instant' : 'smooth',
+        behavior: mode,
       })
+    })
+  }, [prefersReducedMotion])
+
+  useEffect(() => {
+    scrollToBottom()
+  }, [messages, scrollToBottom])
+
+  const appendMessage = useCallback((message: Message) => {
+    setMessages(prev => {
+      const next = [...prev, message]
+      return next.length > 8 ? next.slice(next.length - 8) : next
+    })
+  }, [])
+
+  const updateMessage = useCallback((id: string, updater: (message: Message) => Message) => {
+    setMessages(prev => prev.map(message => (message.id === id ? updater(message) : message)))
+  }, [])
+
+  const resetComposer = useCallback(() => {
+    setInputPlaceholder(true)
+    setInputText('Ask COOPR to sharpen the hook, rewrite the draft, open shot planning, or pick the post slot.')
+    setSendReady(false)
+    setSendPressed(false)
+  }, [])
+
+  const typeComposer = useCallback(async (text: string) => {
+    setInputPlaceholder(false)
+    setInputText('')
+    setSendReady(false)
+    if (prefersReducedMotion) {
+      setInputText(text)
+      setSendReady(true)
+      return
     }
-  }, [])
+    for (let index = 0; index <= text.length; index += 1) {
+      if (loopAbortRef.current) return
+      setInputText(text.slice(0, index))
+      await wait(charDelay(text[index] ?? ' ', 18), false)
+    }
+    setSendReady(true)
+  }, [prefersReducedMotion])
 
-  const flashSidebar = useCallback((idx: number) => {
-    if (noMotion) return
-    setFlashSidebarIdx(idx)
-    setTimeout(() => {
-      setFlashSidebarIdx(null)
-      setActiveSidebarIdx(idx)
-    }, 320)
-  }, [])
+  const flashSidebar = useCallback((key: NavKey) => {
+    if (prefersReducedMotion) {
+      setActiveNav(key)
+      return
+    }
+    setFlashNav(key)
+    window.setTimeout(() => {
+      setFlashNav(null)
+      setActiveNav(key)
+    }, 280)
+  }, [prefersReducedMotion])
 
-  const resetState = useCallback(() => {
-    setPhase('idle')
-    setShowReplay(false)
-    setShowThinking(false)
-    setShowAgentBlock(false)
-    setVisibleNodes(0)
-    setShowItBar(false)
-    setShowRefNode(false)
-    setShowQualityGate(false)
-    setRcFinished(false)
-    setShowResponseBub(false)
-    setShowHookCard(false)
-    setShowTrail(false)
-    setShowUserMsg2(false)
-    setShowThinking2(false)
-    setShowAgentBlock2(false)
-    setVisibleTimingNodes(0)
-    setRcFinished2(false)
-    setShowResponseBub2(false)
-    setShowTimingCard(false)
-    setShowInsight(false)
-    setActiveSidebarIdx(0)
-    setFlashSidebarIdx(null)
-    if (holdValRef.current) holdValRef.current.textContent = '61%'
-    if (scoreNumRef.current) scoreNumRef.current.textContent = '84'
-    barRefs.current.forEach(bar => { if (bar) bar.style.width = '0' })
-  }, [])
+  const pressSend = useCallback(async () => {
+    setSendPressed(true)
+    await wait(prefersReducedMotion ? 30 : 120, prefersReducedMotion)
+    setSendPressed(false)
+  }, [prefersReducedMotion])
+
+  const runTurn = useCallback(async (turn: DemoTurn) => {
+    flashSidebar(turn.nav)
+    await typeComposer(turn.ask)
+    if (loopAbortRef.current) return
+    await wait(prefersReducedMotion ? 30 : 120, prefersReducedMotion)
+    await pressSend()
+    if (loopAbortRef.current) return
+
+    appendMessage({ id: makeId(), type: 'user', text: turn.ask })
+    resetComposer()
+    await wait(prefersReducedMotion ? 40 : 280, prefersReducedMotion)
+
+    const reasoningId = makeId()
+    appendMessage({
+      id: reasoningId,
+      type: 'reasoning',
+      intro: turn.intro,
+      toolCount: turn.toolCount,
+      elapsed: turn.elapsed,
+      steps: turn.steps,
+      visibleSteps: 0,
+      parallel: turn.parallel,
+      showParallel: false,
+      gates: turn.gates,
+      visibleGates: 0,
+      complete: false,
+    })
+
+    for (let index = 0; index < turn.steps.length; index += 1) {
+      if (loopAbortRef.current) return
+      updateMessage(reasoningId, message => {
+        if (message.type !== 'reasoning') return message
+        return { ...message, visibleSteps: index + 1 }
+      })
+      await wait(360 + index * 40, prefersReducedMotion)
+    }
+
+    if (turn.parallel?.length) {
+      updateMessage(reasoningId, message => {
+        if (message.type !== 'reasoning') return message
+        return { ...message, showParallel: true }
+      })
+      await wait(420, prefersReducedMotion)
+    }
+
+    if (turn.gates?.length) {
+      for (let index = 0; index < turn.gates.length; index += 1) {
+        if (loopAbortRef.current) return
+        updateMessage(reasoningId, message => {
+          if (message.type !== 'reasoning') return message
+          return { ...message, visibleGates: index + 1 }
+        })
+        await wait(180, prefersReducedMotion)
+      }
+    }
+
+    updateMessage(reasoningId, message => {
+      if (message.type !== 'reasoning') return message
+      return { ...message, complete: true }
+    })
+    setRail(turn.rail)
+    await wait(260, prefersReducedMotion)
+
+    appendMessage({ id: makeId(), type: 'assistant', text: turn.reply })
+    await wait(200, prefersReducedMotion)
+    appendMessage({ id: makeId(), type: 'result', result: turn.result })
+    await wait(900, prefersReducedMotion)
+  }, [appendMessage, flashSidebar, makeId, prefersReducedMotion, pressSend, resetComposer, typeComposer, updateMessage])
 
   const play = useCallback(async () => {
     if (playingRef.current) return
     playingRef.current = true
-    abortRef.current = false
+    loopAbortRef.current = false
+    setShowReplay(false)
 
-    setActiveSidebarIdx(0)
-    await wait(350)
+    setMessages([])
+    setRail(TURN_SEQUENCE[0].rail)
+    setActiveNav('hook')
+    setFlashNav(null)
+    resetComposer()
+    await wait(300, prefersReducedMotion)
 
-    // ─── TURN 1: Hook generation ───
-    setPhase('user-typing')
-    await wait(180)
-    await wait(50)
-    if (userTypeRef.current) {
-      await typeInto(userTypeRef.current, 'Write me a killer hook for my next reel', 32, false, abortRef)
-    }
-    if (abortRef.current) return
-    scroll()
-    await wait(520)
-
-    // Thinking
-    setShowThinking(true)
-    setPhase('thinking')
-    scroll()
-    await wait(1300)
-    if (abortRef.current) return
-
-    // Reasoning chain
-    setShowThinking(false)
-    await wait(180)
-    setShowAgentBlock(true)
-    setPhase('reasoning')
-    scroll()
-    await wait(480)
-    if (abortRef.current) return
-
-    flashSidebar(4) // Hook Lab
-
-    for (let i = 0; i < REASONING_STEPS.length; i++) {
-      if (abortRef.current) return
-      setVisibleNodes(i + 1)
-      scroll()
-      await wait(REASONING_STEPS[i].delay)
-    }
-    if (abortRef.current) return
-
-    // Iteration bar
-    setShowItBar(true)
-    setPhase('scoring')
-    scroll()
-    await wait(180)
-
-    if (itS1Ref.current) await countTo(itS1Ref.current, 0, 72, 480)
-    if (abortRef.current) return
-    await wait(260)
-    if (itS2Ref.current) await countTo(itS2Ref.current, 0, 84, 480)
-    if (abortRef.current) return
-    await wait(260)
-    if (itS3Ref.current) await countTo(itS3Ref.current, 0, 87, 480)
-    if (abortRef.current) return
-
-    // Update right panel
-    if (holdValRef.current && !noMotion) {
-      holdValRef.current.style.transition = 'color 0.3s'
-      holdValRef.current.style.color = 'var(--green)'
-      holdValRef.current.textContent = '68%'
-      setTimeout(() => { if (holdValRef.current) holdValRef.current.style.color = '' }, 900)
+    for (const turn of TURN_SEQUENCE) {
+      if (loopAbortRef.current) break
+      await runTurn(turn)
     }
 
-    setShowRefNode(true)
-    scroll()
-    await wait(380)
-    if (abortRef.current) return
-
-    // Quality gate
-    setShowQualityGate(true)
-    scroll()
-    await wait(180)
-
-    if (qgFillRef.current) {
-      requestAnimationFrame(() => { if (qgFillRef.current) qgFillRef.current.style.width = '87%' })
-      setTimeout(() => { if (qgFillRef.current) qgFillRef.current.classList.add('glowing') }, 600)
+    if (!loopAbortRef.current) {
+      setShowReplay(true)
+      playedRef.current = true
     }
-    if (qgValRef.current) await countTo(qgValRef.current, 0, 87, 900)
-    if (abortRef.current) return
-
-    setRcFinished(true)
-    await wait(460)
-    if (abortRef.current) return
-
-    // Response
-    setShowResponseBub(true)
-    setPhase('response')
-    scroll()
-    await wait(180)
-    if (responseTypeRef.current) {
-      await typeInto(responseTypeRef.current, "Here's your top hook, refined through 2 rounds:", 24, true, abortRef)
-    }
-    if (abortRef.current) return
-
-    // Hook card
-    setShowHookCard(true)
-    setPhase('hook')
-    scroll()
-    await wait(350)
-    if (abortRef.current) return
-
-    for (let j = 0; j < SCORE_BARS.length; j++) {
-      if (abortRef.current) return
-      const bar = barRefs.current[j]
-      if (bar) {
-        requestAnimationFrame(() => { bar.style.width = SCORE_BARS[j].width + '%' })
-        if (!noMotion) {
-          setTimeout(() => {
-            bar.classList.add('sc-fill--shimmer')
-            setTimeout(() => bar.classList.remove('sc-fill--shimmer'), 1100)
-          }, 400)
-        }
-      }
-      await wait(130)
-    }
-    if (abortRef.current) return
-    await wait(380)
-
-    // Update Coopr Score
-    if (scoreNumRef.current && !noMotion) {
-      scoreNumRef.current.style.transition = 'color 0.3s'
-      scoreNumRef.current.style.color = 'var(--green)'
-      const scoreStart = performance.now()
-      const scoreEl = scoreNumRef.current;
-      (function scoreAnim(now: number) {
-        const p = Math.min((now - scoreStart) / 800, 1)
-        const e = 1 - Math.pow(1 - p, 3)
-        const v = Math.round(84 + 4 * e)
-        if (scoreEl) scoreEl.textContent = String(Math.min(v, 88))
-        if (p < 1) requestAnimationFrame(scoreAnim)
-        else if (scoreEl) scoreEl.textContent = '88'
-      })(performance.now())
-      setTimeout(() => { if (scoreNumRef.current) scoreNumRef.current.style.color = '' }, 1200)
-    }
-
-    setShowTrail(true)
-    scroll()
-    await wait(1200)
-    if (abortRef.current) return
-
-    // ─── TURN 2: Timing analysis ───
-    setShowUserMsg2(true)
-    setPhase('user2-typing')
-    scroll()
-    await wait(180)
-    await wait(50)
-    if (userType2Ref.current) {
-      await typeInto(userType2Ref.current, 'When should I post this?', 32, false, abortRef)
-    }
-    if (abortRef.current) return
-    scroll()
-    await wait(520)
-
-    // Thinking 2
-    setShowThinking2(true)
-    scroll()
-    await wait(1000)
-    if (abortRef.current) return
-
-    // Reasoning chain 2
-    setShowThinking2(false)
-    await wait(180)
-    setShowAgentBlock2(true)
-    scroll()
-    await wait(400)
-    if (abortRef.current) return
-
-    flashSidebar(1) // Content
-
-    for (let i = 0; i < TIMING_STEPS.length; i++) {
-      if (abortRef.current) return
-      setVisibleTimingNodes(i + 1)
-      scroll()
-      await wait(TIMING_STEPS[i].delay)
-    }
-    if (abortRef.current) return
-
-    setRcFinished2(true)
-    await wait(400)
-    if (abortRef.current) return
-
-    // Response 2
-    setShowResponseBub2(true)
-    scroll()
-    await wait(180)
-    if (responseType2Ref.current) {
-      await typeInto(responseType2Ref.current, "Post Thursday at 8pm PST. Here's why:", 24, true, abortRef)
-    }
-    if (abortRef.current) return
-
-    // Timing card
-    setShowTimingCard(true)
-    scroll()
-    await wait(700)
-    if (abortRef.current) return
-
-    // Proactive insight
-    setShowInsight(true)
-    scroll()
-    await wait(600)
-    if (abortRef.current) return
-
-    flashSidebar(2) // Trends
-
-    setPhase('done')
-    setShowReplay(true)
     playingRef.current = false
-    playedRef.current = true
-  }, [scroll, flashSidebar])
+  }, [prefersReducedMotion, resetComposer, runTurn])
 
-  const handleReplay = useCallback(() => {
-    abortRef.current = true
+  const replay = useCallback(() => {
+    loopAbortRef.current = true
     playingRef.current = false
-    playedRef.current = false
-    resetState()
-    setTimeout(() => {
-      abortRef.current = false
+    window.setTimeout(() => {
+      loopAbortRef.current = false
       play()
-    }, 90)
-  }, [resetState, play])
-
-  // IntersectionObserver trigger
-  useEffect(() => {
-    if (!browserRef.current) return
-    const obs = new IntersectionObserver(
-      entries => {
-        entries.forEach(e => {
-          if (e.isIntersecting && !playedRef.current && !playingRef.current) {
-            play()
-          }
-        })
-      },
-      { threshold: 0.22 }
-    )
-    obs.observe(browserRef.current)
-    return () => obs.disconnect()
+    }, 80)
   }, [play])
 
-  const sidebarItems = [
-    { icon: '\u25C8', label: 'Chat' },
-    { icon: '\u25A0', label: 'Content' },
-    { icon: '\u25B2', label: 'Trends' },
-    { icon: '\u25C6', label: 'Competitors' },
-    { icon: '\u2726', label: 'Hook Lab', section: 'Create' },
-    { icon: '\u270E', label: 'Scripts' },
-    { icon: '\u2637', label: 'Shot Lists' },
-    { icon: '\u2630', label: 'Engine', section: 'Analyze' },
-    { icon: '\u2699', label: 'Settings' },
-  ]
+  useEffect(() => {
+    if (!browserRef.current) return undefined
+    const node = browserRef.current
+    const shouldPlayNow = () => {
+      const rect = node.getBoundingClientRect()
+      const visibleTop = rect.top < window.innerHeight * 0.88
+      const visibleBottom = rect.bottom > window.innerHeight * 0.18
+      return visibleTop && visibleBottom
+    }
+
+    if (!playingRef.current && !playedRef.current && shouldPlayNow()) {
+      play()
+    }
+
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting && !playingRef.current && !playedRef.current) {
+          play()
+        }
+      })
+    }, { threshold: 0.08, rootMargin: '0px 0px -12% 0px' })
+    observer.observe(node)
+    return () => observer.disconnect()
+  }, [play])
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return undefined
+
+    const maybePlayFromHash = () => {
+      if (window.location.hash !== '#product') return
+      if (playingRef.current || playedRef.current) return
+      window.setTimeout(() => {
+        if (!playingRef.current && !playedRef.current) {
+          play()
+        }
+      }, 120)
+    }
+
+    maybePlayFromHash()
+    window.addEventListener('hashchange', maybePlayFromHash)
+    return () => window.removeEventListener('hashchange', maybePlayFromHash)
+  }, [play])
+
+  useEffect(() => () => { loopAbortRef.current = true }, [])
+
+  const nav = useMemo(() => NAV_ITEMS, [])
 
   return (
-    <section className="max-w-[1200px] mx-auto px-6 py-20 pb-[100px] relative" id="product">
-      <div className="text-center font-mono text-[11px] font-medium tracking-[0.08em] uppercase text-[var(--text-3)] mb-4">
+    <section className="relative mx-auto max-w-[1380px] px-6 py-20 pb-[100px]" id="product">
+      <div className="text-center font-mono text-[11px] font-medium uppercase tracking-[0.08em] text-[var(--text-3)] mb-4">
         See it work
       </div>
       <h2 className="text-center font-display text-[clamp(2rem,4vw,3rem)] font-extrabold leading-[1.05] tracking-[-0.04em] mb-3">
         An agent that shows <em className="font-accent italic font-normal">its work</em>
       </h2>
-      <p className="text-center text-base text-[var(--text-2)] max-w-[440px] mx-auto mb-12">
-        Ask a question. Coopr orchestrates tools, iterates on quality, and shows you every step.
+      <p className="mx-auto mb-12 max-w-[480px] text-center text-base text-[var(--text-2)]">
+        One creator. One reel. One workspace that keeps moving without turning into a giant feed.
       </p>
 
-      {/* Floating wrapper + glow backdrop */}
       <div className="relative" ref={browserRef}>
         <div
-          className="absolute -inset-8 rounded-[40px] pointer-events-none z-0"
+          className="pointer-events-none absolute -inset-8 z-0 rounded-[40px]"
           style={{
-            background: 'radial-gradient(ellipse at 50% 60%, rgba(13,148,136,0.12) 0%, transparent 70%)',
-            animation: 'glow-pulse 4s ease-in-out infinite',
+            background: 'radial-gradient(ellipse at 50% 55%, rgba(13,148,136,0.1) 0%, transparent 72%)',
+            animation: prefersReducedMotion ? 'none' : 'glow-pulse 4s ease-in-out infinite',
           }}
         />
-        <div className="relative z-[1]" style={{ animation: noMotion ? 'none' : 'browser-float 6s ease-in-out infinite' }}>
-          <div className="bg-white border border-[var(--border-raw)] rounded-[20px] overflow-hidden" style={{ boxShadow: 'var(--shadow-lg)' }}>
-            {/* Browser chrome */}
-            <div className="flex items-center py-3 px-4 bg-[var(--bg-alt)] border-b border-[var(--border-light)] gap-2">
+        <div className="relative z-[1]">
+          <div className="overflow-hidden rounded-[24px] border border-[var(--border-raw)] bg-white shadow-[var(--shadow-lg)]">
+            <div className="flex items-center gap-2 border-b border-[var(--border-light)] bg-[var(--bg-alt)] px-4 py-3">
               <div className="flex gap-1.5">
-                <span className="w-[10px] h-[10px] rounded-full bg-[#FF5F57]" />
-                <span className="w-[10px] h-[10px] rounded-full bg-[#FEBC2E]" />
-                <span className="w-[10px] h-[10px] rounded-full bg-[#28C840]" />
+                <span className="h-[10px] w-[10px] rounded-full bg-[#FF5F57]" />
+                <span className="h-[10px] w-[10px] rounded-full bg-[#FEBC2E]" />
+                <span className="h-[10px] w-[10px] rounded-full bg-[#28C840]" />
               </div>
-              <div className="flex-1 text-center font-mono text-[11px] text-[var(--text-3)]">
-                app.coopr.studio
-              </div>
+              <div className="flex-1 text-center font-mono text-[11px] text-[var(--text-3)]">app.coopr.studio</div>
+              {showReplay ? (
+                <button
+                  type="button"
+                  onClick={replay}
+                  className="rounded-full border border-[var(--border-raw)] bg-white px-3 py-1.5 text-[11px] font-medium text-[var(--text-2)] transition hover:border-[rgba(13,148,136,0.18)] hover:text-[var(--teal)]"
+                >
+                  Replay demo
+                </button>
+              ) : null}
             </div>
 
-            {/* App grid */}
-            <div className="grid grid-cols-[220px_1fr_260px] h-[720px] max-lg:grid-cols-1 max-lg:h-auto">
-              {/* Sidebar */}
-              <div className="bg-[var(--bg-dark)] p-3 text-[var(--text-inv)] max-lg:hidden">
-                <div className="flex items-center gap-[10px] px-3 pb-4 border-b border-white/[0.06] mb-3.5">
-                  <div className="w-7 h-7 rounded-lg bg-white flex items-center justify-center font-display text-xs font-extrabold text-[var(--bg-dark)]">C</div>
+            <div className="grid h-[680px] grid-cols-[214px_minmax(0,1fr)_260px] max-[1100px]:grid-cols-[200px_minmax(0,1fr)] max-[900px]:h-auto max-[900px]:grid-cols-1">
+              <aside className="bg-[var(--bg-dark)] p-3 text-[var(--text-inv)] max-[900px]:hidden">
+                <div className="mb-3.5 flex items-center gap-[10px] border-b border-white/[0.06] px-3 pb-4">
+                  <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-white font-display text-xs font-extrabold text-[var(--bg-dark)]">C</div>
                   <span className="font-display text-[15px] font-bold tracking-[-0.03em]">Coopr</span>
                 </div>
-                {sidebarItems.map((item, idx) => (
-                  <div key={item.label}>
-                    {item.section && (
-                      <div className="font-mono text-[10px] font-medium tracking-[0.08em] uppercase text-white/20 px-3 mt-4 mb-2">
-                        {item.section}
+                {nav.map(item => {
+                  const Icon = item.Icon
+                  const active = activeNav === item.key
+                  const flashing = flashNav === item.key
+                  return (
+                    <div key={item.key}>
+                      {item.section ? (
+                        <div className="mb-2 mt-4 px-3 font-mono text-[10px] font-medium uppercase tracking-[0.08em] text-white/20">{item.section}</div>
+                      ) : null}
+                      <div className={`flex cursor-pointer items-center gap-3 rounded-lg px-3 py-[9px] text-sm font-[450] transition-all duration-200 ${flashing ? 'sb-it-flash' : active ? 'bg-white/[0.08] text-white' : 'text-white/40 hover:bg-white/[0.05] hover:text-white/70'}`}>
+                        <Icon className={`h-[16px] w-[16px] shrink-0 ${active ? 'opacity-100' : 'opacity-55'}`} strokeWidth={1.8} />
+                        {item.label}
                       </div>
-                    )}
-                    <div
-                      className={`flex items-center gap-3 py-[9px] px-3 rounded-lg text-sm font-[450] cursor-pointer transition-all duration-250 ${
-                        flashSidebarIdx === idx
-                          ? 'sb-it-flash'
-                          : activeSidebarIdx === idx
-                          ? 'bg-white/[0.08] text-white'
-                          : 'text-white/40 hover:bg-white/[0.05] hover:text-white/70'
-                      }`}
-                    >
-                      <span className={`text-sm w-[18px] text-center ${activeSidebarIdx === idx ? 'opacity-100' : 'opacity-50'}`}>{item.icon}</span>
-                      {item.label}
                     </div>
-                  </div>
-                ))}
-              </div>
+                  )
+                })}
+              </aside>
 
-              {/* Chat */}
-              <div className="flex flex-col min-h-0 bg-[var(--bg)] border-r border-[var(--border-light)] max-lg:min-h-[500px]">
-                <div className="flex items-center gap-[10px] py-3.5 px-5 border-b border-[var(--border-light)]">
-                  <div className="w-7 h-7 rounded-[7px] bg-[var(--bg-dark)] flex items-center justify-center text-xs font-bold text-[var(--text-inv)]">C</div>
+              <div className="flex min-h-0 flex-col border-r border-[var(--border-light)] bg-[var(--bg)] max-[1100px]:border-r-0 max-[900px]:min-h-[580px]">
+                <div className="flex items-center gap-[10px] border-b border-[var(--border-light)] px-5 py-3.5">
+                  <div className="flex h-7 w-7 items-center justify-center rounded-[7px] bg-[var(--bg-dark)] text-xs font-bold text-[var(--text-inv)]">C</div>
                   <span className="text-[15px] font-semibold tracking-[-0.01em]">Coopr</span>
                   <span className="text-xs text-[var(--text-3)]">166 tools available</span>
                 </div>
 
-                <div className="flex-1 min-h-0 relative">
-                  {/* Scroll fade top */}
-                  <div className="absolute top-0 left-0 right-0 h-6 bg-gradient-to-b from-[var(--bg)] to-transparent z-[2] pointer-events-none opacity-0 transition-opacity duration-200" id="chat-fade-top" />
-                  {/* Scroll fade bottom */}
-                  <div className="absolute bottom-0 left-0 right-0 h-6 bg-gradient-to-t from-[var(--bg)] to-transparent z-[2] pointer-events-none" id="chat-fade-bottom" />
-                <div
-                  ref={chatBodyRef}
-                  className="absolute inset-0 py-5 px-6 overflow-y-auto flex flex-col gap-[18px]"
-                  style={{ scrollbarWidth: 'thin', scrollbarColor: 'rgba(0,0,0,0.15) transparent' }}
-                  onScroll={(e) => {
-                    const el = e.currentTarget
-                    const top = document.getElementById('chat-fade-top')
-                    const bot = document.getElementById('chat-fade-bottom')
-                    if (top) top.style.opacity = el.scrollTop > 20 ? '1' : '0'
-                    if (bot) bot.style.opacity = (el.scrollHeight - el.scrollTop - el.clientHeight) > 20 ? '1' : '0'
-                  }}
-                >
-                  {/* ─── TURN 1 ─── */}
-
-                  {/* User message 1 */}
-                  {phase !== 'idle' && (
-                    <div className="anim-slide-r vis flex flex-col items-end gap-1">
-                      <div className="flex flex-row-reverse items-start gap-[10px]">
-                        <div className="w-7 h-7 rounded-[7px] bg-[var(--blue)] flex items-center justify-center text-xs font-bold text-white flex-shrink-0">H</div>
-                        <div className="py-3 px-4 rounded-[14px] bg-[var(--bg-dark)] text-[var(--text-inv)] rounded-br text-sm leading-relaxed max-w-[460px]">
-                          <span ref={userTypeRef} />
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Thinking dots 1 */}
-                  {showThinking && (
-                    <div className="anim-fade vis">
-                      <ThinkingDots />
-                    </div>
-                  )}
-
-                  {/* Agent block 1 */}
-                  {showAgentBlock && (
-                    <div className="flex items-start gap-[10px]">
-                      <div className="w-7 h-7 rounded-[7px] bg-[var(--bg-dark)] flex items-center justify-center text-xs font-bold text-[var(--text-inv)] flex-shrink-0">C</div>
-                      <div className="flex-1 min-w-0">
-                        {/* Reasoning chain */}
-                        <div className="anim-fade vis bg-white border border-[var(--border-raw)] rounded-xl overflow-hidden shadow-[0_1px_3px_rgba(0,0,0,0.04)] my-1">
-                          <div className="flex items-center gap-2 py-3 px-4 text-sm font-[550] transition-opacity duration-200">
-                            {!rcFinished ? (
-                              <>
-                                <span className="text-[var(--teal)] flex">
-                                  <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5" stroke="#0D9488" strokeWidth="1.5" fill="none" /></svg>
-                                </span>
-                                <span>Reasoning...</span>
-                              </>
-                            ) : (
-                              <>
-                                <span className="rc-check-pulse inline-flex text-[var(--green)]">
-                                  <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M3 7.5L5.5 10L11 4" stroke="#16A34A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                                </span>
-                                <span>Finished reasoning</span>
-                                <div className="flex gap-1 ml-auto">
-                                  <span className="font-mono text-[11px] font-medium py-[3px] px-2 rounded-full bg-[rgba(22,163,74,0.07)] text-[var(--green)]">8 tools</span>
-                                  <span className="font-mono text-[11px] font-medium py-[3px] px-2 rounded-full bg-[var(--bg-alt)] text-[var(--text-3)]">2 iterations</span>
-                                  <span className="font-mono text-[11px] font-medium py-[3px] px-2 rounded-full bg-[var(--bg-alt)] text-[var(--text-3)]">4.1s</span>
-                                </div>
-                              </>
-                            )}
-                          </div>
-
-                          <div className="px-4 pb-3 pt-1.5 border-t border-[var(--border-light)]">
-                            {REASONING_STEPS.slice(0, visibleNodes).map((step, i) => (
-                              <ReasoningNode key={i} step={step} showLine={i < visibleNodes - 1} />
-                            ))}
-
-                            {/* Iteration bar */}
-                            {showItBar && (
-                              <div className="anim-fade vis flex items-center gap-1.5 py-1.5 px-0 text-xs">
-                                <svg width="11" height="11" viewBox="0 0 14 14" fill="none"><path d="M11 7A4 4 0 1 1 7 3" stroke="#2563EB" strokeWidth="1.5" strokeLinecap="round" /><path d="M7 1l2 2-2 2" stroke="#2563EB" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                                <span className="font-medium text-[var(--blue)]">Iterating on top 2</span>
-                                <div className="flex items-center gap-1 ml-auto font-mono text-xs font-semibold">
-                                  <span ref={itS1Ref} className="text-[var(--text-3)]">0%</span>
-                                  <span className="text-[var(--text-3)] text-[10px]">&rarr;</span>
-                                  <span ref={itS2Ref} className="text-[var(--amber)]">0%</span>
-                                  <span className="text-[var(--text-3)] text-[10px]">&rarr;</span>
-                                  <span ref={itS3Ref} className="text-[var(--green)]">0%</span>
-                                </div>
-                              </div>
-                            )}
-
-                            {/* Refinement node */}
-                            {showRefNode && (
-                              <div className="anim-fade vis flex items-start gap-[10px] py-1.5 relative">
-                                <div className="w-[13px] h-[13px] rounded-full flex-shrink-0 mt-[3px] flex items-center justify-center bg-[rgba(37,99,235,0.1)] border-[1.5px] border-[var(--blue)]">
-                                  <span className="w-1 h-1 rounded-full bg-[var(--blue)]" />
-                                </div>
-                                <span className="text-[13px] text-[var(--text-2)] leading-relaxed">
-                                  <strong className="text-[var(--text)] font-semibold">Refined top 2</strong> against your voice profile
-                                </span>
-                                <span className="font-mono text-[11px] text-[var(--text-3)] ml-auto flex-shrink-0">1.1s</span>
-                              </div>
-                            )}
-
-                            {/* Quality gate */}
-                            {showQualityGate && (
-                              <div className="anim-fade vis flex items-center gap-1.5 py-2 px-0 text-xs font-medium text-[var(--green)]">
-                                <svg width="11" height="11" viewBox="0 0 14 14" fill="none"><path d="M3 7.5L5.5 10L11 4" stroke="#16A34A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                                Exceeds 85% target
-                                <div className="flex-none w-20 h-1 bg-[var(--bg-alt)] rounded-sm overflow-visible relative">
-                                  <div
-                                    ref={qgFillRef}
-                                    className="qg-fill h-full rounded-sm bg-[var(--green)] relative"
-                                    style={{ width: '0%', transition: 'width 1s cubic-bezier(0.34,1.2,0.64,1)' }}
-                                  />
-                                </div>
-                                <span ref={qgValRef} className="font-mono text-xs font-semibold">0%</span>
-                              </div>
-                            )}
-                          </div>
-                        </div>
-
-                        {/* Response bubble 1 */}
-                        {showResponseBub && (
-                          <div className="anim-fade vis py-3 px-4 rounded-[14px] bg-[var(--bg-alt)] text-[var(--text)] rounded-bl text-sm leading-relaxed max-w-full mt-[5px]">
-                            <span ref={responseTypeRef} />
-                          </div>
-                        )}
-
-                        {/* Hook card */}
-                        {showHookCard && (
-                          <div className={`anim-spring vis my-2 p-4 bg-white border border-[var(--border-raw)] rounded-xl ${!noMotion ? 'hk-glow' : ''}`}>
-                            <div className="flex items-center justify-between mb-2">
-                              <span className="text-[11px] font-semibold uppercase tracking-[0.06em] text-[var(--text-3)]">Top Hook</span>
-                              <span className="font-mono text-[11px] font-semibold text-[var(--green)] bg-[rgba(22,163,74,0.06)] py-[3px] px-[9px] rounded-full flex items-center gap-1">
-                                <svg width="9" height="9" viewBox="0 0 14 14" fill="none"><path d="M3 7.5L5.5 10L11 4" stroke="#16A34A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                                87% hold rate
-                              </span>
-                            </div>
-                            <div className="text-base font-semibold leading-snug mb-1.5">&ldquo;Nobody talks about this morning routine mistake&rdquo;</div>
-                            <div className="text-xs text-[var(--green)] flex items-center gap-1 mb-2.5">
-                              <svg width="9" height="9" viewBox="0 0 12 12" fill="none"><path d="M6 9V3M4 5l2-2 2 2" stroke="#16A34A" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                              +15% vs your average
-                            </div>
-
-                            <div className="flex flex-col gap-[5px]">
-                              {SCORE_BARS.map((bar, j) => (
-                                <div key={bar.name} className="flex items-center gap-2">
-                                  <span className="text-xs text-[var(--text-3)] w-[100px] flex-shrink-0">{bar.name}</span>
-                                  <div className="flex-1 h-1 bg-[var(--bg-alt)] rounded-sm overflow-hidden">
-                                    <div
-                                      ref={el => { barRefs.current[j] = el }}
-                                      className={`h-full rounded-sm ${bar.color === 'h' ? 'bg-[var(--green)]' : 'bg-[var(--amber)]'} ${bar.color === 'm' ? 'sc-fill--m' : ''}`}
-                                      style={{ width: '0', transition: 'width 0.6s cubic-bezier(0.22,0.61,0.36,1)' }}
-                                    />
-                                  </div>
-                                  <span className="font-mono text-xs font-semibold text-[var(--text-2)] w-[30px] text-right">{bar.value}</span>
-                                </div>
-                              ))}
-                            </div>
-
-                            <div className="flex gap-1.5 mt-3">
-                              <button className="font-body text-xs font-semibold py-2 px-3.5 rounded-full bg-[var(--bg-dark)] text-[var(--text-inv)] border-none cursor-pointer">Use this hook</button>
-                              <button className="font-body text-xs font-semibold py-2 px-3.5 rounded-full bg-[var(--bg-alt)] text-[var(--text-2)] border border-[var(--border-raw)] cursor-pointer">Iterate more</button>
-                              <button className="font-body text-xs font-semibold py-2 px-3.5 rounded-full bg-[var(--bg-alt)] text-[var(--text-2)] border border-[var(--border-raw)] cursor-pointer">Different angle</button>
-                            </div>
-                          </div>
-                        )}
-
-                        {/* Trail 1 */}
-                        {showTrail && (
-                          <div className="anim-fade vis flex items-center gap-1.5 text-xs text-[var(--text-3)] mt-1">
-                            <svg width="9" height="9" viewBox="0 0 10 10" fill="none"><path d="M2 5h6M5 2v6" stroke="#999" strokeWidth="1.2" strokeLinecap="round" /></svg>
-                            <span>How I thought about this</span>
-                            <span className="font-mono text-[11px]">8 tools &middot; 2 iterations &middot; 87% quality &middot; 4.1s</span>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* ─── TURN 2: Timing ─── */}
-
-                  {/* User message 2 */}
-                  {showUserMsg2 && (
-                    <div className="anim-slide-r vis flex flex-col items-end gap-1">
-                      <div className="flex flex-row-reverse items-start gap-[10px]">
-                        <div className="w-7 h-7 rounded-[7px] bg-[var(--blue)] flex items-center justify-center text-xs font-bold text-white flex-shrink-0">H</div>
-                        <div className="py-3 px-4 rounded-[14px] bg-[var(--bg-dark)] text-[var(--text-inv)] rounded-br text-sm leading-relaxed max-w-[460px]">
-                          <span ref={userType2Ref} />
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Thinking dots 2 */}
-                  {showThinking2 && (
-                    <div className="anim-fade vis">
-                      <ThinkingDots />
-                    </div>
-                  )}
-
-                  {/* Agent block 2 */}
-                  {showAgentBlock2 && (
-                    <div className="flex items-start gap-[10px]">
-                      <div className="w-7 h-7 rounded-[7px] bg-[var(--bg-dark)] flex items-center justify-center text-xs font-bold text-[var(--text-inv)] flex-shrink-0">C</div>
-                      <div className="flex-1 min-w-0">
-                        {/* Reasoning chain 2 */}
-                        <div className="anim-fade vis bg-white border border-[var(--border-raw)] rounded-xl overflow-hidden shadow-[0_1px_3px_rgba(0,0,0,0.04)] my-1">
-                          <div className="flex items-center gap-2 py-3 px-4 text-sm font-[550]">
-                            {!rcFinished2 ? (
-                              <>
-                                <span className="text-[var(--teal)] flex">
-                                  <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5" stroke="#0D9488" strokeWidth="1.5" fill="none" /></svg>
-                                </span>
-                                <span>Reasoning...</span>
-                              </>
-                            ) : (
-                              <>
-                                <span className="rc-check-pulse inline-flex text-[var(--green)]">
-                                  <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M3 7.5L5.5 10L11 4" stroke="#16A34A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                                </span>
-                                <span>Finished reasoning</span>
-                                <div className="flex gap-1 ml-auto">
-                                  <span className="font-mono text-[11px] font-medium py-[3px] px-2 rounded-full bg-[rgba(22,163,74,0.07)] text-[var(--green)]">3 tools</span>
-                                  <span className="font-mono text-[11px] font-medium py-[3px] px-2 rounded-full bg-[var(--bg-alt)] text-[var(--text-3)]">0.9s</span>
-                                </div>
-                              </>
-                            )}
-                          </div>
-
-                          <div className="px-4 pb-3 pt-1.5 border-t border-[var(--border-light)]">
-                            {TIMING_STEPS.slice(0, visibleTimingNodes).map((step, i) => (
-                              <ReasoningNode key={i} step={step} showLine={i < visibleTimingNodes - 1} />
-                            ))}
-                          </div>
-                        </div>
-
-                        {/* Response bubble 2 */}
-                        {showResponseBub2 && (
-                          <div className="anim-fade vis py-3 px-4 rounded-[14px] bg-[var(--bg-alt)] text-[var(--text)] rounded-bl text-sm leading-relaxed max-w-full mt-[5px]">
-                            <span ref={responseType2Ref} />
-                          </div>
-                        )}
-
-                        {/* Timing card */}
-                        {showTimingCard && (
-                          <div className="anim-spring vis my-2 p-4 bg-white border border-[var(--border-raw)] rounded-xl">
-                            <div className="flex items-center justify-between mb-3">
-                              <span className="text-[11px] font-semibold uppercase tracking-[0.06em] text-[var(--text-3)]">Recommended</span>
-                              <span className="font-mono text-[11px] font-semibold text-[var(--teal)] bg-[rgba(13,148,136,0.06)] py-[3px] px-[9px] rounded-full">Optimal window</span>
-                            </div>
-                            <div className="flex items-baseline gap-2 mb-2">
-                              <span className="text-xl font-bold tracking-[-0.02em]">Thursday</span>
-                              <span className="text-base font-semibold text-[var(--teal)]">8:00 PM PST</span>
-                            </div>
-                            <div className="flex flex-col gap-1.5 text-xs text-[var(--text-2)]">
-                              <div className="flex items-center gap-1.5">
-                                <span className="w-1.5 h-1.5 rounded-full bg-[var(--green)]" />
-                                Your audience is 2.4x more active vs. average
-                              </div>
-                              <div className="flex items-center gap-1.5">
-                                <span className="w-1.5 h-1.5 rounded-full bg-[var(--green)]" />
-                                No competitor overlap in this window
-                              </div>
-                              <div className="flex items-center gap-1.5">
-                                <span className="w-1.5 h-1.5 rounded-full bg-[var(--green)]" />
-                                Matches your best-performing posting pattern
-                              </div>
-                            </div>
-                          </div>
-                        )}
-
-                        {/* Proactive insight */}
-                        {showInsight && (
-                          <div className="anim-fade vis py-3 px-4 rounded-[14px] bg-[rgba(13,148,136,0.04)] border border-[rgba(13,148,136,0.12)] text-sm leading-relaxed max-w-full mt-[5px]">
-                            <div className="flex items-center gap-1.5 text-xs font-semibold text-[var(--teal)] mb-1.5">
-                              <svg width="10" height="10" viewBox="0 0 14 14" fill="none"><path d="M7 1v4l2.5 1.5" stroke="#0D9488" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /><circle cx="7" cy="7" r="6" stroke="#0D9488" strokeWidth="1.5" /></svg>
-                              Learning from your data
-                            </div>
-                            <span className="text-[var(--text-2)]">
-                              Your hold rate improved <strong className="text-[var(--text)] font-semibold">19% since switching to direct hooks</strong> last month. This one follows that pattern — it should compound further.
-                            </span>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Bottom padding for scroll room */}
-                  <div className="h-4 flex-shrink-0" />
-                </div>
+                <div className="relative flex-1 min-h-0">
+                  <div className="pointer-events-none absolute left-0 right-0 top-0 z-[2] h-6 bg-gradient-to-b from-[var(--bg)] to-transparent opacity-0 transition-opacity duration-200" id="chat-fade-top" />
+                  <div className="pointer-events-none absolute bottom-0 left-0 right-0 z-[2] h-6 bg-gradient-to-t from-[var(--bg)] to-transparent" id="chat-fade-bottom" />
+                  <div
+                    ref={chatBodyRef}
+                    className="absolute inset-0 flex flex-col gap-[18px] overflow-y-auto px-6 py-5"
+                    style={{ scrollbarWidth: 'thin', scrollbarColor: 'rgba(0,0,0,0.15) transparent', scrollBehavior: prefersReducedMotion ? 'auto' : 'smooth' }}
+                    onScroll={(event) => {
+                      const el = event.currentTarget
+                      const top = document.getElementById('chat-fade-top')
+                      const bottom = document.getElementById('chat-fade-bottom')
+                      if (top) top.style.opacity = el.scrollTop > 20 ? '1' : '0'
+                      if (bottom) bottom.style.opacity = el.scrollHeight - el.scrollTop - el.clientHeight > 20 ? '1' : '0'
+                    }}
+                  >
+                    {messages.map(message => (
+                      <ChatMessage key={message.id} message={message} />
+                    ))}
+                    <div className="h-4 shrink-0" />
+                  </div>
                 </div>
 
-                {/* Chat input */}
-                <div className="py-4 px-5 border-t border-[var(--border-light)]">
-                  <div className="flex items-center gap-[10px] py-3.5 px-4 bg-[var(--bg-alt)] border border-[var(--border-raw)] rounded-xl text-sm text-[var(--text-3)]">
-                    <span>Ask Coopr anything...</span>
-                    <div className="w-8 h-8 rounded-full bg-[var(--bg-dark)] flex items-center justify-center ml-auto flex-shrink-0">
-                      <svg width="11" height="11" viewBox="0 0 16 16" fill="none"><path d="M3 8h10m0 0L9 4m4 4L9 12" stroke="#FAFAF9" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                <div className="border-t border-[var(--border-light)] px-5 py-4">
+                  <div className="rounded-xl border border-[var(--border-raw)] bg-[var(--bg-alt)] px-4 py-3.5 text-sm text-[var(--text-3)]">
+                    <div className="flex items-center gap-[10px]">
+                      <span className={`${inputPlaceholder ? 'text-[var(--text-3)]' : 'text-[var(--text)]'} flex-1 overflow-hidden text-ellipsis whitespace-nowrap`}>
+                        {inputText}
+                      </span>
+                      <button
+                        type="button"
+                        aria-label="Send request"
+                        className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full transition-all duration-200 ${sendReady ? 'bg-[var(--teal)] text-white' : 'bg-[var(--bg-dark)] text-white'} ${sendPressed ? 'scale-90' : ''}`}
+                      >
+                        <Send className="h-[12px] w-[12px]" strokeWidth={2.2} />
+                      </button>
                     </div>
                   </div>
                 </div>
               </div>
 
-              {/* Right panel */}
-              <div className="p-5 bg-white overflow-y-auto max-lg:hidden">
-                <div className="font-mono text-[11px] font-semibold tracking-[0.08em] uppercase text-[var(--text-3)] mb-3.5 pb-2 border-b border-[var(--border-light)]">
-                  Performance
-                </div>
-                <div className="flex justify-between items-baseline py-2.5 border-b border-[var(--border-light)]">
-                  <span className="text-[13px] text-[var(--text-2)]">Hold Rate</span>
-                  <span><span ref={holdValRef} className="font-mono text-[15px] font-bold">61%</span><span className="text-xs font-semibold ml-1 text-[var(--green)]">+19%</span></span>
-                </div>
-                <div className="flex justify-between items-baseline py-2.5 border-b border-[var(--border-light)]">
-                  <span className="text-[13px] text-[var(--text-2)]">Engagement</span>
-                  <span><span className="font-mono text-[15px] font-bold">4.7%</span><span className="text-xs font-semibold ml-1 text-[var(--green)]">+1.2%</span></span>
-                </div>
-                <div className="flex justify-between items-baseline py-2.5 border-b border-[var(--border-light)]">
-                  <span className="text-[13px] text-[var(--text-2)]">Reach (7d)</span>
-                  <span><span className="font-mono text-[15px] font-bold">18.4K</span><span className="text-xs font-semibold ml-1 text-[var(--green)]">+32%</span></span>
-                </div>
-                <div className="flex justify-between items-baseline py-2.5 border-b border-[var(--border-light)]">
-                  <span className="text-[13px] text-[var(--text-2)]">Velocity</span>
-                  <span className="font-mono text-[15px] font-bold">3.2/wk</span>
-                </div>
-
-                <div className="mt-4 p-4 bg-[var(--bg-alt)] rounded-xl border border-[var(--border-light)]">
-                  <div className="font-mono text-[11px] font-semibold tracking-[0.08em] uppercase text-[var(--text-3)] mb-1.5">Coopr Score</div>
-                  <div ref={scoreNumRef} className="font-display text-[40px] font-extrabold leading-none tracking-[-0.04em]">84</div>
-                  <div className="text-xs text-[var(--text-3)] mt-1">Top 15% of your niche</div>
-                </div>
-
-                <div className="font-mono text-[11px] font-semibold tracking-[0.08em] uppercase text-[var(--text-3)] mt-3.5 mb-3.5 pb-2 border-b border-[var(--border-light)]">
-                  Creative DNA
-                </div>
-                <div className="flex flex-wrap gap-1.5">
-                  {['Direct hooks', 'Fast pacing', 'Natural light', 'Tutorial style'].map(tag => (
-                    <span key={tag} className="text-[11px] font-medium py-[5px] px-[10px] rounded-full bg-[var(--bg-alt)] text-[var(--text-2)] border border-[var(--border-light)]">
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-
-                <div className="font-mono text-[11px] font-semibold tracking-[0.08em] uppercase text-[var(--text-3)] mt-5 mb-2 pb-2 border-b border-[var(--border-light)]">
-                  Session
-                </div>
-                <div className="flex flex-col gap-1.5 text-xs text-[var(--text-3)]">
-                  <div className="flex justify-between">
-                    <span>Tools used</span>
-                    <span className="font-mono font-medium text-[var(--text-2)]">11</span>
+              <aside className="grid content-start gap-4 bg-white px-4 py-4 max-[1100px]:hidden">
+                <SectionBadge>Live studio preview</SectionBadge>
+                <div className="grid gap-3">
+                  <div className="grid gap-3 border-t border-[var(--border-light)] pt-3">
+                    <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-[var(--text-3)]">Performance</div>
+                    {rail.metrics.map(metric => (
+                      <div key={metric.label} className="flex items-center justify-between gap-3 border-b border-[var(--border-light)] pb-3 text-[13px] last:border-b-0 last:pb-0">
+                        <span className="text-[var(--text-2)]">{metric.label}</span>
+                        <strong className="text-right text-[var(--text)]">
+                          {metric.value}
+                          {metric.delta ? <em className={`ml-1 not-italic ${metric.tone === 'up' ? 'text-[var(--green)]' : 'text-[var(--text-3)]'}`}>{metric.delta}</em> : null}
+                        </strong>
+                      </div>
+                    ))}
                   </div>
-                  <div className="flex justify-between">
-                    <span>Data points</span>
-                    <span className="font-mono font-medium text-[var(--text-2)]">47 videos</span>
+
+                  <div className="rounded-[18px] border border-[var(--border-light)] bg-[rgba(244,240,232,0.75)] px-4 py-4">
+                    <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-[var(--text-3)]">Coopr score</div>
+                    <div className="mt-2 text-[58px] font-display font-extrabold leading-none tracking-[-0.07em] text-[var(--text)]">{rail.score}</div>
+                    <div className="mt-1 text-[13px] text-[var(--text-2)]">{rail.scoreCopy}</div>
                   </div>
-                  <div className="flex justify-between">
-                    <span>Models active</span>
-                    <span className="font-mono font-medium text-[var(--text-2)]">3</span>
+
+                  <div className="grid gap-3 border-t border-[var(--border-light)] pt-3">
+                    <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-[var(--text-3)]">Creative DNA</div>
+                    <div className="flex flex-wrap gap-2">
+                      {rail.dna.map(chip => (
+                        <span key={chip} className="rounded-full border border-[var(--border-light)] bg-[var(--bg-alt)] px-3 py-2 text-[11px] font-semibold text-[var(--text-2)]">{chip}</span>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="grid gap-3 border-t border-[var(--border-light)] pt-3">
+                    <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-[var(--text-3)]">Session</div>
+                    <div className="flex items-center justify-between gap-3 text-[13px]">
+                      <span className="text-[var(--text-2)]">Tools used</span>
+                      <strong className="text-[var(--text)]">{rail.session.tools}</strong>
+                    </div>
+                    <div className="flex items-center justify-between gap-3 text-[13px]">
+                      <span className="text-[var(--text-2)]">Data points</span>
+                      <strong className="text-[var(--text)]">{rail.session.data}</strong>
+                    </div>
+                    <div className="flex items-center justify-between gap-3 text-[13px]">
+                      <span className="text-[var(--text-2)]">Models active</span>
+                      <strong className="text-[var(--text)]">{rail.session.models}</strong>
+                    </div>
                   </div>
                 </div>
-              </div>
+              </aside>
             </div>
           </div>
         </div>
       </div>
-
-      {/* Replay button */}
-      <button
-        onClick={handleReplay}
-        className={`absolute bottom-5 right-10 flex items-center gap-1.5 font-mono text-[11px] font-medium text-[var(--text-3)] bg-white border border-[var(--border-raw)] py-2 px-3.5 rounded-full cursor-pointer z-10 transition-all duration-300 hover:text-[var(--text)] hover:border-[var(--teal)] hover:shadow-[0_2px_8px_rgba(13,148,136,0.1)] ${
-          showReplay ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2 pointer-events-none'
-        }`}
-      >
-        <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M2 8a6 6 0 1 1 1.5 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /><path d="M2 13V9h4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
-        Replay
-      </button>
     </section>
   )
 }
