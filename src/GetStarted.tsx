@@ -10,8 +10,7 @@ const isDev = window.location.hostname === 'localhost' ||
 
 function GetStarted() {
   const [code, setCode] = useState('')
-  const [status, setStatus] = useState<'idle' | 'checking' | 'valid' | 'invalid' | 'dev'>('idle')
-  const [email, setEmail] = useState('')
+  const [status, setStatus] = useState<'idle' | 'checking' | 'valid' | 'invalid' | 'used' | 'dev'>('idle')
   const [showContent, setShowContent] = useState(false)
 
   useEffect(() => {
@@ -40,15 +39,11 @@ function GetStarted() {
     }
     setStatus('checking')
     const { data, error } = await supabase
-      .from('waitlist')
-      .select('email, invite_code')
-      .eq('invite_code', inviteCode.trim())
-      .single()
+      .rpc('validate_and_consume_invite', { invite: inviteCode.trim() })
 
-    if (error || !data) {
-      setStatus('invalid')
+    if (error || !data?.valid) {
+      setStatus(data?.reason === 'already_used' ? 'used' : 'invalid')
     } else {
-      setEmail(data.email)
       setStatus('valid')
     }
   }
@@ -106,7 +101,7 @@ function GetStarted() {
 
           <div className={`transition-all duration-500 ${showContent ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'}`}>
             <p className="text-[15px] text-muted-foreground mb-3">
-              {email ? `Welcome — we sent your invite to ${email}` : 'Welcome to Coopr'}
+              Welcome to Coopr
             </p>
 
             <div className="rounded-xl border border-border bg-white p-4 mb-6 text-left">
@@ -162,6 +157,11 @@ function GetStarted() {
           {status === 'invalid' && (
             <p className="text-[13px] text-destructive animate-fade-in">
               That code doesn't look right. Double check your invite email.
+            </p>
+          )}
+          {status === 'used' && (
+            <p className="text-[13px] text-destructive animate-fade-in">
+              This invite code has already been used. Each code works once.
             </p>
           )}
           <Button type="submit" disabled={!code || status === 'checking'}
