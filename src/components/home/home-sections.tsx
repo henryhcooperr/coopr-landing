@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { cn } from '@/lib/utils'
 import { HOME_WORKFLOW_STEPS } from './home-data'
 import { IconBadge } from '@/components/shared/ProductPrimitives'
+import Iridescence from './Iridescence'
 
 type WorkflowKey = typeof HOME_WORKFLOW_STEPS[number]['key']
 
@@ -232,10 +233,15 @@ export function HomeHeroSignalField() {
   return (
     <div className="pointer-events-none absolute inset-0 overflow-hidden">
       <div className="hm-bg-grid" />
-      <div className="hm-bg-wash" />
-      <div className="hm-bg-orb hm-bg-orb--a" />
-      <div className="hm-bg-orb hm-bg-orb--b" />
-      <div className="hm-bg-orb hm-bg-orb--c" />
+      <Iridescence
+        color={[0.05, 0.58, 0.53]}
+        speed={0.6}
+        amplitude={0.08}
+        mouseReact={true}
+        style={{ opacity: 'var(--hero-iridescence-opacity, 0.35)' }}
+      />
+      {/* Film grain overlay — lightweight CSS, no extra WebGL context */}
+      <div className="hm-grain-overlay" />
     </div>
   )
 }
