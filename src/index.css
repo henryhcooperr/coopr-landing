@@ -761,6 +761,64 @@
   animation: hero-fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
+/* ---- StarBorder — orbiting light on border ---- */
+.star-border-container {
+  position: relative;
+  overflow: hidden;
+}
+
+.star-border-gradient {
+  position: absolute;
+  width: 300%;
+  height: 50%;
+  opacity: 0;
+  animation: star-orbit linear infinite;
+}
+
+.star-border-gradient--top {
+  top: 0;
+  left: -100%;
+  animation-name: star-orbit-top;
+}
+
+.star-border-gradient--bottom {
+  bottom: 0;
+  left: -100%;
+  animation-name: star-orbit-bottom;
+}
+
+.star-border-container:hover .star-border-gradient,
+.star-border-container:focus-within .star-border-gradient {
+  opacity: 1;
+}
+
+/* Always visible — don't wait for hover */
+.star-border-gradient { opacity: 1; }
+
+.star-border-inner {
+  position: relative;
+  z-index: 1;
+}
+
+@keyframes star-orbit-top {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(33.33%); }
+}
+
+@keyframes star-orbit-bottom {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-33.33%); }
+}
+
+/* ---- Wordmark footer close ---- */
+.wordmark-close {
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(255,255,255,0.12);
+  background: linear-gradient(180deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.04) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
 .ws-shell-glow {
   position: absolute;
   right: -8%;

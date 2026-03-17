@@ -9,6 +9,7 @@ import BlurText from '@/components/home/BlurText'
 import GlowPulseButton from '@/components/home/GlowPulseButton'
 import ProductionReel from '@/components/home/ProductionReel'
 import SocialProof from '@/components/home/SocialProof'
+import StarBorder from '@/components/home/StarBorder'
 
 // ============================================
 // SHARED: Waitlist Form (preserves Supabase integration)
@@ -236,27 +237,79 @@ function App() {
       {/* FOUNDER */}
       <Founder />
 
-      {/* CTA */}
-      <section className="max-w-[700px] mx-auto px-6 pt-[60px] pb-[120px] text-center" id="cta">
+      {/* CTA — StarBorder + GlowPulse */}
+      <section className="max-w-[620px] mx-auto px-6 pt-[60px] pb-[100px] text-center" id="cta">
+        <div className="font-mono text-[11px] uppercase tracking-[0.16em] text-[var(--teal)] mb-4">
+          Early access
+        </div>
         <h2 className="font-display text-[clamp(2rem,4vw,3rem)] font-extrabold leading-[1.05] tracking-[-0.04em] mb-3.5">
           Know before you <em className="font-accent italic font-normal text-[var(--teal)]">post.</em>
         </h2>
         <p className="text-base text-[var(--text-2)] mb-8">
-          Join the beta. Agency-grade creative intelligence for individual creators. Spots are limited.
+          Early access spots are numbered. Your data stays yours. Unsubscribe anytime.
         </p>
-        <WaitlistForm {...formProps} variant="cta" />
-        <p className="text-xs text-[var(--text-3)] mt-3.5">Your data stays yours. No spam. No selling.</p>
+        <StarBorder color="var(--teal)" speed="4s" thickness={1} className="inline-block rounded-2xl">
+          <div className="bg-[var(--bg)] rounded-[15px] px-6 py-5">
+            <WaitlistForm {...formProps} variant="cta" />
+          </div>
+        </StarBorder>
       </section>
 
-      {/* FOOTER */}
-      <footer className="py-6 border-t border-[var(--border-light)]">
-        <div className="flex flex-col sm:flex-row items-center justify-between max-w-[1100px] mx-auto px-6 text-xs text-[var(--text-3)] gap-2.5">
-          <span>&copy; 2026 COOPR. Built in California.</span>
-          <div className="flex gap-5">
-            <a href="#/privacy" className="text-[var(--text-3)] no-underline text-xs hover:text-[var(--text-2)]">Privacy</a>
-            <a href="#/terms" className="text-[var(--text-3)] no-underline text-xs hover:text-[var(--text-2)]">Terms</a>
-            <a href="#/data-deletion" className="text-[var(--text-3)] no-underline text-xs hover:text-[var(--text-2)]">Data Deletion</a>
-            <a href="mailto:henry@getcoopr.com" className="text-[var(--text-3)] no-underline text-xs hover:text-[var(--text-2)]">Contact</a>
+      {/* FOOTER — Wordmark + Utility Bar */}
+      <footer className="bg-[#111111] overflow-hidden">
+        {/* Wordmark close */}
+        <div className="pt-16 pb-8 text-center overflow-hidden">
+          <div className="font-display text-[clamp(4rem,15vw,10rem)] font-extrabold tracking-[-0.06em] leading-none wordmark-close select-none">
+            COOPR
+          </div>
+        </div>
+
+        {/* Utility bar */}
+        <div className="border-t border-[rgba(255,255,255,0.08)]">
+          <div className="mx-auto max-w-[1100px] px-6 py-10 grid grid-cols-1 sm:grid-cols-3 gap-8 text-sm">
+            {/* Brand + social */}
+            <div>
+              <div className="text-white font-display font-bold text-[15px] mb-1">COOPR</div>
+              <div className="text-[rgba(255,255,255,0.4)] text-xs mb-4">Creative engine for creators.</div>
+              <div className="flex items-center gap-4">
+                {['Instagram', 'YouTube', 'TikTok', 'LinkedIn', 'X'].map(platform => (
+                  <span key={platform} className="text-[rgba(255,255,255,0.3)] text-xs hover:text-white transition-colors cursor-pointer">
+                    {platform}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            {/* Product links */}
+            <div>
+              <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-[rgba(255,255,255,0.3)] mb-3">Product</div>
+              <div className="space-y-2">
+                {[['Features', '#features'], ['Waitlist', '#cta'], ['Changelog', '#']].map(([label, href]) => (
+                  <a key={label} href={href} className="block text-[rgba(255,255,255,0.5)] text-xs no-underline hover:text-white transition-colors">
+                    {label}
+                  </a>
+                ))}
+              </div>
+            </div>
+
+            {/* Legal links */}
+            <div>
+              <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-[rgba(255,255,255,0.3)] mb-3">Legal</div>
+              <div className="space-y-2">
+                {[['Privacy', '#/privacy'], ['Terms', '#/terms'], ['Data Deletion', '#/data-deletion'], ['Contact', 'mailto:henry@getcoopr.com']].map(([label, href]) => (
+                  <a key={label} href={href} className="block text-[rgba(255,255,255,0.5)] text-xs no-underline hover:text-white transition-colors">
+                    {label}
+                  </a>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Copyright bar */}
+        <div className="border-t border-[rgba(255,255,255,0.06)] py-5">
+          <div className="mx-auto max-w-[1100px] px-6 text-center text-[11px] text-[rgba(255,255,255,0.25)]">
+            &copy; 2026 COOPR. Built in California.
           </div>
         </div>
       </footer>
