@@ -3,10 +3,11 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { submitWaitlistEmail } from '@/lib/supabase'
 import ChatDemo from '@/components/ChatDemo'
-import { HomeHeroSignalField, HomeWorkflowRail } from '@/components/home/home-sections'
+import { HomeHeroSignalField } from '@/components/home/home-sections'
 import { BrandLockup, HeaderActionCluster, HeroBrandStack } from '@/components/shared/Brand'
 import BlurText from '@/components/home/BlurText'
 import GlowPulseButton from '@/components/home/GlowPulseButton'
+import ProductionReel from '@/components/home/ProductionReel'
 
 // ============================================
 // SHARED: Waitlist Form (preserves Supabase integration)
@@ -225,8 +226,8 @@ function App() {
       {/* CHAT DEMO */}
       <ChatDemo />
 
-      {/* COMPACT WORKFLOW */}
-      <HomeWorkflowRail />
+      {/* PRODUCTION REEL — replaces WorkflowRail */}
+      <ProductionReel />
 
       {/* FOUNDER */}
       <Founder />

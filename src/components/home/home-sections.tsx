@@ -13,7 +13,7 @@ function getWorkflowWash(key: WorkflowKey) {
   return 'radial-gradient(circle at 82% 18%, rgba(217,119,6,0.14), transparent 34%), radial-gradient(circle at 16% 84%, rgba(217,119,6,0.08), transparent 30%)'
 }
 
-function DiscoverPreview() {
+export function DiscoverPreview() {
   return (
     <div className="grid gap-3 sm:grid-cols-[0.88fr_1.12fr]">
       <div className="rounded-[22px] border border-[var(--border-light)] bg-white p-4">
@@ -53,7 +53,7 @@ function DiscoverPreview() {
   )
 }
 
-function ScriptPreview() {
+export function ScriptPreview() {
   return (
     <div className="grid gap-3 sm:grid-cols-[0.92fr_1.08fr]">
       <div className="space-y-3">
@@ -105,7 +105,7 @@ function ScriptPreview() {
   )
 }
 
-function PlannerPreview() {
+export function PlannerPreview() {
   return (
     <div className="grid gap-3 sm:grid-cols-[1.02fr_0.98fr]">
       <div className="rounded-[22px] border border-[rgba(71,85,105,0.14)] bg-[linear-gradient(180deg,rgba(71,85,105,0.08),rgba(255,255,255,1))] p-4">
@@ -169,7 +169,7 @@ function PlannerPreview() {
   )
 }
 
-function CadencePreview() {
+export function CadencePreview() {
   const heatmap = [
     [1, 2, 3, 2],
     [2, 3, 3, 2],
