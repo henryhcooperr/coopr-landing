@@ -39,8 +39,8 @@ function AnimatedNumber({ value, className }: { value: number; className?: strin
 // ---- Social Proof Section ----
 
 const STATS = [
-  { value: 169, label: 'tools in the engine' },
-  { value: 102, label: 'database tables' },
+  { value: 169, label: 'tools in the creative engine' },
+  { value: 50, label: 'frames analyzed per video' },
   { value: 7, label: 'ML models trained on your data' },
 ]
 

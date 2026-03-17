@@ -10,6 +10,7 @@ import GlowPulseButton from '@/components/home/GlowPulseButton'
 import ProductionReel from '@/components/home/ProductionReel'
 import SocialProof from '@/components/home/SocialProof'
 import StarBorder from '@/components/home/StarBorder'
+import { Safari } from '@/components/ui/Safari'
 
 // ============================================
 // SHARED: Waitlist Form (preserves Supabase integration)
@@ -401,6 +402,17 @@ function Hero() {
             Log in as a beta tester
           </a>
         </p>
+      </div>
+
+      {/* Product screenshot in Safari frame — the "Linear move" */}
+      <div className="hero-entrance relative max-w-[1100px] mx-auto px-6 mt-12" style={{ animationDelay: '2400ms' }}>
+        <div className="rounded-xl shadow-[0_20px_60px_rgba(10,22,40,0.12)] overflow-hidden">
+          <Safari
+            url="app.getcoopr.com"
+            imageSrc="/product-chat.png"
+            className="w-full"
+          />
+        </div>
       </div>
     </section>
   )

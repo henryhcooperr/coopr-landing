@@ -1,4 +1,4 @@
-import ScrollStack, { ScrollStackItem } from './ScrollStack'
+import { motion } from 'motion/react'
 import { DiscoverPreview, ScriptPreview, PlannerPreview, CadencePreview } from './home-sections'
 
 const SCENES = [
@@ -44,38 +44,37 @@ export default function ProductionReel() {
   return (
     <section className="mx-auto max-w-[1100px] px-6 pt-8 pb-16">
       {/* Section header */}
-      <div className="mb-10 text-center">
+      <motion.div
+        className="mb-10 text-center"
+        initial={{ opacity: 0, y: 24 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.5 }}
+        transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+      >
         <div className="font-mono text-[11px] uppercase tracking-[0.16em] text-[var(--text-3)] mb-3">
           The production reel
         </div>
         <h2 className="font-display text-[clamp(2rem,4vw,3rem)] font-extrabold leading-[1.05] tracking-[-0.04em] text-[var(--text)]">
           Four moves. One scroll.
         </h2>
-      </div>
+      </motion.div>
 
-      {/* Desktop: ScrollStack */}
-      <div className="hidden lg:block">
-        <ScrollStack
-          itemDistance={80}
-          itemScale={0.02}
-          itemStackDistance={24}
-          stackPosition="18%"
-          scaleEndPosition="8%"
-          baseScale={0.88}
-          blurAmount={3}
-        >
-          {SCENES.map((scene) => (
-            <ScrollStackItem key={scene.num}>
-              <SceneCard scene={scene} />
-            </ScrollStackItem>
-          ))}
-        </ScrollStack>
-      </div>
-
-      {/* Mobile: simple vertical stack */}
-      <div className="space-y-6 lg:hidden">
-        {SCENES.map((scene) => (
-          <SceneCard key={scene.num} scene={scene} />
+      {/* Scene cards — simple staggered reveal, no scroll hijacking */}
+      <div className="space-y-8">
+        {SCENES.map((scene, i) => (
+          <motion.div
+            key={scene.num}
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.2 }}
+            transition={{
+              duration: 0.6,
+              ease: [0.16, 1, 0.3, 1],
+              delay: i * 0.05,
+            }}
+          >
+            <SceneCard scene={scene} />
+          </motion.div>
         ))}
       </div>
     </section>
@@ -104,7 +103,7 @@ function SceneCard({ scene }: { scene: typeof SCENES[number] }) {
         </div>
       </div>
 
-      {/* Heading + subline (8 words + 15 words max) */}
+      {/* Heading + subline */}
       <h3 className="font-display text-[clamp(1.6rem,3vw,2.4rem)] font-extrabold leading-[1.02] tracking-[-0.04em] text-[var(--text)] mb-2">
         {scene.heading}
       </h3>
