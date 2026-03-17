@@ -8,6 +8,7 @@ import { BrandLockup, HeaderActionCluster, HeroBrandStack } from '@/components/s
 import BlurText from '@/components/home/BlurText'
 import GlowPulseButton from '@/components/home/GlowPulseButton'
 import ProductionReel from '@/components/home/ProductionReel'
+import SocialProof from '@/components/home/SocialProof'
 
 // ============================================
 // SHARED: Waitlist Form (preserves Supabase integration)
@@ -228,6 +229,9 @@ function App() {
 
       {/* PRODUCTION REEL — replaces WorkflowRail */}
       <ProductionReel />
+
+      {/* SOCIAL PROOF — dark band with stats */}
+      <SocialProof />
 
       {/* FOUNDER */}
       <Founder />
