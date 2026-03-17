@@ -6,6 +6,7 @@ import ChatDemo from '@/components/ChatDemo'
 import { HomeHeroSignalField, HomeWorkflowRail } from '@/components/home/home-sections'
 import { BrandLockup, HeaderActionCluster, HeroBrandStack } from '@/components/shared/Brand'
 import BlurText from '@/components/home/BlurText'
+import GlowPulseButton from '@/components/home/GlowPulseButton'
 
 // ============================================
 // SHARED: Waitlist Form (preserves Supabase integration)
@@ -71,6 +72,26 @@ function WaitlistForm({ submitted, onSubmit, email, setEmail, isSubmitting, vari
       </Button>
     </form>
   )
+}
+
+// ============================================
+// NAV SCROLL BEHAVIOR HOOK
+// ============================================
+
+function useNavScroll() {
+  const [scrolled, setScrolled] = useState(false)
+  const [compact, setCompact] = useState(false)
+
+  useEffect(() => {
+    const onScroll = () => {
+      setScrolled(window.scrollY > 100)
+      setCompact(window.scrollY > 500)
+    }
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
+
+  return { scrolled, compact }
 }
 
 // ============================================
@@ -160,13 +181,25 @@ function App() {
   }, [email, isSubmitting])
 
   const formProps = { submitted, onSubmit: handleSubmit, email, setEmail, isSubmitting }
+  const { scrolled, compact } = useNavScroll()
 
   return (
     <div className="min-h-screen bg-[var(--bg)]">
-      {/* NAV */}
-      <nav className="fixed top-0 left-0 right-0 z-[100]" style={{ background: 'rgba(250,250,249,0.92)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)' }}>
-        <div className="flex items-center justify-between max-w-[1100px] mx-auto px-6 h-[72px]">
-          <a href="#" className="flex items-center gap-[10px] no-underline text-[var(--text)]">
+      {/* NAV — border reveals on scroll, compresses height past hero */}
+      <nav
+        className="fixed top-0 left-0 right-0 z-[100] transition-all duration-200"
+        style={{
+          background: 'rgba(250,250,249,0.92)',
+          backdropFilter: 'blur(16px)',
+          WebkitBackdropFilter: 'blur(16px)',
+          borderBottom: `1px solid ${scrolled ? 'var(--border-light)' : 'transparent'}`,
+        }}
+      >
+        <div
+          className="flex items-center justify-between max-w-[1100px] mx-auto px-6 transition-all duration-200"
+          style={{ height: compact ? '56px' : '72px' }}
+        >
+          <a href="#" className="hero-entrance flex items-center gap-[10px] no-underline text-[var(--text)]" style={{ animationDelay: '0ms' }}>
             <BrandLockup />
           </a>
           <div className="flex items-center gap-3">
@@ -282,18 +315,21 @@ function Hero() {
           <span className="hi" data-tip="Henry Cooper, underwater filmmaker">Built by a creator who needed it.</span>
         </p>
 
-        {/* T+1800ms — CTA springs in */}
+        {/* T+1800ms — CTA springs in with glow */}
         <div className="hero-entrance-spring flex items-center justify-center gap-3.5 flex-wrap" style={{ animationDelay: '1800ms' }}>
-          <a
+          <GlowPulseButton
             href="#cta"
-            className="inline-flex items-center gap-2 font-body text-[15px] font-semibold text-[var(--text-inv)] bg-[var(--bg-dark)] border-none py-3.5 px-7 rounded-full no-underline transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[var(--shadow)]"
+            glowColor="#0D9488"
+            intensity={12}
+            speed={3}
+            className="inline-flex items-center gap-2 font-body text-[15px] font-semibold text-[var(--text-inv)] bg-[var(--bg-dark)] border-none py-3.5 px-7 rounded-full no-underline"
           >
             Join the Waitlist
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10m0 0L9 4m4 4L9 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
-          </a>
+          </GlowPulseButton>
           <a
             href="#product"
-            className="inline-flex items-center gap-1.5 font-body text-sm font-medium text-[var(--text-2)] no-underline transition-colors duration-200 hover:text-[var(--text)]"
+            className="inline-flex items-center gap-1.5 font-body text-sm font-medium text-[var(--text-2)] no-underline transition-all duration-200 hover:text-[var(--text)] hover:gap-2.5"
           >
             See it in action
             <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M6 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
