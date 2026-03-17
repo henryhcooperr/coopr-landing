@@ -636,62 +636,187 @@
   }
 }
 
+/* ---- Ocean color palette ---- */
+:root {
+  --hero-deep: #0A1628;
+  --hero-mid: #1E3A5F;
+  --hero-teal: #0D9488;
+  --hero-surface: #5EEAD4;
+  --hero-foam: #CCFBF1;
+  --hero-iridescence-opacity: 0.35;
+}
+
+@media (max-width: 768px) {
+  :root {
+    --hero-iridescence-opacity: 0.2;
+  }
+}
+
 .hm-bg-grid {
   position: absolute;
   inset: -6% -8%;
-  opacity: 0.22;
+  opacity: 0.12;
   background-image:
     linear-gradient(rgba(17,17,17,0.04) 1px, transparent 1px),
     linear-gradient(90deg, rgba(17,17,17,0.04) 1px, transparent 1px);
   background-size: 48px 48px;
   mask-image: radial-gradient(circle at center, rgba(0,0,0,0.76), transparent 78%);
   animation: hm-grid-drift 18s linear infinite alternate;
+  z-index: 2;
 }
 
-.hm-bg-wash {
+/* Film grain overlay — lightweight CSS SVG noise, no WebGL */
+.hm-grain-overlay {
   position: absolute;
-  inset: 18% 10% auto;
-  height: 44%;
-  border-radius: 999px;
-  background:
-    radial-gradient(circle at center, rgba(255,255,255,0.82), rgba(255,255,255,0)),
-    linear-gradient(90deg, rgba(13,148,136,0.035), rgba(37,99,235,0.02), rgba(255,255,255,0));
-  filter: blur(44px);
-  opacity: 0.78;
+  inset: 0;
+  opacity: 0.08;
+  mix-blend-mode: multiply;
+  pointer-events: none;
+  z-index: 3;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+  background-size: 256px 256px;
+  animation: hm-grain-shift 0.4s steps(4) infinite;
 }
 
-.hm-bg-orb {
+@keyframes hm-grain-shift {
+  0% { transform: translate(0, 0); }
+  25% { transform: translate(-2px, 3px); }
+  50% { transform: translate(3px, -1px); }
+  75% { transform: translate(-1px, -3px); }
+  100% { transform: translate(2px, 1px); }
+}
+
+/* ---- Hero entrance choreography ---- */
+.hero-entrance {
+  opacity: 0;
+  transform: translateY(16px);
+  animation: hero-fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.hero-entrance-spring {
+  opacity: 0;
+  transform: translateY(16px) scale(0.95);
+  animation: hero-spring-in 0.7s cubic-bezier(0.34, 1.4, 0.64, 1) forwards;
+}
+
+@keyframes hero-fade-up {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes hero-spring-in {
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* COOPR gradient text treatment */
+.hero-gradient-text {
+  background: linear-gradient(135deg, var(--hero-teal, #0D9488), var(--hero-surface, #5EEAD4));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-entrance,
+  .hero-entrance-spring {
+    opacity: 1;
+    transform: none;
+    animation: none;
+  }
+  .social-proof-stat {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ---- Social Proof dark band ---- */
+.social-proof-band {
+  background: #111111;
+  position: relative;
+  overflow: hidden;
+}
+
+.social-proof-band::before {
+  content: '';
   position: absolute;
-  border-radius: 999px;
-  filter: blur(86px);
-  opacity: 0.28;
-  animation: hm-bg-drift 26s ease-in-out infinite;
+  inset: -6% -8%;
+  opacity: 0.06;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.06) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: radial-gradient(circle at center, rgba(0,0,0,0.6), transparent 72%);
+  animation: hm-grid-drift 18s linear infinite alternate;
 }
 
-.hm-bg-orb--a {
-  left: -8%;
-  top: 16%;
-  width: 220px;
-  height: 220px;
-  background: rgba(13,148,136,0.08);
+.social-proof-stat {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: hero-fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-.hm-bg-orb--b {
-  right: -6%;
-  top: 10%;
-  width: 240px;
-  height: 240px;
-  background: rgba(37,99,235,0.06);
-  animation-duration: 30s;
+/* ---- StarBorder — orbiting light on border ---- */
+.star-border-container {
+  position: relative;
+  overflow: hidden;
 }
 
-.hm-bg-orb--c {
-  left: 36%;
-  bottom: 10%;
-  width: 220px;
-  height: 220px;
-  background: rgba(71,85,105,0.05);
-  animation-duration: 34s;
+.star-border-gradient {
+  position: absolute;
+  width: 300%;
+  height: 50%;
+  opacity: 0;
+  animation: star-orbit linear infinite;
+}
+
+.star-border-gradient--top {
+  top: 0;
+  left: -100%;
+  animation-name: star-orbit-top;
+}
+
+.star-border-gradient--bottom {
+  bottom: 0;
+  left: -100%;
+  animation-name: star-orbit-bottom;
+}
+
+.star-border-container:hover .star-border-gradient,
+.star-border-container:focus-within .star-border-gradient {
+  opacity: 1;
+}
+
+/* Always visible — don't wait for hover */
+.star-border-gradient { opacity: 1; }
+
+.star-border-inner {
+  position: relative;
+  z-index: 1;
+}
+
+@keyframes star-orbit-top {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(33.33%); }
+}
+
+@keyframes star-orbit-bottom {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-33.33%); }
+}
+
+/* ---- Wordmark footer close ---- */
+.wordmark-close {
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(255,255,255,0.12);
+  background: linear-gradient(180deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.04) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
 }
 
 .ws-shell-glow {

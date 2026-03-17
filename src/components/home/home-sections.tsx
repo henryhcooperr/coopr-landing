@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { cn } from '@/lib/utils'
 import { HOME_WORKFLOW_STEPS } from './home-data'
 import { IconBadge } from '@/components/shared/ProductPrimitives'
+import Iridescence from './Iridescence'
 
 type WorkflowKey = typeof HOME_WORKFLOW_STEPS[number]['key']
 
@@ -12,15 +13,15 @@ function getWorkflowWash(key: WorkflowKey) {
   return 'radial-gradient(circle at 82% 18%, rgba(217,119,6,0.14), transparent 34%), radial-gradient(circle at 16% 84%, rgba(217,119,6,0.08), transparent 30%)'
 }
 
-function DiscoverPreview() {
+export function DiscoverPreview() {
   return (
     <div className="grid gap-3 sm:grid-cols-[0.88fr_1.12fr]">
       <div className="rounded-[22px] border border-[var(--border-light)] bg-white p-4">
         <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-[var(--teal)]">tracked feed</div>
         <div className="mt-3 space-y-2">
           {[
-            ['Wild Lens Daily', '+24%'],
-            ['Ocean Almanac', '+18%'],
+            ['Competitor A', '+24%'],
+            ['Competitor B', '+18%'],
           ].map(([name, lift], idx) => (
             <div key={name} className={cn('rounded-[16px] px-3 py-3', idx === 0 ? 'bg-[rgba(13,148,136,0.08)]' : 'bg-[var(--bg)]')}>
               <div className="flex items-center justify-between gap-3">
@@ -34,7 +35,7 @@ function DiscoverPreview() {
       <div className="rounded-[22px] border border-[rgba(13,148,136,0.14)] bg-[linear-gradient(180deg,rgba(13,148,136,0.08),rgba(255,255,255,1))] p-4">
         <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-[var(--text-3)]">selected opportunity</div>
         <div className="mt-3 text-[clamp(1.35rem,2vw,1.8rem)] font-display font-extrabold leading-[1.02] tracking-[-0.05em] text-[var(--text)]">
-          Myth-busting reef cleanup is accelerating now.
+          This angle is trending up with low competition.
         </div>
         <div className="mt-4 rounded-[18px] bg-white p-3">
           <div className="mb-2 flex items-center justify-between text-xs text-[var(--text-3)]">
@@ -52,7 +53,7 @@ function DiscoverPreview() {
   )
 }
 
-function ScriptPreview() {
+export function ScriptPreview() {
   return (
     <div className="grid gap-3 sm:grid-cols-[0.92fr_1.08fr]">
       <div className="space-y-3">
@@ -88,10 +89,10 @@ function ScriptPreview() {
         <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-[var(--text-3)]">script timeline</div>
         <div className="mt-3 space-y-2 font-mono text-[12px]">
           {[
-            ['0s', 'Everyone says reef cleanup does nothing.'],
-            ['7s', 'Show the one proof that myth gets wrong.'],
-            ['15s', 'Explain why the reef actually responds.'],
-            ['22s', 'Land on the visual payoff and next dive CTA.'],
+            ['0s', 'Open with the misconception your audience has.'],
+            ['7s', 'Show the proof that changes their mind.'],
+            ['15s', 'Explain why this matters to them.'],
+            ['22s', 'Land on the visual payoff + CTA.'],
           ].map(([time, cue], idx) => (
             <div key={time} className={cn('grid grid-cols-[34px_1fr] gap-2 rounded-[16px] px-3 py-3', idx < 2 ? 'bg-[rgba(37,99,235,0.06)]' : 'bg-[var(--bg)]')}>
               <div className="text-[10px] uppercase tracking-[0.12em] text-[var(--blue)]">{time}</div>
@@ -104,7 +105,7 @@ function ScriptPreview() {
   )
 }
 
-function PlannerPreview() {
+export function PlannerPreview() {
   return (
     <div className="grid gap-3 sm:grid-cols-[1.02fr_0.98fr]">
       <div className="rounded-[22px] border border-[rgba(71,85,105,0.14)] bg-[linear-gradient(180deg,rgba(71,85,105,0.08),rgba(255,255,255,1))] p-4">
@@ -116,8 +117,8 @@ function PlannerPreview() {
         </div>
         <div className="mt-3 space-y-2">
           {[
-            ['Script / Dialogue', 'Everyone says reef cleanup does nothing. They are wrong.'],
-            ['Location', 'Monterey breakwall'],
+            ['Script / Dialogue', 'Open with the myth, then flip it with proof.'],
+            ['Location', 'On-location shoot'],
             ['Time of Day', 'golden hour'],
             ['Shot Type', 'talking head'],
           ].map(([label, value], idx) => (
@@ -146,7 +147,7 @@ function PlannerPreview() {
             {[
               ['1', 'talking head', 'myth opener'],
               ['2', 'close up', 'proof detail'],
-              ['3', 'wide shot', 'cleanup payoff'],
+              ['3', 'wide shot', 'visual payoff'],
             ].map(([num, shot, cue]) => (
               <div key={num} className="grid grid-cols-[20px_78px_1fr] gap-2 rounded-[16px] bg-[var(--bg)] px-3 py-3 text-[var(--text)]">
                 <div className="font-mono text-[var(--text-3)]">{num}</div>
@@ -159,7 +160,7 @@ function PlannerPreview() {
         <div className="rounded-[22px] border border-[var(--border-light)] bg-white p-4">
           <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-[var(--text-3)]">shoot day plan</div>
           <div className="mt-3 space-y-2 text-xs text-[var(--text)]">
-            <div className="rounded-[16px] bg-[var(--bg)] px-3 py-3">Monterey breakwall • 3 scenes • golden hour</div>
+            <div className="rounded-[16px] bg-[var(--bg)] px-3 py-3">On-location • 3 scenes • golden hour</div>
             <div className="rounded-[16px] bg-[var(--bg)] px-3 py-3">Equipment: lav, backup recorder, wide lens</div>
           </div>
         </div>
@@ -168,7 +169,7 @@ function PlannerPreview() {
   )
 }
 
-function CadencePreview() {
+export function CadencePreview() {
   const heatmap = [
     [1, 2, 3, 2],
     [2, 3, 3, 2],
@@ -232,10 +233,15 @@ export function HomeHeroSignalField() {
   return (
     <div className="pointer-events-none absolute inset-0 overflow-hidden">
       <div className="hm-bg-grid" />
-      <div className="hm-bg-wash" />
-      <div className="hm-bg-orb hm-bg-orb--a" />
-      <div className="hm-bg-orb hm-bg-orb--b" />
-      <div className="hm-bg-orb hm-bg-orb--c" />
+      <Iridescence
+        color={[0.05, 0.58, 0.53]}
+        speed={0.6}
+        amplitude={0.08}
+        mouseReact={true}
+        style={{ opacity: 'var(--hero-iridescence-opacity, 0.35)' }}
+      />
+      {/* Film grain overlay — lightweight CSS, no extra WebGL context */}
+      <div className="hm-grain-overlay" />
     </div>
   )
 }
