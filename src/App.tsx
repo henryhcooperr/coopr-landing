@@ -433,44 +433,71 @@ function Beliefs() {
 // FOUNDER SECTION
 // ============================================
 
+const FOUNDER_WORDS = "I'm an underwater filmmaker who spent years creating in the dark. Which hooks hold people. What competitors see that I don't. When my audience actually watches. No tool could tell me. So I built one. Not to replace the creative work. To make every decision data-informed instead of gut-feel.".split(' ')
+
 function Founder() {
-  const { ref, inView } = useScrollReveal()
+  const containerRef = useRef<HTMLDivElement>(null)
+  const [wordOpacities, setWordOpacities] = useState<number[]>(() => FOUNDER_WORDS.map(() => 0.12))
+  const [attrVisible, setAttrVisible] = useState(false)
+
+  useEffect(() => {
+    const container = containerRef.current
+    if (!container) return
+
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      setWordOpacities(FOUNDER_WORDS.map(() => 1))
+      setAttrVisible(true)
+      return
+    }
+
+    const onScroll = () => {
+      const rect = container.getBoundingClientRect()
+      const viewH = window.innerHeight
+      const sectionStart = rect.top
+      const sectionEnd = rect.bottom - viewH * 0.3
+
+      if (sectionStart > viewH || sectionEnd < 0) return
+
+      const progress = Math.max(0, Math.min(1, (viewH - sectionStart) / (viewH + rect.height * 0.5)))
+      const newOpacities = FOUNDER_WORDS.map((_, i) => {
+        const wordProgress = (i / FOUNDER_WORDS.length)
+        const delta = progress - wordProgress
+        return Math.max(0.12, Math.min(1, delta * 4 + 0.12))
+      })
+      setWordOpacities(newOpacities)
+      setAttrVisible(progress > 0.85)
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true })
+    onScroll()
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
 
   return (
-    <section ref={ref} className={`max-w-[700px] mx-auto px-6 pt-10 pb-[100px] scroll-reveal ${inView ? 'in-view' : ''}`}>
-      <h2 className="font-display text-[clamp(1.75rem,3.5vw,2.5rem)] font-extrabold leading-[1.1] tracking-[-0.04em] mb-6">
-        Built by a creator who got tired of <em className="font-accent italic font-normal">guessing</em>
-      </h2>
-
-      <p className="text-[1.0625rem] leading-[1.75] text-[var(--text-2)] mb-5 tracking-[-0.01em]">
-        I'm an underwater content creator. I've spent hundreds of hours diving, filming, color grading, scripting —{' '}
-        <strong className="text-[var(--text)] font-semibold">the full grind.</strong> I love every second of it.
+    <section ref={containerRef} className="max-w-[700px] mx-auto px-6 pt-16 pb-[100px]">
+      <p className="text-[clamp(1.25rem,2.5vw,1.75rem)] leading-[1.6] tracking-[-0.02em] font-medium">
+        {FOUNDER_WORDS.map((word, i) => (
+          <span
+            key={i}
+            className="transition-opacity duration-300"
+            style={{ opacity: wordOpacities[i], color: 'var(--text)' }}
+          >
+            {word}{' '}
+          </span>
+        ))}
       </p>
 
-      <p className="text-[1.0625rem] leading-[1.75] text-[var(--text-2)] mb-5 tracking-[-0.01em]">
-        But I was guessing. Which hooks hold people? What do my competitors do that I don't? When does my audience actually watch?{' '}
-        <strong className="text-[var(--text)] font-semibold">No tool could tell me.</strong>
-      </p>
-
-      <p className="text-[1.0625rem] leading-[1.75] text-[var(--text-2)] mb-5 tracking-[-0.01em]">
-        So I built one. Not to replace the creative work — I'd never want that.{' '}
-        <strong className="text-[var(--text)] font-semibold">To speed up my timeline</strong> and make every decision data-informed instead of gut-feel.
-      </p>
-
-      <div className="mt-8 pt-6 border-t-[3px] border-[var(--bg-dark)]">
-        <h3 className="font-display text-[clamp(1.5rem,3vw,2rem)] font-extrabold leading-[1.15] tracking-[-0.04em]">
-          Coopr is the tool I wish existed when I started.<br />
-          Now it <em className="font-accent italic font-normal text-[var(--teal)]">does.</em>
-        </h3>
-      </div>
-
-      <div className="mt-8 pt-5 border-t border-[var(--border-raw)] flex items-center gap-3.5">
-        <div className="w-11 h-11 rounded-full flex items-center justify-center font-display text-sm font-extrabold text-white" style={{ background: 'linear-gradient(135deg, #0a2540, #14758a)' }}>
+      {/* Attribution */}
+      <div
+        className="mt-10 pt-5 border-t border-[var(--border-raw)] flex items-center gap-3.5 transition-all duration-700"
+        style={{ opacity: attrVisible ? 1 : 0, transform: attrVisible ? 'none' : 'translateY(10px)' }}
+      >
+        <div className="w-12 h-12 rounded-full flex items-center justify-center font-display text-sm font-extrabold text-white" style={{ background: 'linear-gradient(135deg, #0a2540, #14758a)' }}>
           HC
         </div>
         <div>
           <div className="font-display text-[0.9375rem] font-bold tracking-[-0.02em]">Henry Cooper</div>
-          <div className="text-[0.8125rem] text-[var(--text-3)]">Founder, COOPR</div>
+          <div className="font-mono text-[11px] uppercase tracking-[0.12em] text-[var(--text-3)]">Filmmaker. Creator. Founder of COOPR.</div>
         </div>
       </div>
     </section>
