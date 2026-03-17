@@ -200,18 +200,18 @@ function App() {
         }}
       >
         <div
-          className="flex items-center justify-between max-w-[1100px] mx-auto px-6 transition-all duration-200"
+          className="flex items-center justify-between max-w-[1400px] mx-auto px-6 sm:px-10 lg:px-16 transition-all duration-200"
           style={{ height: compact ? '56px' : '72px' }}
         >
           <a href="#" className="hero-entrance flex items-center gap-[10px] no-underline text-[var(--text)]" style={{ animationDelay: '0ms' }}>
             <BrandLockup />
           </a>
-          <div className="flex items-center gap-3">
-            <a href="#/get-started" className="text-[13px] font-medium text-[var(--teal)] hover:text-[var(--teal-dark)] transition-colors no-underline hidden sm:inline-flex items-center gap-1.5">
+          <div className="flex items-center gap-4 sm:gap-6">
+            <a href="#/get-started" className="text-[13px] font-medium text-[var(--teal)] hover:text-[var(--teal-dark)] transition-colors no-underline hidden md:inline-flex items-center gap-1.5">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
               Beta Tester? Log in
             </a>
-            <HeaderActionCluster primaryHref="#/features" primaryLabel="Features" secondaryHref="#cta" secondaryLabel="Join Waitlist" />
+            <HeaderActionCluster primaryHref="#product" primaryLabel="Features" secondaryHref="#cta" secondaryLabel="Join Waitlist" />
           </div>
         </div>
       </nav>

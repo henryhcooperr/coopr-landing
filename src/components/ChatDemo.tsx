@@ -188,15 +188,15 @@ const NAV_ITEMS: Array<{ key: NavKey; label: string; Icon: LucideIcon; section?:
 const TURN_SEQUENCE: DemoTurn[] = [
   {
     nav: 'hook',
-    ask: 'Write me a killer hook for my next reel.',
+    ask: 'Write me a killer hook for my next reel about the hidden side of kelp forests.',
     intro: 'Working through the hook request with the same tool chain COOPR uses in studio.',
     toolCount: '8 tools',
     elapsed: '4.1s',
     steps: [
       { Icon: BarChart3, tone: 'search', title: 'Loaded your last 5 reels', sub: 'Avg hold rate 71% · best opener 86%', time: '0.2s' },
-      { Icon: Users2, tone: 'compare', title: 'Pulled competitor benchmark data', sub: 'Comparing against 8 tracked cleanup creators', time: '0.8s' },
-      { Icon: Radar, tone: 'analyze', title: 'Ran niche benchmark model', sub: 'Looking for myth-busting openings with proof in frame', time: '1.1s' },
-      { Icon: Sparkles, tone: 'generate', title: 'Generated hook variants', sub: 'Built 5 candidates matched to Maya’s direct voice', time: '1.2s' },
+      { Icon: Users2, tone: 'compare', title: 'Pulled competitor benchmark data', sub: 'Comparing against 8 tracked creators in your niche', time: '0.8s' },
+      { Icon: Radar, tone: 'analyze', title: 'Ran niche benchmark model', sub: 'Looking for high-curiosity openings with visual proof', time: '1.1s' },
+      { Icon: Sparkles, tone: 'generate', title: 'Generated hook variants', sub: 'Built 5 candidates matched to your direct voice', time: '1.2s' },
       { Icon: Gauge, tone: 'score', title: 'Scored predicted hold rate', sub: 'Ranking variants against your recent audience pattern', time: '0.8s' },
     ],
     parallel: [
@@ -211,12 +211,12 @@ const TURN_SEQUENCE: DemoTurn[] = [
       { label: 'Trend alignment', value: '3 signals', state: 'pass' },
       { label: 'Competitor differentiation check', value: 'pending', state: 'pending' },
     ],
-    reply: 'Top hook is ready. It beats Maya’s current baseline without sounding like a different person.',
+    reply: 'Top hook is ready. It beats your current baseline without sounding like a different person.',
     result: {
       kind: 'hook',
-      title: 'People keep saying reef cleanup does nothing. Look at this patch 30 days later.',
-      hold: '87% predicted hold',
-      subtitle: '+15% vs Maya’s average proof-first opener',
+      title: "Nobody talks about what lives underneath kelp forests. I spent 4 hours at 60 feet to show you.",
+      hold: '91% predicted hold',
+      subtitle: '+18% vs your average proof-first opener',
       bars: [
         { label: 'Curiosity gap', value: '9/10', width: 90, tone: 'green' },
         { label: 'Pattern interrupt', value: '8/10', width: 82, tone: 'green' },
@@ -245,7 +245,7 @@ const TURN_SEQUENCE: DemoTurn[] = [
     elapsed: '2.8s',
     steps: [
       { Icon: PenSquare, tone: 'generate', title: 'Opened Script Builder from the winning hook', sub: 'Locked the top opener so the draft inherits the exact same premise', time: '0.4s' },
-      { Icon: MessageSquare, tone: 'analyze', title: 'Pulled Maya’s voice profile', sub: 'Short lines, direct claims, and proof before explanation', time: '0.5s' },
+      { Icon: MessageSquare, tone: 'analyze', title: 'Pulled your voice profile', sub: 'Short lines, direct claims, and proof before explanation', time: '0.5s' },
       { Icon: GitBranch, tone: 'compare', title: 'Checked pacing against top-performing reels', sub: 'Compressed the middle so the proof still lands early', time: '0.7s' },
       { Icon: Gauge, tone: 'score', title: 'Scored the updated draft', sub: 'Voice fit and watch-through stay above the current threshold', time: '1.2s' },
     ],
@@ -259,9 +259,9 @@ const TURN_SEQUENCE: DemoTurn[] = [
       kind: 'script',
       voiceFit: '0.85 voice fit',
       lines: [
-        { ts: '0s', title: 'People keep saying reef cleanup does nothing.', note: 'Open on the restored patch before Maya enters frame.' },
-        { ts: '6s', title: 'This is the same reef after volunteers pulled the line and trash out.', note: 'Keep the sentence short enough to land in one breath.' },
-        { ts: '16s', title: 'Save this and I’ll show what changes next month too.', note: 'Close on the next-proof promise, not a generic CTA.' },
+        { ts: '0s', title: 'People keep saying this is overrated.', note: 'Open on the reveal before you enter frame.' },
+        { ts: '6s', title: 'This is what actually happens when you look closer.', note: 'Keep the sentence short enough to land in one breath.' },
+        { ts: '16s', title: "Save this and I'll show what changes next month too.", note: 'Close on the next-proof promise, not a generic CTA.' },
       ],
       note: 'Shorter draft. Same voice. Ready for teleprompter and filming.',
     },
@@ -286,9 +286,9 @@ const TURN_SEQUENCE: DemoTurn[] = [
     elapsed: '3.1s',
     steps: [
       { Icon: Compass, tone: 'generate', title: 'Mapped the draft into scenes', sub: 'Hook, proof, payoff — same order as the approved script', time: '0.5s' },
-      { Icon: Search, tone: 'search', title: 'Pulled the last successful reef shoot setup', sub: 'Same location, same golden-hour lighting, same handheld rhythm', time: '0.7s' },
-      { Icon: GitBranch, tone: 'compare', title: 'Collapsed the plan to today’s constraints', sub: 'One location, one handheld follow, one optional pickup', time: '0.8s' },
-      { Icon: Gauge, tone: 'score', title: 'Checked filmability against the draft', sub: 'Plan stays inside Maya’s normal shoot complexity threshold', time: '1.1s' },
+      { Icon: Search, tone: 'search', title: 'Pulled the last successful recent shoot setup', sub: 'Same location, same golden-hour lighting, same handheld rhythm', time: '0.7s' },
+      { Icon: GitBranch, tone: 'compare', title: "Collapsed the plan to today's constraints", sub: 'One location, one handheld follow, one optional pickup', time: '0.8s' },
+      { Icon: Gauge, tone: 'score', title: 'Checked filmability against the draft', sub: 'Plan stays inside your normal shoot complexity threshold', time: '1.1s' },
     ],
     parallel: [
       { Icon: PenSquare, tone: 'generate', label: 'Scene editor', time: '0.4s ✓', state: 'done' },
@@ -301,10 +301,10 @@ const TURN_SEQUENCE: DemoTurn[] = [
       kind: 'plan',
       scenes: [
         { label: 'Scene editor', title: 'Hook scene', note: 'Talking head opener with the trash bag already in frame.' },
-        { label: 'Shot storyboard', title: 'Proof cut', note: 'Macro coral detail matched against last month’s angle.' },
-        { label: 'Shoot day', title: 'Payoff close', note: 'Wide cleanup reveal while Maya lands the save-worthy CTA.' },
+        { label: 'Shot storyboard', title: 'Proof cut', note: "Close-up detail matched against last month's best angle." },
+        { label: 'Shoot day', title: 'Payoff close', note: 'Wide reveal while you land the save-worthy CTA.' },
       ],
-      summary: '3 scenes · 12 shots · Monterey breakwall · golden hour',
+      summary: '3 scenes · 12 shots · on-location · golden hour',
     },
     rail: {
       metrics: [
@@ -326,8 +326,8 @@ const TURN_SEQUENCE: DemoTurn[] = [
     toolCount: '4 tools',
     elapsed: '1.9s',
     steps: [
-      { Icon: Clock3, tone: 'analyze', title: 'Checked audience activity patterns', sub: 'Peak engagement is clustered on Thursday night for Maya’s cleanup audience', time: '0.2s' },
-      { Icon: Users2, tone: 'compare', title: 'Scanned competitor overlap', sub: 'Two similar cleanup explainers already landed earlier in the week', time: '0.4s' },
+      { Icon: Clock3, tone: 'analyze', title: 'Checked audience activity patterns', sub: 'Peak engagement is clustered on Thursday night for your audience', time: '0.2s' },
+      { Icon: Users2, tone: 'compare', title: 'Scanned competitor overlap', sub: 'Two similar similar posts already landed earlier in the week', time: '0.4s' },
       { Icon: LineChart, tone: 'analyze', title: 'Cross-referenced posting cadence', sub: 'Thursday keeps the schedule on pace without bunching the content mix', time: '0.5s' },
       { Icon: Gauge, tone: 'score', title: 'Ranked release windows', sub: 'Primary and fallback slots both scored against the same reel profile', time: '0.8s' },
     ],
@@ -336,7 +336,7 @@ const TURN_SEQUENCE: DemoTurn[] = [
       kind: 'timing',
       slot: 'Thursday · 8:10 PM PST',
       rows: [
-        { label: 'Best slot', note: 'Highest audience concentration with lower overlap from cleanup creators this week.', value: 'Thu 8:10 PM' },
+        { label: 'Best slot', note: 'Highest audience concentration with lower overlap from creators in your niche this week.', value: 'Thu 8:10 PM' },
         { label: 'Backup slot', note: 'Tuesday still works, but the feed is denser and the opener has to work harder.', value: 'Tue 7:12 PM' },
         { label: 'Why now', note: 'Proof-first reels perform best when the niche is quieter and the audience is peaking.', value: 'Low overlap' },
       ],
@@ -480,7 +480,7 @@ function HookResultCard({ result }: { result: HookResult }) {
         <span className="text-[11px] font-semibold uppercase tracking-[0.06em] text-[var(--text-3)]">Top Hook</span>
         <span className="rounded-full bg-[rgba(22,163,74,0.08)] px-[9px] py-[3px] font-mono text-[11px] font-semibold text-[var(--green)]">{result.hold}</span>
       </div>
-      <div className="text-base font-semibold leading-snug text-[var(--text)]">“{result.title}”</div>
+      <div className="text-base font-semibold leading-snug text-[var(--text)]">"{result.title}"</div>
       <div className="mt-2 text-xs text-[var(--green)]">{result.subtitle}</div>
       <div className="mt-3 flex flex-col gap-[6px]">
         {result.bars.map(bar => (
