@@ -5,6 +5,7 @@ import { submitWaitlistEmail } from '@/lib/supabase'
 import ChatDemo from '@/components/ChatDemo'
 import { HomeHeroSignalField, HomeWorkflowRail } from '@/components/home/home-sections'
 import { BrandLockup, HeaderActionCluster, HeroBrandStack } from '@/components/shared/Brand'
+import BlurText from '@/components/home/BlurText'
 
 // ============================================
 // SHARED: Waitlist Form (preserves Supabase integration)
@@ -200,10 +201,10 @@ function App() {
       {/* CTA */}
       <section className="max-w-[700px] mx-auto px-6 pt-[60px] pb-[120px] text-center" id="cta">
         <h2 className="font-display text-[clamp(2rem,4vw,3rem)] font-extrabold leading-[1.05] tracking-[-0.04em] mb-3.5">
-          Stop guessing. Start <em className="font-accent italic font-normal text-[var(--teal)]">creating.</em>
+          Know before you <em className="font-accent italic font-normal text-[var(--teal)]">post.</em>
         </h2>
         <p className="text-base text-[var(--text-2)] mb-8">
-          Early access for creators who want to understand their audience, not just post at them.
+          Join the beta. Agency-grade creative intelligence for individual creators. Spots are limited.
         </p>
         <WaitlistForm {...formProps} variant="cta" />
         <p className="text-xs text-[var(--text-3)] mt-3.5">Your data stays yours. No spam. No selling.</p>
@@ -212,7 +213,7 @@ function App() {
       {/* FOOTER */}
       <footer className="py-6 border-t border-[var(--border-light)]">
         <div className="flex flex-col sm:flex-row items-center justify-between max-w-[1100px] mx-auto px-6 text-xs text-[var(--text-3)] gap-2.5">
-          <span>&copy; 2026 Coopr Labs. Built in California.</span>
+          <span>&copy; 2026 COOPR. Built in California.</span>
           <div className="flex gap-5">
             <a href="#/privacy" className="text-[var(--text-3)] no-underline text-xs hover:text-[var(--text-2)]">Privacy</a>
             <a href="#/terms" className="text-[var(--text-3)] no-underline text-xs hover:text-[var(--text-2)]">Terms</a>
@@ -234,25 +235,55 @@ function Hero() {
     <section className="relative overflow-hidden pt-[140px] pb-[100px] text-center">
       <HomeHeroSignalField />
       <div className="relative max-w-[980px] mx-auto px-6">
-        <HeroBrandStack />
-
-        <div className="inline-flex items-center gap-2 font-mono text-[11px] font-medium tracking-[0.08em] uppercase text-[var(--text-3)] mb-7">
-          <span className="w-2 h-2 rounded-full bg-[var(--teal)]" style={{ animation: 'pulse-dot 2s ease-in-out infinite' }} />
-          Creative Intelligence Platform
+        {/* T+200ms — Brand mark fades up */}
+        <div className="hero-entrance" style={{ animationDelay: '200ms' }}>
+          <HeroBrandStack />
         </div>
 
+        {/* T+400ms — Eyebrow fades in */}
+        <div className="hero-entrance inline-flex items-center gap-2 font-mono text-[11px] font-medium tracking-[0.08em] uppercase text-[var(--text-3)] mb-7" style={{ animationDelay: '400ms' }}>
+          <span className="w-2 h-2 rounded-full bg-[var(--teal)]" style={{ animation: 'pulse-dot 2s ease-in-out infinite' }} />
+          Creative Engine for Creators
+        </div>
+
+        {/* T+600ms — BlurText headline reveal, word by word */}
         <h1 className="font-display text-[clamp(3rem,6vw+0.5rem,5rem)] font-extrabold leading-none tracking-[-0.04em] text-[var(--text)] mb-7 max-w-[900px] mx-auto">
-          We don't make your content. We make you a{' '}
-          <em className="font-accent italic font-normal text-[var(--teal)]">better creator.</em>
+          <BlurText
+            text="Your content has patterns."
+            delay={80}
+            stepDuration={0.4}
+            animateBy="words"
+            direction="bottom"
+            className="justify-center font-display text-[clamp(3rem,6vw+0.5rem,5rem)] font-extrabold leading-none tracking-[-0.04em] text-[var(--text)]"
+          />
+          <span className="flex justify-center items-baseline gap-[0.25em] flex-wrap">
+            <BlurText
+              text="COOPR"
+              delay={80}
+              stepDuration={0.4}
+              animateBy="words"
+              direction="bottom"
+              className="font-display text-[clamp(3rem,6vw+0.5rem,5rem)] font-extrabold leading-none tracking-[-0.04em] text-[var(--teal)]"
+            />
+            <BlurText
+              text="finds them."
+              delay={80}
+              stepDuration={0.4}
+              animateBy="words"
+              direction="bottom"
+              className="font-accent text-[clamp(3rem,6vw+0.5rem,5rem)] italic font-normal leading-none text-[var(--teal)]"
+            />
+          </span>
         </h1>
 
-        <p className="text-lg leading-[1.65] text-[var(--text-2)] max-w-[520px] mx-auto mb-11 tracking-[-0.01em]">
-          Coopr learns your audience, studies your competitors, and coaches your creative decisions with{' '}
-          <span className="hi" data-tip="Trained on YOUR specific data">real analysis</span>{' '}
-          — not generic suggestions.
+        {/* T+1500ms — Subtext fades up */}
+        <p className="hero-entrance text-lg leading-[1.65] text-[var(--text-2)] max-w-[520px] mx-auto mb-11 tracking-[-0.01em]" style={{ animationDelay: '1500ms' }}>
+          COOPR analyzes your videos, learns your voice, tracks your competitors, and tells you exactly what to create next.{' '}
+          <span className="hi" data-tip="Henry Cooper, underwater filmmaker">Built by a creator who needed it.</span>
         </p>
 
-        <div className="flex items-center justify-center gap-3.5 flex-wrap">
+        {/* T+1800ms — CTA springs in */}
+        <div className="hero-entrance-spring flex items-center justify-center gap-3.5 flex-wrap" style={{ animationDelay: '1800ms' }}>
           <a
             href="#cta"
             className="inline-flex items-center gap-2 font-body text-[15px] font-semibold text-[var(--text-inv)] bg-[var(--bg-dark)] border-none py-3.5 px-7 rounded-full no-underline transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[var(--shadow)]"
@@ -269,7 +300,8 @@ function Hero() {
           </a>
         </div>
 
-        <p className="mt-8 text-[13px] text-[var(--text-3)]">
+        {/* T+2100ms — Beta link fades in */}
+        <p className="hero-entrance mt-8 text-[13px] text-[var(--text-3)]" style={{ animationDelay: '2100ms' }}>
           Already have an invite?{' '}
           <a href="#/get-started" className="text-[var(--teal)] font-medium no-underline hover:underline underline-offset-2">
             Log in as a beta tester
@@ -397,7 +429,7 @@ function Founder() {
         </div>
         <div>
           <div className="font-display text-[0.9375rem] font-bold tracking-[-0.02em]">Henry Cooper</div>
-          <div className="text-[0.8125rem] text-[var(--text-3)]">Founder, Coopr Labs</div>
+          <div className="text-[0.8125rem] text-[var(--text-3)]">Founder, COOPR</div>
         </div>
       </div>
     </section>
@@ -411,26 +443,26 @@ function Founder() {
 function Stats() {
   const { ref, inView } = useScrollReveal()
 
-  const stat1 = useCountUp(19, '', inView)
-  const stat2 = useCountUp(77, '+', inView)
-  const stat3 = useCountUp(166, '', inView)
+  const stat1 = useCountUp(4460, '', inView)
+  const stat2 = useCountUp(131, '', inView)
+  const stat3 = useCountUp(7, '', inView)
 
   return (
     <div ref={ref} className="max-w-[700px] mx-auto px-6 pb-20 grid grid-cols-2 sm:grid-cols-4 gap-6 text-center">
       <div className={`scroll-reveal ${inView ? 'in-view' : ''}`}>
-        <div ref={stat1} className="font-display text-[2rem] font-extrabold tracking-[-0.04em] leading-none">19</div>
-        <div className="text-[11px] text-[var(--text-3)] mt-1">ML models trained on your data</div>
+        <div ref={stat1} className="font-display text-[2rem] font-extrabold tracking-[-0.04em] leading-none">4,460</div>
+        <div className="text-[11px] text-[var(--text-3)] mt-1">Frames analyzed</div>
       </div>
       <div className={`scroll-reveal ${inView ? 'in-view' : ''}`} style={{ transitionDelay: '0.08s' }}>
-        <div ref={stat2} className="font-display text-[2rem] font-extrabold tracking-[-0.04em] leading-none">77+</div>
-        <div className="text-[11px] text-[var(--text-3)] mt-1">Signals per video</div>
+        <div ref={stat2} className="font-display text-[2rem] font-extrabold tracking-[-0.04em] leading-none">131</div>
+        <div className="text-[11px] text-[var(--text-3)] mt-1">Competitor techniques extracted</div>
       </div>
       <div className={`scroll-reveal ${inView ? 'in-view' : ''}`} style={{ transitionDelay: '0.16s' }}>
-        <div ref={stat3} className="font-display text-[2rem] font-extrabold tracking-[-0.04em] leading-none">166</div>
-        <div className="text-[11px] text-[var(--text-3)] mt-1">Tools, one conversation</div>
+        <div ref={stat3} className="font-display text-[2rem] font-extrabold tracking-[-0.04em] leading-none">7</div>
+        <div className="text-[11px] text-[var(--text-3)] mt-1">ML models trained on your data</div>
       </div>
       <div className={`scroll-reveal ${inView ? 'in-view' : ''}`} style={{ transitionDelay: '0.24s' }}>
-        <div className="font-display text-[1.25rem] font-extrabold tracking-[-0.03em] leading-[1.2]">Gets smarter with every post</div>
+        <div className="font-display text-[1.25rem] font-extrabold tracking-[-0.03em] leading-[1.2]">Intelligence that compounds</div>
       </div>
     </div>
   )

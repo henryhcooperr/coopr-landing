@@ -686,6 +686,50 @@
   100% { transform: translate(2px, 1px); }
 }
 
+/* ---- Hero entrance choreography ---- */
+.hero-entrance {
+  opacity: 0;
+  transform: translateY(16px);
+  animation: hero-fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.hero-entrance-spring {
+  opacity: 0;
+  transform: translateY(16px) scale(0.95);
+  animation: hero-spring-in 0.7s cubic-bezier(0.34, 1.4, 0.64, 1) forwards;
+}
+
+@keyframes hero-fade-up {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes hero-spring-in {
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* COOPR gradient text treatment */
+.hero-gradient-text {
+  background: linear-gradient(135deg, var(--hero-teal, #0D9488), var(--hero-surface, #5EEAD4));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-entrance,
+  .hero-entrance-spring {
+    opacity: 1;
+    transform: none;
+    animation: none;
+  }
+}
+
 .ws-shell-glow {
   position: absolute;
   right: -8%;
