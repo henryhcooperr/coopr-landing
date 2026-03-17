@@ -229,6 +229,23 @@ function App() {
       {/* CHAT DEMO */}
       <ChatDemo />
 
+      {/* MID-PAGE CTA — catch visitors after the demo */}
+      <div className="max-w-[520px] mx-auto px-6 py-10 text-center">
+        <p className="text-[15px] text-[var(--text-2)] mb-4">
+          That's one workflow. COOPR has 169 more.
+        </p>
+        <GlowPulseButton
+          href="#cta"
+          glowColor="#0D9488"
+          intensity={8}
+          speed={4}
+          className="inline-flex items-center gap-2 font-body text-[14px] font-semibold text-[var(--text-inv)] bg-[var(--bg-dark)] border-none py-3 px-6 rounded-full no-underline"
+        >
+          Join the Waitlist
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 8h10m0 0L9 4m4 4L9 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+        </GlowPulseButton>
+      </div>
+
       {/* PRODUCTION REEL — replaces WorkflowRail */}
       <ProductionReel />
 
@@ -273,10 +290,16 @@ function App() {
               <div className="text-white font-display font-bold text-[15px] mb-1">COOPR</div>
               <div className="text-[rgba(255,255,255,0.4)] text-xs mb-4">Creative engine for creators.</div>
               <div className="flex items-center gap-4">
-                {['Instagram', 'YouTube', 'TikTok', 'LinkedIn', 'X'].map(platform => (
-                  <span key={platform} className="text-[rgba(255,255,255,0.3)] text-xs hover:text-white transition-colors cursor-pointer">
+                {[
+                  ['Instagram', 'https://instagram.com/henryhcooper'],
+                  ['YouTube', 'https://youtube.com/@henryhcooper'],
+                  ['TikTok', 'https://tiktok.com/@henryhcooper'],
+                  ['LinkedIn', 'https://linkedin.com/in/henryhcooper'],
+                  ['X', 'https://x.com/henryhcooper'],
+                ].map(([platform, href]) => (
+                  <a key={platform} href={href} target="_blank" rel="noopener noreferrer" className="text-[rgba(255,255,255,0.3)] text-xs no-underline hover:text-white transition-colors">
                     {platform}
-                  </span>
+                  </a>
                 ))}
               </div>
             </div>
