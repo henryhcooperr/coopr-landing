@@ -394,6 +394,7 @@ export default function Features() {
         <div className="mx-auto flex max-w-[1200px] flex-col items-center justify-between gap-3 px-6 text-center text-xs text-[var(--text-3)] sm:flex-row sm:text-left">
           <span>&copy; 2026 Coopr Labs. Built in California.</span>
           <div className="flex items-center gap-5">
+            <a href="#/devlog" className="text-[var(--text-3)] no-underline hover:text-[var(--text)]">Dev Log</a>
             <a href="#/privacy" className="text-[var(--text-3)] no-underline hover:text-[var(--text)]">Privacy</a>
             <a href="#/terms" className="text-[var(--text-3)] no-underline hover:text-[var(--text)]">Terms</a>
             <a href="#/data-deletion" className="text-[var(--text-3)] no-underline hover:text-[var(--text)]">Data Deletion</a>

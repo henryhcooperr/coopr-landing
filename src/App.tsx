@@ -173,6 +173,7 @@ function App() {
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
               Beta Tester? Log in
             </a>
+            <a href="#/devlog" className="text-[13px] font-medium text-[var(--text-2)] hover:text-[var(--text)] transition-colors no-underline hidden sm:inline-flex">Dev Log</a>
             <HeaderActionCluster primaryHref="#/features" primaryLabel="Features" secondaryHref="#cta" secondaryLabel="Join Waitlist" />
           </div>
         </div>
@@ -214,6 +215,7 @@ function App() {
         <div className="flex flex-col sm:flex-row items-center justify-between max-w-[1100px] mx-auto px-6 text-xs text-[var(--text-3)] gap-2.5">
           <span>&copy; 2026 Coopr Labs. Built in California.</span>
           <div className="flex gap-5">
+            <a href="#/devlog" className="text-[var(--text-3)] no-underline text-xs hover:text-[var(--text-2)]">Dev Log</a>
             <a href="#/privacy" className="text-[var(--text-3)] no-underline text-xs hover:text-[var(--text-2)]">Privacy</a>
             <a href="#/terms" className="text-[var(--text-3)] no-underline text-xs hover:text-[var(--text-2)]">Terms</a>
             <a href="#/data-deletion" className="text-[var(--text-3)] no-underline text-xs hover:text-[var(--text-2)]">Data Deletion</a>

@@ -7,6 +7,7 @@ import Terms from './Terms.tsx'
 import DataDeletion from './DataDeletion.tsx'
 import GetStarted from './GetStarted.tsx'
 import Features from './Features.tsx'
+import Devlog from './Devlog.tsx'
 
 function Router() {
   const [path, setPath] = useState(window.location.hash)
@@ -23,6 +24,7 @@ function Router() {
   if (basePath === '#/data-deletion') return <DataDeletion />
   if (basePath === '#/get-started') return <GetStarted />
   if (basePath === '#/features') return <Features />
+  if (basePath === '#/devlog') return <Devlog />
   return <App />
 }
 
