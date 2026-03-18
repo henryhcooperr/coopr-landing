@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button'
 import { submitWaitlistEmail } from '@/lib/supabase'
 import ChatDemo from '@/components/ChatDemo'
 import { HomeHeroSignalField, HomeWorkflowRail } from '@/components/home/home-sections'
-import { BrandLockup, HeaderActionCluster, HeroBrandStack } from '@/components/shared/Brand'
+import { BrandLockup, HeroBrandStack } from '@/components/shared/Brand'
 
 // ============================================
 // SHARED: Waitlist Form (preserves Supabase integration)
@@ -168,13 +168,16 @@ function App() {
           <a href="#" className="flex items-center gap-[10px] no-underline text-[var(--text)]">
             <BrandLockup />
           </a>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-4">
             <a href="https://app.getcoopr.com/register" className="text-[13px] font-medium text-[var(--teal)] hover:text-[var(--teal-dark)] transition-colors no-underline hidden sm:inline-flex items-center gap-1.5">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
-              Beta Tester? Log in
+              Log in
             </a>
-            <a href="#/devlog" className="text-[13px] font-medium text-[var(--text-2)] hover:text-[var(--text)] transition-colors no-underline hidden sm:inline-flex">Dev Log</a>
-            <HeaderActionCluster primaryHref="#/features" primaryLabel="Features" secondaryHref="#cta" secondaryLabel="Join Waitlist" />
+            <div className="inline-flex items-center gap-1 rounded-full border border-[rgba(17,17,17,0.08)] bg-white/88 p-1.5 shadow-[0_12px_32px_rgba(17,17,17,0.06)] backdrop-blur-md">
+              <a href="#/devlog" className="hidden sm:inline-flex items-center rounded-full px-4 py-2 text-[13px] font-medium text-[var(--text-2)] no-underline transition-colors hover:text-[var(--text)]">Dev Log</a>
+              <a href="#/features" className="inline-flex items-center rounded-full px-4 py-2 text-[13px] font-medium text-[var(--text-2)] no-underline transition-colors hover:text-[var(--text)]">Features</a>
+              <a href="#cta" className="inline-flex items-center rounded-full bg-[var(--bg-dark)] px-5 py-2 text-[13px] font-semibold text-[var(--text-inv)] no-underline transition-all hover:-translate-y-[1px] hover:shadow-md">Join Waitlist</a>
+            </div>
           </div>
         </div>
       </nav>
