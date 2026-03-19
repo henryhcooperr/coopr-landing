@@ -719,169 +719,219 @@ function FloatingNav() {
 // V5 HERO DEMO (inline — replaces old ChatDemo)
 // ============================================
 
-type DemoMsg = { role: 'user' | 'assistant' | 'block'; text: string; blockLabel?: string; blockAccent?: string; children?: React.ReactNode }
+/* V5HeroDemo — imperative DOM for smooth typewriter + thinking animations (matches HTML prototype) */
+/* All content is hardcoded demo data — no user input, safe for textContent/createElement */
+
+function V5DemoBlockContent({ type }: { type: string }) {
+  // Renders static block content as React — used by addBlock via a mounted container
+  if (type === 'idea') return (
+    <div style={{background:'var(--bg)',border:'1px solid var(--border-raw)',borderRadius:10,padding:'14px 16px'}}>
+      <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:10}}>
+        <span className="font-accent italic" style={{fontSize:14,color:'var(--teal)'}}>Idea Evaluation</span>
+        <span className="font-mono" style={{fontSize:10,fontWeight:500,padding:'3px 10px',borderRadius:100,background:'var(--teal-dim)',color:'var(--teal)'}}>Strong 8.2/10</span>
+      </div>
+      <p style={{fontSize:13,lineHeight:1.6,color:'var(--text-2)',marginBottom:10}}>High search volume topic. Your form-focused content gets +31% above average hold rate. Educational hooks dominate in fitness right now.</p>
+      <div style={{display:'flex',gap:8,flexWrap:'wrap'}}>
+        {['Niche fit: 92%','Gap: Medium','Strength: Form'].map(t=><span key={t} className="font-mono" style={{fontSize:10,padding:'4px 10px',borderRadius:100,background:'#fff',border:'1px solid var(--border-raw)',color:'var(--text-2)'}}>{t}</span>)}
+      </div>
+    </div>
+  )
+  if (type === 'hooks') return (
+    <div style={{display:'flex',flexDirection:'column',gap:10}}>
+      <div style={{background:'#fff',border:'1px solid var(--teal)',borderRadius:10,padding:'12px 14px',boxShadow:'0 0 0 1px var(--teal),0 4px 20px rgba(13,148,136,0.12)'}}>
+        <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:6}}><span className="font-accent italic" style={{fontSize:13,color:'var(--violet)'}}>Hook 1</span><span className="font-mono" style={{fontSize:11,fontWeight:600,padding:'4px 12px',borderRadius:100,background:'rgba(22,163,74,0.1)',color:'#16A34A'}}>84% hold</span></div>
+        <div style={{fontSize:13,fontWeight:500,lineHeight:1.4}}>{"\u201CThe exercise everyone does wrong \u2014 and why your trainer won\u2019t tell you\u201D"}</div>
+      </div>
+      <div style={{background:'#fff',border:'1px solid var(--border-raw)',borderRadius:10,padding:'12px 14px'}}>
+        <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:6}}><span className="font-accent italic" style={{fontSize:13,color:'var(--violet)'}}>Hook 2</span><span className="font-mono" style={{fontSize:11,fontWeight:600,padding:'4px 12px',borderRadius:100,background:'rgba(245,158,11,0.08)',color:'#D97706'}}>76% hold</span></div>
+        <div style={{fontSize:13,fontWeight:500,lineHeight:1.4}}>{"\u201C3 mistakes killing your progress \u2014 I filmed proof\u201D"}</div>
+      </div>
+    </div>
+  )
+  if (type === 'voicematch') return (
+    <div style={{display:'inline-flex',alignItems:'center',gap:8,padding:'8px 14px',background:'var(--teal-dim)',border:'1px solid rgba(13,148,136,0.15)',borderRadius:8}}>
+      <span className="font-display" style={{fontSize:20,fontWeight:700,color:'var(--teal)'}}>94%</span>
+      <span style={{fontSize:11,color:'var(--text-2)'}}>Voice match — sounds like you</span>
+    </div>
+  )
+  if (type === 'research') return (
+    <div style={{border:'1px solid var(--border-raw)',borderRadius:10,padding:16,background:'#fff'}}>
+      <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:6}}><span className="font-display" style={{fontSize:14,fontWeight:700}}>Solo Travel Niche Report</span><span className="font-mono" style={{fontSize:10,padding:'3px 10px',borderRadius:100,background:'rgba(37,99,235,0.08)',color:'#2563EB'}}>High confidence</span></div>
+      <div className="font-mono" style={{fontSize:10,color:'var(--text-3)',marginBottom:14}}>8 sources · 63 posts scanned · 4 min read</div>
+      {[{n:'1',t:'Hidden-gem POV format surging',b:'First-person hooks outperforming guide-style by 2.8x among solo travel creators under 100K.'},{n:'2',t:'Food + location mashups trending',b:'Street food + neighborhood discovery averaging 5.1% ER vs 2.3% baseline.'}].map(s=>(
+        <div key={s.n} style={{display:'flex',gap:10,marginBottom:s.n==='2'?0:14}}>
+          <div className="font-mono" style={{width:20,height:20,borderRadius:'50%',background:'rgba(37,99,235,0.08)',color:'#2563EB',fontSize:10,fontWeight:600,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>{s.n}</div>
+          <div><div style={{fontSize:13,fontWeight:600}}>{s.t}</div><div style={{fontSize:12,color:'var(--text-2)',lineHeight:1.5}}>{s.b}</div></div>
+        </div>
+      ))}
+    </div>
+  )
+  if (type === 'creators') return (
+    <div style={{display:'flex',flexDirection:'column',gap:6}}>
+      {[{i:'SN',name:'SoloNomad',badge:'Competitor',bc:'var(--teal)',dim:'var(--teal-dim)',stats:'82K · 4.8% eng',grad:'#0D9488,#047857'},{i:'WL',name:'WanderLena',badge:'Inspiration',bc:'var(--violet)',dim:'rgba(124,62,237,0.08)',stats:'210K · 3.2% eng',grad:'#7C3AED,#4338CA'},{i:'TJ',name:'TokyoJay',badge:'Rising',bc:'var(--amber)',dim:'rgba(245,158,11,0.08)',stats:'31K · 7.1% eng',grad:'#F59E0B,#D97706'}].map(c=>(
+        <div key={c.i} style={{display:'flex',alignItems:'center',gap:10,padding:'8px 10px',background:'var(--bg)',border:'1px solid var(--border-raw)',borderRadius:8}}>
+          <div style={{width:30,height:30,borderRadius:'50%',background:`linear-gradient(135deg,${c.grad})`,display:'flex',alignItems:'center',justifyContent:'center',fontSize:10,fontWeight:700,color:'#fff',flexShrink:0}}>{c.i}</div>
+          <div style={{flex:1,minWidth:0}}><div style={{fontSize:12,fontWeight:600}}>{c.name} <span className="font-mono" style={{fontSize:8,padding:'1px 6px',borderRadius:100,background:c.dim,color:c.bc}}>{c.badge}</span></div><div className="font-mono" style={{fontSize:9,color:'var(--text-3)'}}>{c.stats}</div></div>
+        </div>
+      ))}
+    </div>
+  )
+  return null
+}
 
 function V5HeroDemo() {
   const chatRef = useRef<HTMLDivElement>(null)
-  const [msgs, setMsgs] = useState<DemoMsg[]>([])
+  const inputRef = useRef<HTMLInputElement>(null)
+  const titleRef = useRef<HTMLDivElement>(null)
+  const toolsRef = useRef<HTMLDivElement>(null)
+  const cancelRef = useRef(false)
+  const mountRootsRef = useRef<Array<{ root: ReturnType<typeof import('react-dom/client').createRoot>, container: HTMLElement }>>([])
   const [activeConv, setActiveConv] = useState<'create' | 'research'>('create')
-  const [headerTitle, setHeaderTitle] = useState('Form mistakes video')
-  const [headerTools, setHeaderTools] = useState('3 tools used')
-  const abortRef = useRef(false)
 
-  const wait = (ms: number) => new Promise<void>(r => setTimeout(r, ms))
+  // We need createRoot for mounting React blocks into imperative DOM
+  const reactDomRef = useRef<typeof import('react-dom/client') | null>(null)
+  useEffect(() => { import('react-dom/client').then(m => { reactDomRef.current = m }) }, [])
 
-  const scrollBottom = useCallback(() => {
-    if (chatRef.current) chatRef.current.scrollTop = chatRef.current.scrollHeight
+  const wt = useCallback((ms: number) => new Promise<void>(r => {
+    const id = setTimeout(r, ms)
+    const iv = setInterval(() => { if (cancelRef.current) { clearTimeout(id); clearInterval(iv); r() } }, 60)
+    setTimeout(() => clearInterval(iv), ms + 100)
+  }), [])
+
+  const scroll = useCallback(() => { chatRef.current && (chatRef.current.scrollTop = chatRef.current.scrollHeight) }, [])
+
+  const clearChat = useCallback(() => {
+    mountRootsRef.current.forEach(({ root }) => root.unmount())
+    mountRootsRef.current = []
+    if (chatRef.current) while (chatRef.current.firstChild) chatRef.current.removeChild(chatRef.current.firstChild)
   }, [])
 
-  const pushMsg = useCallback((m: DemoMsg) => {
-    setMsgs(prev => [...prev, m])
-    setTimeout(scrollBottom, 50)
-  }, [scrollBottom])
+  const mk = useCallback((tag: string, cls?: string, txt?: string) => {
+    const e = document.createElement(tag); if (cls) e.className = cls; if (txt) e.textContent = txt; return e
+  }, [])
+
+  const typeInput = useCallback(async (text: string) => {
+    if (!inputRef.current) return; inputRef.current.value = ''
+    for (let i = 0; i < text.length; i++) { if (cancelRef.current) return; inputRef.current.value += text[i]; await wt(18 + Math.random() * 10) }
+    await wt(100)
+  }, [wt])
+
+  const fadeIn = useCallback(async (node: HTMLElement) => {
+    node.style.opacity = '0'; node.style.transform = 'translateY(10px)'
+    node.style.transition = 'opacity .4s cubic-bezier(0.16,1,0.3,1), transform .4s cubic-bezier(0.16,1,0.3,1)'
+    chatRef.current?.appendChild(node); scroll()
+    await new Promise<void>(r => requestAnimationFrame(() => requestAnimationFrame(() => { node.style.opacity = '1'; node.style.transform = 'none'; setTimeout(r, 250) })))
+  }, [scroll])
+
+  const addUser = useCallback(async (text: string) => {
+    const d = mk('div', 'self-end max-w-[80%] px-4 py-2.5 rounded-2xl rounded-br-sm text-[14px] leading-snug text-white')
+    d.style.background = 'var(--bg-dark)'; d.textContent = text; await fadeIn(d)
+  }, [mk, fadeIn])
+
+  const addThinking = useCallback(() => {
+    const d = mk('div'); d.style.opacity = '1'
+    const lbl = mk('div', 'font-mono text-[10px] font-medium uppercase tracking-[.06em] mb-1.5', 'COOPR'); lbl.style.color = 'var(--teal)'; d.appendChild(lbl)
+    const dots = mk('div', 'flex gap-1 py-1.5')
+    for (let i = 0; i < 3; i++) { const dot = mk('span', 'inline-block w-1.5 h-1.5 rounded-full'); dot.style.cssText = `background:var(--teal);opacity:.3;animation:think-bounce 1.2s ease-in-out infinite;animation-delay:${i*0.2}s`; dots.appendChild(dot) }
+    d.appendChild(dots); chatRef.current?.appendChild(d); scroll(); return d
+  }, [mk, scroll])
+
+  const typeAssistant = useCallback(async (text: string) => {
+    const d = mk('div'); d.style.opacity = '1'
+    const lbl = mk('div', 'font-mono text-[10px] font-medium uppercase tracking-[.06em] mb-1.5', 'COOPR'); lbl.style.color = 'var(--teal)'; d.appendChild(lbl)
+    const c = mk('div', 'text-[14px] leading-relaxed'); c.style.color = 'var(--text)'
+    const cur = mk('span', 'inline-block w-0.5 h-[1em] ml-px align-text-bottom'); cur.style.cssText = 'background:var(--teal);animation:blink-c .8s step-end infinite'
+    c.appendChild(cur); d.appendChild(c); chatRef.current?.appendChild(d); scroll()
+    for (let i = 0; i < text.length; i++) { if (cancelRef.current) { cur.remove(); return }; c.insertBefore(document.createTextNode(text[i]), cur); scroll(); const ch = text[i]; await wt('.!?'.includes(ch)?80:',;'.includes(ch)?40:16+Math.random()*8) }
+    cur.remove()
+  }, [mk, scroll, wt])
+
+  const addBlock = useCallback(async (label: string | null, accent: string, blockType: string) => {
+    const d = mk('div'); d.style.opacity = '0'; d.style.transform = 'translateY(10px)'
+    d.style.transition = 'opacity .4s cubic-bezier(0.16,1,0.3,1), transform .4s cubic-bezier(0.16,1,0.3,1)'
+    if (label) { const lbl = mk('div', 'font-mono text-[10px] font-medium uppercase tracking-[.06em] mb-1.5', label); lbl.style.color = 'var(--teal)'; d.appendChild(lbl) }
+    const block = mk('div', 'pl-3 border-l-[3px]'); block.style.borderColor = accent
+    const container = mk('div')
+    block.appendChild(container); d.appendChild(block)
+    chatRef.current?.appendChild(d); scroll()
+    // Mount React content into the container
+    if (reactDomRef.current) {
+      const root = reactDomRef.current.createRoot(container)
+      root.render(<V5DemoBlockContent type={blockType} />)
+      mountRootsRef.current.push({ root, container })
+    }
+    await new Promise<void>(r => requestAnimationFrame(() => requestAnimationFrame(() => { d.style.opacity = '1'; d.style.transform = 'none'; setTimeout(r, 300) })))
+  }, [mk, scroll])
+
+  const setConv = useCallback((name: 'create' | 'research', tools: string) => {
+    setActiveConv(name)
+    if (titleRef.current) titleRef.current.textContent = name === 'create' ? 'Form mistakes video' : 'Solo travel trends'
+    if (toolsRef.current) toolsRef.current.textContent = tools
+  }, [])
 
   const playCreate = useCallback(async () => {
-    setActiveConv('create'); setHeaderTitle('Form mistakes video'); setHeaderTools('3 tools used')
-    await wait(400)
-    pushMsg({ role: 'user', text: "I have an idea \u2014 common gym form mistakes that most people don't realize" })
-    await wait(1000)
-    pushMsg({ role: 'block', text: '', blockLabel: 'Idea Evaluation', children: (
-      <div className="v5-demo-idea-card">
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-          <span className="font-accent italic text-[14px]" style={{ color: 'var(--teal)' }}>Idea Evaluation</span>
-          <span className="font-mono text-[10px] font-medium px-2.5 py-0.5 rounded-full" style={{ background: 'var(--teal-dim)', color: 'var(--teal)' }}>Strong 8.2/10</span>
-        </div>
-        <p className="text-[13px] leading-relaxed" style={{ color: 'var(--text-2)' }}>High search volume topic. Your form-focused content gets +31% above average hold rate. Educational hooks dominate in fitness right now.</p>
-        <div className="flex gap-2 mt-2 flex-wrap">
-          {['Niche fit: 92%', 'Gap: Medium', 'Strength: Form'].map(t => <span key={t} className="font-mono text-[10px] px-2.5 py-1 rounded-full border" style={{ borderColor: 'var(--border-raw)', color: 'var(--text-2)' }}>{t}</span>)}
-        </div>
-      </div>
-    )})
-    await wait(1200)
-    pushMsg({ role: 'user', text: 'Love it. Work on hooks.' })
-    await wait(1000)
-    pushMsg({ role: 'block', text: '', blockLabel: 'Top hooks', blockAccent: 'var(--violet)', children: (
-      <div className="flex flex-col gap-2">
-        <div className="p-3 rounded-lg border" style={{ borderColor: 'var(--teal)', boxShadow: '0 0 0 1px var(--teal), 0 4px 16px rgba(13,148,136,0.1)' }}>
-          <div className="flex justify-between items-center mb-1.5"><span className="font-accent italic text-[13px]" style={{ color: 'var(--violet)' }}>Hook 1</span><span className="font-mono text-[11px] font-semibold px-3 py-1 rounded-full" style={{ background: 'rgba(22,163,74,0.1)', color: '#16A34A' }}>84% hold</span></div>
-          <p className="text-[13px] font-medium">"The exercise everyone does wrong — and why your trainer won't tell you"</p>
-        </div>
-        <div className="p-3 rounded-lg border" style={{ borderColor: 'var(--border-raw)' }}>
-          <div className="flex justify-between items-center mb-1.5"><span className="font-accent italic text-[13px]" style={{ color: 'var(--violet)' }}>Hook 2</span><span className="font-mono text-[11px] font-semibold px-3 py-1 rounded-full" style={{ background: 'rgba(245,158,11,0.08)', color: '#D97706' }}>76% hold</span></div>
-          <p className="text-[13px] font-medium">"3 mistakes killing your progress — I filmed proof"</p>
-        </div>
-      </div>
-    )})
-    await wait(800)
-    pushMsg({ role: 'block', text: '', children: (
-      <div className="inline-flex items-center gap-2 px-3 py-2 rounded-lg" style={{ background: 'var(--teal-dim)', border: '1px solid rgba(13,148,136,0.15)' }}>
-        <span className="font-display text-xl font-bold" style={{ color: 'var(--teal)' }}>94%</span>
-        <span className="text-[11px]" style={{ color: 'var(--text-2)' }}>Voice match — sounds like you</span>
-      </div>
-    )})
-  }, [pushMsg])
+    setConv('create', '3 tools used'); await wt(400)
+    await typeInput("I have an idea \u2014 common gym form mistakes that most people don't realize"); if (cancelRef.current) return
+    await addUser("I have an idea \u2014 common gym form mistakes that most people don't realize"); if (inputRef.current) inputRef.current.value = ''
+    await wt(200); const th = addThinking(); await wt(800); th.remove()
+    await addBlock('Idea Evaluation', 'var(--teal)', 'idea'); await wt(600)
+    await typeInput('Love it. Work on hooks.'); if (cancelRef.current) return
+    await addUser('Love it. Work on hooks.'); if (inputRef.current) inputRef.current.value = ''
+    await wt(200); const th2 = addThinking(); await wt(900); th2.remove()
+    await addBlock('Top hooks', 'var(--violet)', 'hooks'); await wt(500)
+    await addBlock(null, 'var(--teal)', 'voicematch')
+  }, [setConv, wt, typeInput, addUser, addThinking, addBlock])
 
   const playResearch = useCallback(async () => {
-    setActiveConv('research'); setHeaderTitle('Solo travel trends'); setHeaderTools('8 sources')
-    await wait(400)
-    pushMsg({ role: 'user', text: "What's trending in solo travel right now? Who should I watch?" })
-    await wait(1200)
-    pushMsg({ role: 'block', text: '', blockLabel: 'Solo Travel Report', blockAccent: 'var(--blue)', children: (
-      <div className="p-3.5 rounded-lg border bg-white" style={{ borderColor: 'var(--border-raw)' }}>
-        <div className="flex justify-between items-center mb-1"><span className="font-display text-[14px] font-bold">Solo Travel Niche Report</span><span className="font-mono text-[10px] px-2.5 py-0.5 rounded-full" style={{ background: 'rgba(37,99,235,0.08)', color: '#2563EB' }}>High confidence</span></div>
-        <div className="font-mono text-[10px] mb-3" style={{ color: 'var(--text-3)' }}>8 sources &middot; 63 posts scanned &middot; 4 min read</div>
-        <div className="flex gap-2 mb-3"><div className="flex items-center justify-center w-5 h-5 rounded-full text-[10px] font-bold shrink-0" style={{ background: 'rgba(37,99,235,0.08)', color: '#2563EB' }}>1</div><div><div className="text-[13px] font-semibold">Hidden-gem POV format surging</div><div className="text-[12px] leading-snug" style={{ color: 'var(--text-2)' }}>First-person hooks outperforming guide-style by 2.8x among solo travel creators under 100K.</div></div></div>
-        <div className="flex gap-2"><div className="flex items-center justify-center w-5 h-5 rounded-full text-[10px] font-bold shrink-0" style={{ background: 'rgba(37,99,235,0.08)', color: '#2563EB' }}>2</div><div><div className="text-[13px] font-semibold">Food + location mashups trending</div><div className="text-[12px] leading-snug" style={{ color: 'var(--text-2)' }}>Street food + neighborhood discovery averaging 5.1% ER vs 2.3% baseline.</div></div></div>
-      </div>
-    )})
-    await wait(800)
-    pushMsg({ role: 'block', text: '', blockLabel: 'Creators discovered', children: (
-      <div className="flex flex-col gap-1.5">
-        {[
-          { i: 'SN', name: 'SoloNomad', badge: 'Competitor', bc: 'var(--teal)', stats: '82K \u00B7 4.8% eng', grad: '#0D9488,#047857' },
-          { i: 'WL', name: 'WanderLena', badge: 'Inspiration', bc: 'var(--violet)', stats: '210K \u00B7 3.2% eng', grad: '#7C3AED,#4338CA' },
-          { i: 'TJ', name: 'TokyoJay', badge: 'Rising', bc: 'var(--amber)', stats: '31K \u00B7 7.1% eng', grad: '#F59E0B,#D97706' },
-        ].map(c => (
-          <div key={c.i} className="flex items-center gap-2.5 p-2 rounded-lg border" style={{ borderColor: 'var(--border-raw)', background: 'var(--bg)' }}>
-            <div className="w-7 h-7 rounded-full flex items-center justify-center text-[9px] font-bold text-white shrink-0" style={{ background: `linear-gradient(135deg,${c.grad})` }}>{c.i}</div>
-            <div className="flex-1 min-w-0"><div className="text-[12px] font-semibold flex items-center gap-1.5">{c.name} <span className="font-mono text-[8px] px-1.5 py-px rounded-full" style={{ background: `color-mix(in srgb, ${c.bc} 10%, transparent)`, color: c.bc }}>{c.badge}</span></div><div className="font-mono text-[9px]" style={{ color: 'var(--text-3)' }}>{c.stats}</div></div>
-          </div>
-        ))}
-      </div>
-    )})
-    await wait(600)
-    pushMsg({ role: 'assistant', text: "Saved. TokyoJay is worth watching closely — 7.1% engagement at 31K is exceptional. His hidden-gem format matches your style." })
-  }, [pushMsg])
+    setConv('research', '8 sources'); await wt(400)
+    await typeInput("What's trending in solo travel right now? Who should I watch?"); if (cancelRef.current) return
+    await addUser("What's trending in solo travel right now? Who should I watch?"); if (inputRef.current) inputRef.current.value = ''
+    await wt(200); const th = addThinking(); await wt(1200); th.remove()
+    await addBlock('Solo Travel Report', 'var(--blue)', 'research'); await wt(500)
+    await addBlock('Creators discovered', 'var(--teal)', 'creators'); await wt(400)
+    await typeAssistant("Saved. TokyoJay is worth watching closely \u2014 7.1% engagement at 31K is exceptional. His hidden-gem format matches your style.")
+  }, [setConv, wt, typeInput, addUser, addThinking, addBlock, typeAssistant])
 
-  // Auto-cycle
   useEffect(() => {
-    abortRef.current = false
-    let cancelled = false
-    const convs = [playCreate, playResearch]
-    let idx = 0
-    async function cycle() {
-      while (!cancelled) {
-        setMsgs([])
-        await wait(300)
-        await convs[idx]()
-        await wait(4000)
-        idx = (idx + 1) % convs.length
-      }
-    }
+    cancelRef.current = false; let alive = true
+    const convs = [playCreate, playResearch]; let idx = 0
+    async function cycle() { while (alive) { clearChat(); await wt(300); if (!alive) return; await convs[idx](); if (!alive) return; await wt(4000); idx = (idx+1)%convs.length } }
     cycle()
-    return () => { cancelled = true; abortRef.current = true }
-  }, [playCreate, playResearch])
+    return () => { alive = false; cancelRef.current = true; clearChat() }
+  }, [playCreate, playResearch, clearChat, wt])
 
   return (
     <div className="flex h-full">
-      {/* Sidebar */}
-      <div className="w-[210px] shrink-0 border-r p-3 max-[640px]:hidden" style={{ borderColor: 'var(--border-raw)', background: 'var(--bg)' }}>
-        <div className="font-display font-bold text-[14px] px-2 mb-5 flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full" style={{ background: 'var(--teal)' }} /> COOPR</div>
-        <div className="font-mono text-[9px] uppercase tracking-[.08em] px-2.5 mb-1.5" style={{ color: 'var(--text-3)' }}>Conversations</div>
-        {[
-          { key: 'create' as const, title: 'Form mistakes video', preview: 'Working on hooks...', dot: 'var(--teal)' },
-          { key: 'research' as const, title: 'Solo travel trends', preview: '8 creators found', dot: 'var(--blue)' },
-        ].map(c => (
-          <div key={c.key} className={`flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-[13px] cursor-pointer mb-0.5 transition-colors ${activeConv === c.key ? 'bg-[rgba(13,148,136,0.06)]' : 'hover:bg-[rgba(0,0,0,0.03)]'}`} style={{ color: activeConv === c.key ? 'var(--text)' : 'var(--text-2)' }}>
-            <span className="w-2 h-2 rounded-full shrink-0" style={{ background: c.dot }} />
-            <div className="flex-1 min-w-0"><div className="text-[12px] font-semibold truncate">{c.title}</div><div className="text-[10px] truncate" style={{ color: activeConv === c.key ? 'var(--teal)' : 'var(--text-3)' }}>{c.preview}</div></div>
+      <div className="w-[210px] shrink-0 border-r p-3 max-[640px]:hidden" style={{borderColor:'var(--border-raw)',background:'var(--bg)'}}>
+        <div className="font-display font-bold text-[14px] px-2 mb-5 flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full" style={{background:'var(--teal)'}} /> COOPR</div>
+        <div className="font-mono text-[9px] uppercase tracking-[.08em] px-2.5 mb-1.5" style={{color:'var(--text-3)'}}>Conversations</div>
+        {([['create','Form mistakes video','Working on hooks...','var(--teal)'],['research','Solo travel trends','8 creators found','var(--blue)']] as const).map(([key,title,preview,dot])=>(
+          <div key={key} className={`flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-[13px] mb-0.5 transition-colors ${activeConv===key?'bg-[rgba(13,148,136,0.06)]':''}`} style={{color:activeConv===key?'var(--text)':'var(--text-2)'}}>
+            <span className="w-2 h-2 rounded-full shrink-0" style={{background:dot}} />
+            <div className="flex-1 min-w-0"><div className="text-[12px] font-semibold truncate">{title}</div><div className="text-[10px] truncate" style={{color:activeConv===key?'var(--teal)':'var(--text-3)'}}>{preview}</div></div>
           </div>
         ))}
-        <div className="border-t mt-3 pt-3" style={{ borderColor: 'var(--border-raw)' }}>
-          <div className="font-mono text-[9px] uppercase tracking-[.08em] px-2.5 mb-1.5" style={{ color: 'var(--text-3)' }}>Pages</div>
-          {['DNA', 'Pulse', 'Studio', 'Library'].map((p, i) => (
-            <div key={p} className="flex items-center gap-2.5 px-2.5 py-1.5 text-[12px] font-semibold" style={{ color: 'var(--text-2)' }}>
-              <span className="w-2 h-2 rounded-full opacity-40" style={{ background: ['var(--violet)', 'var(--amber)', '#16A34A', '#E11D48'][i] }} /> {p}
+        <div className="border-t mt-3 pt-3" style={{borderColor:'var(--border-raw)'}}>
+          <div className="font-mono text-[9px] uppercase tracking-[.08em] px-2.5 mb-1.5" style={{color:'var(--text-3)'}}>Pages</div>
+          {['DNA','Pulse','Studio','Library'].map((p,i)=>(
+            <div key={p} className="flex items-center gap-2.5 px-2.5 py-1.5 text-[12px] font-semibold" style={{color:'var(--text-2)'}}>
+              <span className="w-2 h-2 rounded-full opacity-40" style={{background:['var(--violet)','var(--amber)','#16A34A','#E11D48'][i]}} /> {p}
             </div>
           ))}
         </div>
       </div>
-      {/* Main chat */}
       <div className="flex-1 flex flex-col overflow-hidden">
-        <div className="flex items-center justify-between px-5 py-2.5 border-b" style={{ borderColor: 'var(--border-raw)' }}>
-          <div className="font-display text-[13px] font-bold">{headerTitle}</div>
-          <div className="font-mono text-[10px] px-2.5 py-1 rounded-full" style={{ background: 'var(--bg)', color: 'var(--text-3)' }}>{headerTools}</div>
+        <div className="flex items-center justify-between px-5 py-2.5 border-b" style={{borderColor:'var(--border-raw)'}}>
+          <div ref={titleRef} className="font-display text-[13px] font-bold">Form mistakes video</div>
+          <div ref={toolsRef} className="font-mono text-[10px] px-2.5 py-1 rounded-full" style={{background:'var(--bg)',color:'var(--text-3)'}}>3 tools used</div>
         </div>
-        <div ref={chatRef} className="flex-1 overflow-y-auto p-4 flex flex-col gap-3.5">
-          {msgs.map((m, i) => {
-            if (m.role === 'user') return <div key={i} className="self-end max-w-[80%] px-4 py-2.5 rounded-2xl rounded-br-sm text-[14px] leading-snug text-white" style={{ background: 'var(--bg-dark)' }}>{m.text}</div>
-            if (m.role === 'assistant') return (
-              <div key={i}><div className="font-mono text-[10px] font-medium uppercase tracking-[.06em] mb-1.5" style={{ color: 'var(--teal)' }}>COOPR</div><div className="text-[14px] leading-relaxed" style={{ color: 'var(--text)' }}>{m.text}</div></div>
-            )
-            return (
-              <div key={i}>
-                {m.blockLabel && <div className="font-mono text-[10px] font-medium uppercase tracking-[.06em] mb-1.5" style={{ color: 'var(--teal)' }}>{m.blockLabel}</div>}
-                <div className="pl-3 border-l-[3px]" style={{ borderColor: m.blockAccent || 'var(--teal)' }}>{m.children}</div>
-              </div>
-            )
-          })}
+        <div ref={chatRef} className="flex-1 overflow-y-auto p-4 flex flex-col gap-3.5" />
+        <div className="px-5 py-3 border-t flex gap-2 items-center" style={{borderColor:'var(--border-raw)'}}>
+          <div className="w-[30px] h-[30px] rounded-lg border flex items-center justify-center text-[16px] shrink-0" style={{borderColor:'var(--border-raw)',background:'var(--bg)',color:'var(--text-3)'}}>+</div>
+          <input ref={inputRef} readOnly placeholder="Message COOPR..." className="flex-1 py-2.5 px-3.5 rounded-[10px] border text-[14px] outline-none" style={{borderColor:'var(--border-raw)',background:'var(--bg)',color:'var(--text)'}} />
+          <div className="font-mono text-[9px] px-2.5 py-1 rounded-full shrink-0 flex items-center gap-1" style={{background:'var(--bg)',color:'var(--text-3)'}}><span className="w-1.5 h-1.5 rounded-full bg-green-500" /> Creative</div>
         </div>
-        <div className="px-5 py-3 border-t flex gap-2 items-center" style={{ borderColor: 'var(--border-raw)' }}>
-          <div className="w-[30px] h-[30px] rounded-lg border flex items-center justify-center text-[16px] shrink-0" style={{ borderColor: 'var(--border-raw)', background: 'var(--bg)', color: 'var(--text-3)' }}>+</div>
-          <input readOnly placeholder="Message COOPR..." className="flex-1 py-2.5 px-3.5 rounded-[10px] border text-[14px] outline-none" style={{ borderColor: 'var(--border-raw)', background: 'var(--bg)', color: 'var(--text)', fontFamily: 'var(--font-body, inherit)' }} />
-          <div className="font-mono text-[9px] px-2.5 py-1 rounded-full shrink-0 flex items-center gap-1" style={{ background: 'var(--bg)', color: 'var(--text-3)' }}><span className="w-1.5 h-1.5 rounded-full bg-green-500" /> Creative</div>
-        </div>
-        <div className="px-5 pb-1.5 flex justify-end"><span className="font-mono text-[9px]" style={{ color: 'var(--text-3)' }}>169 tools available</span></div>
+        <div className="px-5 pb-1.5 flex justify-end"><span className="font-mono text-[9px]" style={{color:'var(--text-3)'}}>169 tools available</span></div>
       </div>
     </div>
   )
