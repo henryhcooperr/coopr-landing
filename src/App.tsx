@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { submitWaitlistEmail } from '@/lib/supabase'
-import ChatDemo from '@/components/ChatDemo'
+// ChatDemo replaced by inline V5HeroDemo
 import { BrandLockup, HeroBrandStack } from '@/components/shared/Brand'
 
 // ============================================
@@ -716,6 +716,178 @@ function FloatingNav() {
 }
 
 // ============================================
+// V5 HERO DEMO (inline — replaces old ChatDemo)
+// ============================================
+
+type DemoMsg = { role: 'user' | 'assistant' | 'block'; text: string; blockLabel?: string; blockAccent?: string; children?: React.ReactNode }
+
+function V5HeroDemo() {
+  const chatRef = useRef<HTMLDivElement>(null)
+  const [msgs, setMsgs] = useState<DemoMsg[]>([])
+  const [activeConv, setActiveConv] = useState<'create' | 'research'>('create')
+  const [headerTitle, setHeaderTitle] = useState('Form mistakes video')
+  const [headerTools, setHeaderTools] = useState('3 tools used')
+  const abortRef = useRef(false)
+
+  const wait = (ms: number) => new Promise<void>(r => setTimeout(r, ms))
+
+  const scrollBottom = useCallback(() => {
+    if (chatRef.current) chatRef.current.scrollTop = chatRef.current.scrollHeight
+  }, [])
+
+  const pushMsg = useCallback((m: DemoMsg) => {
+    setMsgs(prev => [...prev, m])
+    setTimeout(scrollBottom, 50)
+  }, [scrollBottom])
+
+  const playCreate = useCallback(async () => {
+    setActiveConv('create'); setHeaderTitle('Form mistakes video'); setHeaderTools('3 tools used')
+    await wait(400)
+    pushMsg({ role: 'user', text: "I have an idea \u2014 common gym form mistakes that most people don't realize" })
+    await wait(1000)
+    pushMsg({ role: 'block', text: '', blockLabel: 'Idea Evaluation', children: (
+      <div className="v5-demo-idea-card">
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+          <span className="font-accent italic text-[14px]" style={{ color: 'var(--teal)' }}>Idea Evaluation</span>
+          <span className="font-mono text-[10px] font-medium px-2.5 py-0.5 rounded-full" style={{ background: 'var(--teal-dim)', color: 'var(--teal)' }}>Strong 8.2/10</span>
+        </div>
+        <p className="text-[13px] leading-relaxed" style={{ color: 'var(--text-2)' }}>High search volume topic. Your form-focused content gets +31% above average hold rate. Educational hooks dominate in fitness right now.</p>
+        <div className="flex gap-2 mt-2 flex-wrap">
+          {['Niche fit: 92%', 'Gap: Medium', 'Strength: Form'].map(t => <span key={t} className="font-mono text-[10px] px-2.5 py-1 rounded-full border" style={{ borderColor: 'var(--border-raw)', color: 'var(--text-2)' }}>{t}</span>)}
+        </div>
+      </div>
+    )})
+    await wait(1200)
+    pushMsg({ role: 'user', text: 'Love it. Work on hooks.' })
+    await wait(1000)
+    pushMsg({ role: 'block', text: '', blockLabel: 'Top hooks', blockAccent: 'var(--violet)', children: (
+      <div className="flex flex-col gap-2">
+        <div className="p-3 rounded-lg border" style={{ borderColor: 'var(--teal)', boxShadow: '0 0 0 1px var(--teal), 0 4px 16px rgba(13,148,136,0.1)' }}>
+          <div className="flex justify-between items-center mb-1.5"><span className="font-accent italic text-[13px]" style={{ color: 'var(--violet)' }}>Hook 1</span><span className="font-mono text-[11px] font-semibold px-3 py-1 rounded-full" style={{ background: 'rgba(22,163,74,0.1)', color: '#16A34A' }}>84% hold</span></div>
+          <p className="text-[13px] font-medium">"The exercise everyone does wrong — and why your trainer won't tell you"</p>
+        </div>
+        <div className="p-3 rounded-lg border" style={{ borderColor: 'var(--border-raw)' }}>
+          <div className="flex justify-between items-center mb-1.5"><span className="font-accent italic text-[13px]" style={{ color: 'var(--violet)' }}>Hook 2</span><span className="font-mono text-[11px] font-semibold px-3 py-1 rounded-full" style={{ background: 'rgba(245,158,11,0.08)', color: '#D97706' }}>76% hold</span></div>
+          <p className="text-[13px] font-medium">"3 mistakes killing your progress — I filmed proof"</p>
+        </div>
+      </div>
+    )})
+    await wait(800)
+    pushMsg({ role: 'block', text: '', children: (
+      <div className="inline-flex items-center gap-2 px-3 py-2 rounded-lg" style={{ background: 'var(--teal-dim)', border: '1px solid rgba(13,148,136,0.15)' }}>
+        <span className="font-display text-xl font-bold" style={{ color: 'var(--teal)' }}>94%</span>
+        <span className="text-[11px]" style={{ color: 'var(--text-2)' }}>Voice match — sounds like you</span>
+      </div>
+    )})
+  }, [pushMsg])
+
+  const playResearch = useCallback(async () => {
+    setActiveConv('research'); setHeaderTitle('Solo travel trends'); setHeaderTools('8 sources')
+    await wait(400)
+    pushMsg({ role: 'user', text: "What's trending in solo travel right now? Who should I watch?" })
+    await wait(1200)
+    pushMsg({ role: 'block', text: '', blockLabel: 'Solo Travel Report', blockAccent: 'var(--blue)', children: (
+      <div className="p-3.5 rounded-lg border bg-white" style={{ borderColor: 'var(--border-raw)' }}>
+        <div className="flex justify-between items-center mb-1"><span className="font-display text-[14px] font-bold">Solo Travel Niche Report</span><span className="font-mono text-[10px] px-2.5 py-0.5 rounded-full" style={{ background: 'rgba(37,99,235,0.08)', color: '#2563EB' }}>High confidence</span></div>
+        <div className="font-mono text-[10px] mb-3" style={{ color: 'var(--text-3)' }}>8 sources &middot; 63 posts scanned &middot; 4 min read</div>
+        <div className="flex gap-2 mb-3"><div className="flex items-center justify-center w-5 h-5 rounded-full text-[10px] font-bold shrink-0" style={{ background: 'rgba(37,99,235,0.08)', color: '#2563EB' }}>1</div><div><div className="text-[13px] font-semibold">Hidden-gem POV format surging</div><div className="text-[12px] leading-snug" style={{ color: 'var(--text-2)' }}>First-person hooks outperforming guide-style by 2.8x among solo travel creators under 100K.</div></div></div>
+        <div className="flex gap-2"><div className="flex items-center justify-center w-5 h-5 rounded-full text-[10px] font-bold shrink-0" style={{ background: 'rgba(37,99,235,0.08)', color: '#2563EB' }}>2</div><div><div className="text-[13px] font-semibold">Food + location mashups trending</div><div className="text-[12px] leading-snug" style={{ color: 'var(--text-2)' }}>Street food + neighborhood discovery averaging 5.1% ER vs 2.3% baseline.</div></div></div>
+      </div>
+    )})
+    await wait(800)
+    pushMsg({ role: 'block', text: '', blockLabel: 'Creators discovered', children: (
+      <div className="flex flex-col gap-1.5">
+        {[
+          { i: 'SN', name: 'SoloNomad', badge: 'Competitor', bc: 'var(--teal)', stats: '82K \u00B7 4.8% eng', grad: '#0D9488,#047857' },
+          { i: 'WL', name: 'WanderLena', badge: 'Inspiration', bc: 'var(--violet)', stats: '210K \u00B7 3.2% eng', grad: '#7C3AED,#4338CA' },
+          { i: 'TJ', name: 'TokyoJay', badge: 'Rising', bc: 'var(--amber)', stats: '31K \u00B7 7.1% eng', grad: '#F59E0B,#D97706' },
+        ].map(c => (
+          <div key={c.i} className="flex items-center gap-2.5 p-2 rounded-lg border" style={{ borderColor: 'var(--border-raw)', background: 'var(--bg)' }}>
+            <div className="w-7 h-7 rounded-full flex items-center justify-center text-[9px] font-bold text-white shrink-0" style={{ background: `linear-gradient(135deg,${c.grad})` }}>{c.i}</div>
+            <div className="flex-1 min-w-0"><div className="text-[12px] font-semibold flex items-center gap-1.5">{c.name} <span className="font-mono text-[8px] px-1.5 py-px rounded-full" style={{ background: `color-mix(in srgb, ${c.bc} 10%, transparent)`, color: c.bc }}>{c.badge}</span></div><div className="font-mono text-[9px]" style={{ color: 'var(--text-3)' }}>{c.stats}</div></div>
+          </div>
+        ))}
+      </div>
+    )})
+    await wait(600)
+    pushMsg({ role: 'assistant', text: "Saved. TokyoJay is worth watching closely — 7.1% engagement at 31K is exceptional. His hidden-gem format matches your style." })
+  }, [pushMsg])
+
+  // Auto-cycle
+  useEffect(() => {
+    abortRef.current = false
+    let cancelled = false
+    const convs = [playCreate, playResearch]
+    let idx = 0
+    async function cycle() {
+      while (!cancelled) {
+        setMsgs([])
+        await wait(300)
+        await convs[idx]()
+        await wait(4000)
+        idx = (idx + 1) % convs.length
+      }
+    }
+    cycle()
+    return () => { cancelled = true; abortRef.current = true }
+  }, [playCreate, playResearch])
+
+  return (
+    <div className="flex h-full">
+      {/* Sidebar */}
+      <div className="w-[210px] shrink-0 border-r p-3 max-[640px]:hidden" style={{ borderColor: 'var(--border-raw)', background: 'var(--bg)' }}>
+        <div className="font-display font-bold text-[14px] px-2 mb-5 flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full" style={{ background: 'var(--teal)' }} /> COOPR</div>
+        <div className="font-mono text-[9px] uppercase tracking-[.08em] px-2.5 mb-1.5" style={{ color: 'var(--text-3)' }}>Conversations</div>
+        {[
+          { key: 'create' as const, title: 'Form mistakes video', preview: 'Working on hooks...', dot: 'var(--teal)' },
+          { key: 'research' as const, title: 'Solo travel trends', preview: '8 creators found', dot: 'var(--blue)' },
+        ].map(c => (
+          <div key={c.key} className={`flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-[13px] cursor-pointer mb-0.5 transition-colors ${activeConv === c.key ? 'bg-[rgba(13,148,136,0.06)]' : 'hover:bg-[rgba(0,0,0,0.03)]'}`} style={{ color: activeConv === c.key ? 'var(--text)' : 'var(--text-2)' }}>
+            <span className="w-2 h-2 rounded-full shrink-0" style={{ background: c.dot }} />
+            <div className="flex-1 min-w-0"><div className="text-[12px] font-semibold truncate">{c.title}</div><div className="text-[10px] truncate" style={{ color: activeConv === c.key ? 'var(--teal)' : 'var(--text-3)' }}>{c.preview}</div></div>
+          </div>
+        ))}
+        <div className="border-t mt-3 pt-3" style={{ borderColor: 'var(--border-raw)' }}>
+          <div className="font-mono text-[9px] uppercase tracking-[.08em] px-2.5 mb-1.5" style={{ color: 'var(--text-3)' }}>Pages</div>
+          {['DNA', 'Pulse', 'Studio', 'Library'].map((p, i) => (
+            <div key={p} className="flex items-center gap-2.5 px-2.5 py-1.5 text-[12px] font-semibold" style={{ color: 'var(--text-2)' }}>
+              <span className="w-2 h-2 rounded-full opacity-40" style={{ background: ['var(--violet)', 'var(--amber)', '#16A34A', '#E11D48'][i] }} /> {p}
+            </div>
+          ))}
+        </div>
+      </div>
+      {/* Main chat */}
+      <div className="flex-1 flex flex-col overflow-hidden">
+        <div className="flex items-center justify-between px-5 py-2.5 border-b" style={{ borderColor: 'var(--border-raw)' }}>
+          <div className="font-display text-[13px] font-bold">{headerTitle}</div>
+          <div className="font-mono text-[10px] px-2.5 py-1 rounded-full" style={{ background: 'var(--bg)', color: 'var(--text-3)' }}>{headerTools}</div>
+        </div>
+        <div ref={chatRef} className="flex-1 overflow-y-auto p-4 flex flex-col gap-3.5">
+          {msgs.map((m, i) => {
+            if (m.role === 'user') return <div key={i} className="self-end max-w-[80%] px-4 py-2.5 rounded-2xl rounded-br-sm text-[14px] leading-snug text-white" style={{ background: 'var(--bg-dark)' }}>{m.text}</div>
+            if (m.role === 'assistant') return (
+              <div key={i}><div className="font-mono text-[10px] font-medium uppercase tracking-[.06em] mb-1.5" style={{ color: 'var(--teal)' }}>COOPR</div><div className="text-[14px] leading-relaxed" style={{ color: 'var(--text)' }}>{m.text}</div></div>
+            )
+            return (
+              <div key={i}>
+                {m.blockLabel && <div className="font-mono text-[10px] font-medium uppercase tracking-[.06em] mb-1.5" style={{ color: 'var(--teal)' }}>{m.blockLabel}</div>}
+                <div className="pl-3 border-l-[3px]" style={{ borderColor: m.blockAccent || 'var(--teal)' }}>{m.children}</div>
+              </div>
+            )
+          })}
+        </div>
+        <div className="px-5 py-3 border-t flex gap-2 items-center" style={{ borderColor: 'var(--border-raw)' }}>
+          <div className="w-[30px] h-[30px] rounded-lg border flex items-center justify-center text-[16px] shrink-0" style={{ borderColor: 'var(--border-raw)', background: 'var(--bg)', color: 'var(--text-3)' }}>+</div>
+          <input readOnly placeholder="Message COOPR..." className="flex-1 py-2.5 px-3.5 rounded-[10px] border text-[14px] outline-none" style={{ borderColor: 'var(--border-raw)', background: 'var(--bg)', color: 'var(--text)', fontFamily: 'var(--font-body, inherit)' }} />
+          <div className="font-mono text-[9px] px-2.5 py-1 rounded-full shrink-0 flex items-center gap-1" style={{ background: 'var(--bg)', color: 'var(--text-3)' }}><span className="w-1.5 h-1.5 rounded-full bg-green-500" /> Creative</div>
+        </div>
+        <div className="px-5 pb-1.5 flex justify-end"><span className="font-mono text-[9px]" style={{ color: 'var(--text-3)' }}>169 tools available</span></div>
+      </div>
+    </div>
+  )
+}
+
+// ============================================
 // APP
 // ============================================
 
@@ -809,7 +981,7 @@ function App() {
                 <div className="v5-browser-url">app.getcoopr.com</div>
               </div>
               <div className="v5-browser-body">
-                <ChatDemo />
+                <V5HeroDemo />
               </div>
             </div>
           </div>
