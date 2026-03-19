@@ -9,6 +9,27 @@ import GetStarted from './GetStarted.tsx'
 import Features from './Features.tsx'
 import Devlog from './Devlog.tsx'
 
+// Map of clean paths to hash routes — used to support both /privacy and #/privacy
+const ROUTE_MAP: Record<string, string> = {
+  '/privacy': '#/privacy',
+  '/terms': '#/terms',
+  '/data-deletion': '#/data-deletion',
+  '/get-started': '#/get-started',
+  '/features': '#/features',
+  '/devlog': '#/devlog',
+}
+
+// On initial load, if we have a clean pathname (e.g. /privacy) but no hash,
+// redirect to the hash equivalent so the router picks it up.
+// This handles Vercel rewrites serving index.html for clean URLs.
+function initCleanPathRedirect() {
+  const { pathname, hash, search } = window.location
+  if (!hash && pathname !== '/' && ROUTE_MAP[pathname]) {
+    window.history.replaceState(null, '', '/' + search + ROUTE_MAP[pathname])
+  }
+}
+initCleanPathRedirect()
+
 function Router() {
   const [path, setPath] = useState(window.location.hash)
 
