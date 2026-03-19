@@ -999,10 +999,6 @@ function App() {
           <div className="v5-hero-brand-stack">
             <HeroBrandStack />
           </div>
-          <div className="v5-hero-badge">
-            <span className="v5-hero-badge-dot" />
-            Private Beta
-          </div>
           <h1 className="v5-hero-h1">
             We don't make your content.<br />
             We make you a <em>better creator.</em>
@@ -1097,8 +1093,6 @@ function TrustBar() {
   const { ref, inView } = useScrollReveal()
   return (
     <div ref={ref} className="v5-trust-bar" style={{ opacity: inView ? 1 : 0, transform: inView ? 'none' : 'translateY(24px)', transition: 'opacity 0.8s cubic-bezier(0.16,1,0.3,1), transform 0.8s cubic-bezier(0.16,1,0.3,1)' }}>
-      <span>Private Beta</span>
-      <span className="v5-trust-sep" />
       <span>Built by a creator, for creators</span>
       <span className="v5-trust-sep" />
       <span>Your data stays yours</span>
