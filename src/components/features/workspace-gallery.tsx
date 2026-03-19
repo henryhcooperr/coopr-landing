@@ -450,7 +450,14 @@ export function WorkspaceGallery({ initialModule = 'shoot', reducedMotion }: Wor
                 </button>
               )
             })}
-            <a href="#cta" className="inline-flex items-center gap-2 px-2 pt-1 font-body text-sm font-semibold text-[var(--teal)] no-underline transition-all duration-200 hover:gap-3">
+            <a
+              href="#"
+              onClick={(e) => {
+                e.preventDefault()
+                document.getElementById('cta-section')?.scrollIntoView({ behavior: 'smooth' })
+              }}
+              className="inline-flex items-center gap-2 px-2 pt-1 font-body text-sm font-semibold text-[var(--teal)] no-underline transition-all duration-200 hover:gap-3"
+            >
               See this in your own workflow
               <ArrowRight size={14} />
             </a>
