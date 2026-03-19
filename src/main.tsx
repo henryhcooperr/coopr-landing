@@ -8,6 +8,7 @@ import DataDeletion from './DataDeletion.tsx'
 import GetStarted from './GetStarted.tsx'
 import Features from './Features.tsx'
 import Devlog from './Devlog.tsx'
+import { Analytics } from '@vercel/analytics/react'
 
 // Map of clean paths to hash routes — used to support both /privacy and #/privacy
 const ROUTE_MAP: Record<string, string> = {
@@ -52,5 +53,6 @@ function Router() {
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <Router />
+    <Analytics />
   </StrictMode>,
 )
