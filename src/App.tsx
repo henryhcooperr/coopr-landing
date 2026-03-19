@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react';
+import { submitWaitlistEmail } from '@/lib/supabase';
 
 // Layout components
 import FloatingNav from './components/FloatingNav';
@@ -17,12 +18,11 @@ import CTASection from './sections/CTASection';
 import './styles/landing.css';
 
 export default function App() {
-  const [submitted, setSubmitted] = useState(false);
-
-  const handleEmailSubmit = useCallback((email: string) => {
-    // In production: call submitWaitlistEmail(email) from supabase lib
-    console.log('Waitlist signup:', email);
-    setSubmitted(true);
+  const handleEmailSubmit = useCallback(async (email: string) => {
+    const { error } = await submitWaitlistEmail(email);
+    if (error) {
+      console.error('Waitlist submission failed:', error);
+    }
   }, []);
 
   const scrollToCTA = useCallback(() => {
