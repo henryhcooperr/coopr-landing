@@ -18,7 +18,7 @@ export const DEVLOG_ENTRIES: DevlogEntry[] = [
     slug: 'photo-carousel-intelligence',
     title: 'COOPR now understands photos and carousels',
     summary:
-      'Not just Reels anymore. COOPR analyzes every format you post — single photos, carousels, and video — with the same depth. Your creative fingerprint, scores, and trends reflect everything you make.',
+      'Not just Reels anymore. COOPR analyzes every format you post — single photos, carousels, and video — with the same depth. Your fingerprint, scores, and trends reflect everything you make.',
     tags: ['new', 'improved'],
     alsoShipped: [
       'Slide-by-slide carousel breakdowns',
@@ -28,31 +28,44 @@ export const DEVLOG_ENTRIES: DevlogEntry[] = [
     ],
   },
   {
+    date: '2026-03-20',
+    slug: 'settings-and-reliability',
+    title: 'Account settings and under-the-hood upgrades',
+    summary:
+      'A proper settings page, audience demographics, and major reliability improvements. Your data now persists across updates — no more resets.',
+    tags: ['new', 'improved'],
+    alsoShipped: [
+      'Full account settings page',
+      'Audience demographics from Instagram',
+      'Persistent cloud storage for your data',
+      'Stronger login security',
+    ],
+  },
+  {
     date: '2026-03-19',
     slug: 'clip-lab',
     title: 'Clip Lab: deep analysis for any clip',
     summary:
-      'Upload a clip and get a full breakdown — what works, what to improve, and how it compares to your best-performing content. Frame-by-frame visual analysis included.',
+      'Upload a clip and get a full breakdown — what works, what to improve, and how it compares to your best-performing content.',
     tags: ['new'],
     alsoShipped: [
-      'AI-powered hook and pacing scores',
-      'Visual scene-by-scene breakdown',
+      'Hook and pacing scores',
+      'Scene-by-scene visual breakdown',
       'Improvement suggestions based on your style',
     ],
   },
   {
     date: '2026-03-19',
-    slug: 'semantic-intelligence',
-    title: 'Smarter search, smarter suggestions — everywhere',
+    slug: 'smarter-search',
+    title: 'Search that understands what you mean',
     summary:
-      'COOPR now uses vector intelligence across the entire platform. Search finds content by meaning, not just keywords. Captions pull from your best-performing style. Your calendar spaces topics to keep your feed fresh.',
+      'Search your library by idea, not just keywords. COOPR finds content that matches your intent — even if the words are different. Your calendar and suggestions got smarter too.',
     tags: ['new', 'improved'],
     alsoShipped: [
-      'Hybrid semantic + keyword search across your library',
-      'Style-aware caption generation from your own content',
-      'Semantic topic spacing in your content calendar',
-      'Content similarity map with explorable clusters',
-      'Demand signal matching for trending opportunities',
+      'Meaning-based search across your library',
+      'Captions that match your voice and best-performing style',
+      'Smarter topic spacing in your content calendar',
+      'Visual content map you can explore',
     ],
   },
   {
@@ -60,28 +73,13 @@ export const DEVLOG_ENTRIES: DevlogEntry[] = [
     slug: 'chat-intelligence',
     title: 'Chat that actually knows your content',
     summary:
-      'When you talk to COOPR, it pulls relevant context from your entire library before responding. You can see exactly where insights come from, and every conversation quietly builds your knowledge base.',
+      'When you talk to COOPR, it draws on your entire library to give relevant answers. You can see where insights come from, and conversations build your knowledge base over time.',
     tags: ['new', 'improved'],
     alsoShipped: [
-      'Pre-response intelligence briefing from your library',
-      'Source badges showing where insights come from',
-      'Auto-extracted knowledge saved from conversations',
-      'Project-aware context in every chat',
-      'Content match blocks for visual similarity results',
-    ],
-  },
-  {
-    date: '2026-03-20',
-    slug: 'settings-and-reliability',
-    title: 'Account settings and under-the-hood upgrades',
-    summary:
-      'A proper settings page, plus major reliability improvements. Your data is now stored on cloud infrastructure that persists across deploys — no more resets.',
-    tags: ['new', 'improved'],
-    alsoShipped: [
-      'Full account settings page',
-      'Audience demographics from Instagram',
-      'Cloud media storage for frames and analysis',
-      'Stronger login security',
+      'Contextual answers grounded in your content',
+      'Source references on insights',
+      'Knowledge saved automatically from conversations',
+      'Project-aware responses',
     ],
   },
   {
@@ -105,8 +103,22 @@ export const DEVLOG_ENTRIES: DevlogEntry[] = [
     tags: ['improved'],
     alsoShipped: [
       'Universal content categorization',
-      'Niche-specific language removed from all prompts',
-      'Bootstrap data adapts to your content style',
+      'Personalized suggestions for any niche',
+      'Onboarding that adapts to your content style',
+    ],
+  },
+  {
+    date: '2026-03-12',
+    slug: 'pulse-briefing',
+    title: 'Pulse: your weekly creative briefing',
+    summary:
+      'A personalized rundown of what happened this week, what to post next, and what your competitors are doing. Like having a creative director check in every Monday.',
+    tags: ['new'],
+    alsoShipped: [
+      'Weekly editorial summary',
+      'Day-by-day content plan with suggestions',
+      'Competitor and niche radar',
+      'Quick-action cards for your next move',
     ],
   },
   {
@@ -126,6 +138,34 @@ export const DEVLOG_ENTRIES: DevlogEntry[] = [
     tags: ['new'],
   },
   {
+    date: '2026-03-10',
+    slug: 'chat-flagship',
+    title: 'A new way to talk to COOPR',
+    summary:
+      'Chat got a complete redesign. COOPR now opens with a personalized greeting based on what you have been working on, and adapts between creative brainstorming and execution modes depending on what you need.',
+    tags: ['new', 'improved'],
+    alsoShipped: [
+      'Personalized conversation openers',
+      'Creative and execution modes',
+      'Inline content cards in your thread',
+      'Iterate on any suggestion with one tap',
+    ],
+  },
+  {
+    date: '2026-03-09',
+    slug: 'production-desk',
+    title: 'Studio: your production desk',
+    summary:
+      'Plan shoots, refine your hooks, and see predicted retention — all in one place. Studio now feels like sitting down at an edit bay built around your content.',
+    tags: ['new', 'improved'],
+    alsoShipped: [
+      'Shoot session planner',
+      'Editable hooks with predicted hold rates',
+      'Script tools with pacing feedback',
+      'Mobile-friendly layout',
+    ],
+  },
+  {
     date: '2026-03-07',
     slug: 'onboarding',
     title: 'A new way to get started',
@@ -135,6 +175,45 @@ export const DEVLOG_ENTRIES: DevlogEntry[] = [
     alsoShipped: [
       'Invite code gating for beta access',
       'Automatic content fingerprinting on signup',
+    ],
+  },
+  {
+    date: '2026-02-28',
+    slug: 'visual-understanding',
+    title: 'COOPR sees what your audience sees',
+    summary:
+      'Every piece of content you post gets analyzed visually — composition, pacing, color, text placement. COOPR builds a picture of what makes your content yours.',
+    tags: ['new'],
+    alsoShipped: [
+      'Visual analysis of every post',
+      'Style patterns detected across your library',
+      'Visual insights fed into your scores and suggestions',
+    ],
+  },
+  {
+    date: '2026-02-21',
+    slug: 'trend-detection',
+    title: 'COOPR spots what is working before you do',
+    summary:
+      'Automatic trend detection across your content and niche. COOPR identifies patterns in what is gaining traction, what is seasonal, and where momentum is shifting.',
+    tags: ['new'],
+    alsoShipped: [
+      'Momentum and seasonal pattern detection',
+      'Performance trends across your library',
+      'Suggestions that adapt to what is trending now',
+    ],
+  },
+  {
+    date: '2026-02-14',
+    slug: 'captions-and-scripts',
+    title: 'Captions and scripts that sound like you',
+    summary:
+      'Generate captions and scripts trained on your voice and style. Get improvement suggestions for drafts, with specific feedback on what to tighten.',
+    tags: ['new'],
+    alsoShipped: [
+      'Caption generation matched to your tone',
+      'Script feedback with pacing notes',
+      'Improvement suggestions for existing content',
     ],
   },
 ]
