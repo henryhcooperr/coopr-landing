@@ -11,6 +11,8 @@ import ExitIntentPopup from './components/ExitIntentPopup';
 import HeroSection from './sections/HeroSection';
 import LearnSection from './sections/LearnSection';
 import PredictSection from './sections/PredictSection';
+import LoopSection from './sections/LoopSection';
+import SocialProofSection from './sections/SocialProofSection';
 import FounderSection from './sections/FounderSection';
 import CTASection from './sections/CTASection';
 
@@ -45,7 +47,13 @@ export default function App() {
       {/* Section 3: Before You Film */}
       <PredictSection />
 
-      {/* Section 4: Founder */}
+      {/* Section 4: The Full Loop */}
+      <LoopSection />
+
+      {/* Section 5: Social Proof */}
+      <SocialProofSection />
+
+      {/* Section 6: Founder */}
       <FounderSection />
 
       {/* Section 5: CTA */}

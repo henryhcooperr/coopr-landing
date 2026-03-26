@@ -1,6 +1,7 @@
-import { useState, useEffect, useRef, useCallback, type CSSProperties } from "react";
-import BlurHeading from "../components/ui/blur-heading";
-import { BorderBeam } from "../components/ui/border-beam";
+import { useState, useCallback, type CSSProperties } from "react";
+import { motion } from "motion/react";
+import { ShimmerButton } from "@/components/ui/shimmer-button";
+import { BlurFade } from "@/components/ui/blur-fade";
 
 interface CTASectionProps {
   onSubmit?: (email: string) => void;
@@ -10,37 +11,13 @@ export default function CTASection({ onSubmit }: CTASectionProps) {
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [inView, setInView] = useState(false);
-  const sectionRef = useRef<HTMLElement>(null);
 
-  /* ---- Intersection Observer for scroll reveal ---- */
-  useEffect(() => {
-    const el = sectionRef.current;
-    if (!el) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setInView(true);
-          observer.unobserve(entry.target);
-        }
-      },
-      { threshold: 0.05 }
-    );
-
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, []);
-
-  /* ---- Form submission ---- */
   const handleSubmit = useCallback(
-    async (e: React.FormEvent) => {
+    async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
       if (!email || isSubmitting) return;
       setIsSubmitting(true);
 
-      // In production, this calls submitWaitlistEmail from supabase lib.
-      // For prototype, simulate network latency:
       await new Promise((r) => setTimeout(r, 800));
 
       setSubmitted(true);
@@ -51,180 +28,126 @@ export default function CTASection({ onSubmit }: CTASectionProps) {
   );
 
   return (
-    <section ref={sectionRef} id="cta-section" style={styles.section}>
-      {/* Section label */}
-      <span
-        className="section-label"
-        style={{
-          ...styles.reveal,
-          opacity: inView ? 1 : 0,
-          transform: inView ? "none" : "translateY(8px)",
-        }}
-      >
-        Ready?
-      </span>
+    <motion.section
+      id="cta-section"
+      style={styles.section}
+      initial={{ opacity: 0, y: 24 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-80px" }}
+      transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+    >
+      {/* Radial glow */}
+      <div style={styles.glow} aria-hidden="true" />
 
-      {/* Heading */}
-      <BlurHeading
-        words={[
-          { text: "Your" },
-          { text: "content" },
-          { text: "deserves" },
-          { text: "a" },
-          { text: "creative", em: true },
-          { text: "engine." },
-        ]}
-        inView={inView}
-        className="section-h2"
-      />
+      <BlurFade delay={0.1} inView>
+        <h2 style={styles.heading}>Ready to stop guessing?</h2>
+      </BlurFade>
 
-      {/* Body */}
-      <p
-        className="section-body"
-        style={{
-          ...styles.reveal,
-          ...styles.body,
-          opacity: inView ? 1 : 0,
-          transform: inView ? "none" : "translateY(8px)",
-          transitionDelay: "0.3s",
-        }}
-      >
-        COOPR is in private beta. The creators who join now shape what it
-        becomes.
-      </p>
+      <BlurFade delay={0.2} inView>
+        <p style={styles.subheading}>
+          Join the beta and let COOPR learn what makes your content work.
+        </p>
+      </BlurFade>
 
-      {/* Email form / success state */}
-      <div
-        style={{
-          ...styles.reveal,
-          ...styles.formOuter,
-          opacity: inView ? 1 : 0,
-          transform: inView ? "none" : "translateY(12px)",
-          transitionDelay: "0.45s",
-        }}
-      >
-        {submitted ? (
-          <div style={styles.successState}>
-            {/* Checkmark */}
-            <svg
-              width="20"
-              height="20"
-              viewBox="0 0 20 20"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-              aria-hidden="true"
-            >
-              <circle cx="10" cy="10" r="10" fill="var(--emerald)" />
-              <path
-                d="M6 10.5l2.5 2.5L14 7.5"
-                stroke="#fff"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
+      <BlurFade delay={0.35} inView>
+        <div style={styles.formOuter}>
+          {submitted ? (
+            <div style={styles.successState}>
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 20 20"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
+              >
+                <circle cx="10" cy="10" r="10" fill="var(--emerald, #059669)" />
+                <path
+                  d="M6 10.5l2.5 2.5L14 7.5"
+                  stroke="#fff"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+              <span style={styles.successText}>
+                You're on the list. We'll be in touch.
+              </span>
+            </div>
+          ) : (
+            <form onSubmit={handleSubmit} style={styles.form} className="cta-form">
+              <input
+                type="email"
+                required
+                placeholder="you@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                style={styles.input}
+                aria-label="Email address"
+                className="cta-input"
               />
-            </svg>
-            <span style={styles.successText}>
-              You're on the list. We'll be in touch.
-            </span>
-          </div>
-        ) : (
-          <form onSubmit={handleSubmit} style={styles.formContainer}>
-            <BorderBeam size={350} duration={8} delay={0.5} colorFrom="#0D9488" colorTo="#7C3AED" />
-            <input
-              type="email"
-              required
-              placeholder="you@example.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              style={styles.input}
-              aria-label="Email address"
-            />
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              style={{
-                ...styles.submitButton,
-                opacity: isSubmitting ? 0.75 : 1,
-              }}
-            >
-              {isSubmitting ? "Joining..." : "Request Early Access"}
-              {!isSubmitting && (
-                <svg
-                  width="14"
-                  height="14"
-                  viewBox="0 0 16 16"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                  aria-hidden="true"
-                  style={{ marginLeft: 4, flexShrink: 0 }}
-                >
-                  <path
-                    d="M3.333 8h9.334M8.667 4l4 4-4 4"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              )}
-            </button>
-          </form>
-        )}
-      </div>
+              <ShimmerButton
+                type="submit"
+                disabled={isSubmitting}
+                shimmerColor="rgba(255,255,255,0.3)"
+                background="var(--brand, #0D9488)"
+                className="cta-button"
+                style={styles.shimmerOverride}
+              >
+                <span style={styles.buttonLabel}>
+                  {isSubmitting ? "Joining..." : "Request Early Access"}
+                </span>
+              </ShimmerButton>
+            </form>
+          )}
+        </div>
+      </BlurFade>
 
-      {/* Trust line */}
-      <p
-        className="font-mono"
-        style={{
-          ...styles.reveal,
-          ...styles.trustLine,
-          opacity: inView ? 1 : 0,
-          transitionDelay: "0.6s",
-        }}
-      >
-        Your data stays yours &middot; No credit card required
-      </p>
+      <BlurFade delay={0.45} inView>
+        <p style={styles.microCopy}>No credit card required. Invite-only beta.</p>
+      </BlurFade>
 
-      {/* Waitlist counter removed — not accurate yet */}
+      <BlurFade delay={0.55} inView>
+        <a href="#/devlog" style={styles.secondaryCta}>
+          Or explore the dev log &rarr;
+        </a>
+      </BlurFade>
 
-      {/* Inject responsive styles */}
       <style>{responsiveCSS}</style>
-    </section>
+    </motion.section>
   );
 }
 
 /* ---------- Responsive overrides ---------- */
 
 const responsiveCSS = `
-  .cta-form-container {
+  .cta-form {
     display: flex;
     align-items: center;
-    gap: 0;
+    gap: 8px;
   }
 
-  .cta-form-input {
+  .cta-input {
     flex: 1;
     min-width: 0;
   }
 
-  .cta-form-button {
+  .cta-button {
     flex-shrink: 0;
     white-space: nowrap;
   }
 
   @media (max-width: 520px) {
-    .cta-form-container {
+    .cta-form {
       flex-direction: column;
-      gap: 8px;
+      gap: 10px;
     }
-    .cta-form-input {
-      width: 100%;
+    .cta-input {
+      width: 100% !important;
       border-radius: 9999px !important;
     }
-    .cta-form-button {
-      width: 100%;
-      border-radius: 9999px !important;
-      justify-content: center;
+    .cta-button {
+      width: 100% !important;
     }
   }
 `;
@@ -233,113 +156,116 @@ const responsiveCSS = `
 
 const styles: Record<string, CSSProperties> = {
   section: {
+    position: "relative",
     textAlign: "center",
-    padding: "var(--section-padding) 24px",
+    padding: "var(--section-padding, 120px) 24px",
     maxWidth: 1100,
     marginLeft: "auto",
     marginRight: "auto",
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
+    background:
+      "radial-gradient(ellipse 70% 50% at 50% 100%, color-mix(in srgb, var(--brand, #0D9488) 8%, transparent), transparent), linear-gradient(to bottom, var(--bg-page, #FAFAF9), color-mix(in srgb, var(--bg-page, #FAFAF9) 92%, #f0ede8))",
+    borderRadius: 24,
+    overflow: "hidden",
   },
-  reveal: {
-    transition:
-      "opacity 0.7s var(--ease-premium), transform 0.7s var(--ease-premium)",
-    willChange: "opacity, transform",
+  glow: {
+    position: "absolute",
+    inset: 0,
+    background:
+      "radial-gradient(ellipse 60% 40% at 50% 80%, color-mix(in srgb, var(--brand, #0D9488) 10%, transparent), transparent)",
+    pointerEvents: "none",
   },
-  body: {
-    textAlign: "center",
-    marginTop: 16,
-    marginBottom: 32,
-    maxWidth: 540,
+  heading: {
+    fontFamily: "var(--font-display, 'Bricolage Grotesque', sans-serif)",
+    fontSize: "clamp(2rem, 5vw, 3.5rem)",
+    fontWeight: 700,
+    lineHeight: 1.1,
+    color: "var(--text, #1a1a18)",
+    marginBottom: 16,
+    letterSpacing: "-0.02em",
+  },
+  subheading: {
+    fontFamily: "var(--font-body, 'Plus Jakarta Sans', sans-serif)",
+    fontSize: "clamp(1rem, 2vw, 1.125rem)",
+    color: "var(--text-2, #6b6b5f)",
+    maxWidth: 480,
+    marginBottom: 40,
+    lineHeight: 1.6,
   },
   formOuter: {
     width: "100%",
-    maxWidth: 480,
+    maxWidth: 520,
+    marginBottom: 16,
+    boxShadow: "var(--shadow-lg, 0 8px 32px rgba(0,0,0,0.08))",
+    borderRadius: 9999,
+    background: "var(--bg-card, #ffffff)",
+    border: "1px solid var(--border, rgba(0,0,0,0.08))",
+    overflow: "hidden",
+    padding: 4,
   },
-  formContainer: {
-    position: "relative",
+  form: {
     display: "flex",
     alignItems: "center",
-    padding: 4,
-    borderRadius: 9999,
-    background: "var(--bg-card)",
-    border: "1px solid var(--border)",
-    overflow: "hidden",
+    gap: 8,
+    width: "100%",
   },
   input: {
     flex: 1,
     minWidth: 0,
     padding: "14px 18px",
-    fontFamily: "var(--font-body)",
+    fontFamily: "var(--font-body, 'Plus Jakarta Sans', sans-serif)",
     fontSize: 14,
-    color: "var(--text)",
+    color: "var(--text, #1a1a18)",
     border: "none",
     outline: "none",
     background: "transparent",
     lineHeight: 1.4,
   },
-  submitButton: {
-    display: "inline-flex",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 4,
-    padding: "14px 24px",
-    fontFamily: "var(--font-display)",
-    fontSize: 14,
-    fontWeight: 600,
-    color: "#FFFFFF",
-    background: "var(--accent)",
-    border: "none",
+  shimmerOverride: {
     borderRadius: 9999,
-    cursor: "pointer",
-    flexShrink: 0,
-    whiteSpace: "nowrap",
-    transition:
-      "background-color 0.2s var(--ease-premium), transform 0.2s var(--ease-spring), opacity 0.2s ease",
+    padding: "12px 22px",
+    fontSize: 14,
+    fontFamily: "var(--font-display, 'Bricolage Grotesque', sans-serif)",
+    fontWeight: 600,
+  },
+  buttonLabel: {
+    fontFamily: "var(--font-display, 'Bricolage Grotesque', sans-serif)",
+    fontWeight: 600,
+    fontSize: 14,
+    color: "#ffffff",
+    letterSpacing: "0.01em",
   },
   successState: {
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
     gap: 10,
-    padding: "16px 24px",
-    animation: "cta-fade-in 0.5s ease forwards",
+    padding: "18px 24px",
   },
   successText: {
-    fontFamily: "var(--font-body)",
+    fontFamily: "var(--font-body, 'Plus Jakarta Sans', sans-serif)",
     fontSize: 15,
     fontWeight: 500,
-    color: "var(--emerald)",
+    color: "var(--emerald, #059669)",
   },
-  trustLine: {
+  microCopy: {
+    fontFamily: "var(--font-mono, 'JetBrains Mono', monospace)",
     fontSize: 12,
-    color: "var(--text-3)",
-    marginTop: 20,
-    textAlign: "center",
+    color: "var(--text-3, #9b9b8e)",
+    marginTop: 8,
     letterSpacing: "0.01em",
   },
-  waitlistCounter: {
-    fontSize: 13,
-    color: "var(--text-3)",
-    marginTop: 12,
-    textAlign: "center",
+  secondaryCta: {
+    display: "inline-block",
+    marginTop: 20,
+    fontFamily: "var(--font-body, 'Plus Jakarta Sans', sans-serif)",
+    fontSize: 14,
+    fontWeight: 500,
+    color: "var(--brand, #0D9488)",
+    textDecoration: "none",
     letterSpacing: "0.01em",
+    transition: "opacity 0.2s ease",
   },
 };
-
-/* Inject success animation keyframes once */
-if (typeof document !== "undefined") {
-  const id = "cta-success-keyframes";
-  if (!document.getElementById(id)) {
-    const style = document.createElement("style");
-    style.id = id;
-    style.textContent = `
-      @keyframes cta-fade-in {
-        from { opacity: 0; transform: translateY(6px); }
-        to   { opacity: 1; transform: translateY(0); }
-      }
-    `;
-    document.head.appendChild(style);
-  }
-}
