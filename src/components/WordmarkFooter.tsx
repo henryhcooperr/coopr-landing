@@ -1,11 +1,11 @@
 import { useState, useEffect, useRef, type CSSProperties } from "react";
 
 /**
- * Dark background footer with giant COOPR wordmark reveal.
+ * Footer with COOPR wordmark, navigation links, tagline, and copyright.
  *
- * - Links row: Dev Log, Privacy, Terms, Data Deletion, Contact
- * - Giant "COOPR" text with gradient mask fade and scroll-triggered scale animation
- * - Copyright line at bottom
+ * - Logo on left, links on right (first row)
+ * - Tagline + copyright line below
+ * - Dark background
  */
 export default function WordmarkFooter() {
   const [inView, setInView] = useState(false);
@@ -28,52 +28,62 @@ export default function WordmarkFooter() {
     return () => observer.disconnect();
   }, []);
 
-  const links = [
+  const navLinks = [
+    { label: "Features", href: "#/features" },
     { label: "Dev Log", href: "#/devlog" },
-    { label: "Privacy", href: "#/privacy" },
+    { label: "Get Started", href: "#/get-started" },
     { label: "Terms", href: "#/terms" },
-    { label: "Data Deletion", href: "#/data-deletion" },
-    { label: "Contact", href: "mailto:hello@getcoopr.com" },
+    { label: "Privacy", href: "#/privacy" },
   ];
 
   return (
     <footer ref={footerRef} style={styles.footer}>
-      {/* Full banner logo */}
-      <img
-        src="/coopr-labs-banner.png"
-        alt="Coopr Labs"
-        style={{
-          height: 'clamp(50px, 8vw, 80px)',
-          width: 'auto',
-          margin: '0 auto 32px',
-          display: 'block',
-          opacity: inView ? 0.15 : 0,
-          filter: 'invert(1)',
-          transform: inView ? "scale(1)" : "scale(0.9)",
-          transition: 'opacity 1s cubic-bezier(0.65, 0.05, 0, 1), transform 1s cubic-bezier(0.65, 0.05, 0, 1)',
-        }}
-      />
+      {/* Top row: Logo left, links right */}
+      <div style={styles.topRow}>
+        <a href="#/" style={styles.logoLink} aria-label="COOPR home">
+          <img
+            src="/coopr-mark.png"
+            alt=""
+            aria-hidden="true"
+            style={{
+              height: 20,
+              width: "auto",
+              opacity: 0.7,
+              filter: "invert(1)",
+            }}
+          />
+          <span style={styles.logoText}>COOPR</span>
+        </a>
 
-      {/* Links */}
-      <nav style={styles.linksRow} aria-label="Footer navigation">
-        {links.map((link, i) => (
-          <span key={link.label} style={styles.linkWrapper}>
-            {i > 0 && (
-              <span style={styles.separator} aria-hidden="true">
-                &middot;
-              </span>
-            )}
-            <a href={link.href} style={styles.link}>
+        <nav style={styles.linksRow} aria-label="Footer navigation">
+          {navLinks.map((link) => (
+            <a key={link.label} href={link.href} style={styles.link}>
               {link.label}
             </a>
-          </span>
-        ))}
-      </nav>
+          ))}
+        </nav>
+      </div>
 
-      {/* Copyright */}
-      <p style={styles.copyright}>
-        2026 Coopr Labs. Built in California.
-      </p>
+      {/* Divider */}
+      <div style={styles.divider} />
+
+      {/* Bottom row: tagline left, copyright right */}
+      <div style={styles.bottomRow}>
+        <p style={styles.tagline}>Built by a creator, for creators.</p>
+        <p style={styles.copyright}>2026 COOPR Labs</p>
+      </div>
+
+      {/* Wordmark watermark */}
+      <div
+        style={{
+          ...styles.wordmark,
+          opacity: inView ? 0.06 : 0,
+          transform: inView ? "scale(1) translateY(0)" : "scale(0.94) translateY(8px)",
+        }}
+        aria-hidden="true"
+      >
+        COOPR
+      </div>
     </footer>
   );
 }
@@ -83,64 +93,93 @@ export default function WordmarkFooter() {
 const styles: Record<string, CSSProperties> = {
   footer: {
     backgroundColor: "var(--bg-dark)",
-    padding: "48px 24px 32px",
-    textAlign: "center",
+    padding: "40px 32px 32px",
     overflow: "hidden",
     position: "relative",
+  },
+  topRow: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    flexWrap: "wrap",
+    gap: "16px 24px",
+    position: "relative",
+    zIndex: 1,
+  },
+  logoLink: {
+    display: "flex",
+    alignItems: "center",
+    gap: 8,
+    textDecoration: "none",
+    flexShrink: 0,
+  },
+  logoText: {
+    fontFamily: "var(--font-display)",
+    fontSize: 15,
+    fontWeight: 700,
+    color: "rgba(255, 255, 255, 0.7)",
+    letterSpacing: "-0.01em",
   },
   linksRow: {
     display: "flex",
     alignItems: "center",
-    justifyContent: "center",
     flexWrap: "wrap",
-    gap: "8px 0",
-  },
-  linkWrapper: {
-    display: "inline-flex",
-    alignItems: "center",
-  },
-  separator: {
-    color: "rgba(255, 255, 255, 0.3)",
-    margin: "0 12px",
-    fontSize: 14,
-    userSelect: "none",
+    gap: "8px 20px",
   },
   link: {
     fontFamily: "var(--font-body)",
     fontSize: 13,
-    color: "rgba(255, 255, 255, 0.5)",
+    color: "rgba(255, 255, 255, 0.45)",
     textDecoration: "none",
     transition: "color 0.2s cubic-bezier(0.65, 0.05, 0, 1)",
     whiteSpace: "nowrap",
   },
-  wordmark: {
-    fontFamily: "var(--font-display)",
-    fontSize: "clamp(6rem, 18vw, 14rem)",
-    fontWeight: 900,
-    letterSpacing: "-0.06em",
-    lineHeight: 1,
-    color: "transparent",
-    background:
-      "linear-gradient(180deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.03) 100%)",
-    WebkitBackgroundClip: "text",
-    backgroundClip: "text",
-    WebkitTextFillColor: "transparent",
-    maskImage:
-      "linear-gradient(to bottom, black 60%, transparent 100%)",
-    WebkitMaskImage:
-      "linear-gradient(to bottom, black 60%, transparent 100%)",
-    userSelect: "none",
-    pointerEvents: "none",
-    marginTop: 32,
-    transition:
-      "opacity 1s cubic-bezier(0.65, 0.05, 0, 1), transform 1s cubic-bezier(0.65, 0.05, 0, 1)",
-    willChange: "opacity, transform",
+  divider: {
+    height: 1,
+    backgroundColor: "rgba(255, 255, 255, 0.08)",
+    margin: "24px 0 20px",
+    position: "relative",
+    zIndex: 1,
+  },
+  bottomRow: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    flexWrap: "wrap",
+    gap: "8px 16px",
+    position: "relative",
+    zIndex: 1,
+  },
+  tagline: {
+    fontFamily: "var(--font-body)",
+    fontSize: 13,
+    color: "rgba(255, 255, 255, 0.35)",
+    fontStyle: "italic",
+    margin: 0,
   },
   copyright: {
     fontFamily: "var(--font-mono)",
     fontSize: 12,
-    color: "rgba(255, 255, 255, 0.3)",
-    marginTop: 24,
+    color: "rgba(255, 255, 255, 0.25)",
+    margin: 0,
     letterSpacing: "0.01em",
+  },
+  wordmark: {
+    position: "absolute",
+    bottom: -16,
+    left: "50%",
+    transform: "translateX(-50%)",
+    fontFamily: "var(--font-display)",
+    fontSize: "clamp(5rem, 16vw, 12rem)",
+    fontWeight: 900,
+    letterSpacing: "-0.06em",
+    lineHeight: 1,
+    color: "white",
+    userSelect: "none",
+    pointerEvents: "none",
+    whiteSpace: "nowrap",
+    transition:
+      "opacity 1.2s cubic-bezier(0.65, 0.05, 0, 1), transform 1.2s cubic-bezier(0.65, 0.05, 0, 1)",
+    willChange: "opacity, transform",
   },
 };

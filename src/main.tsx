@@ -1,5 +1,6 @@
 import { StrictMode, useState, useEffect } from 'react'
 import { createRoot } from 'react-dom/client'
+import { AnimatePresence, motion } from 'motion/react'
 import './index.css'
 import App from './App.tsx'
 import Privacy from './Privacy.tsx'
@@ -30,6 +31,20 @@ function initCleanPathRedirect() {
 }
 initCleanPathRedirect()
 
+function PageTransition({ children, routeKey }: { children: React.ReactNode; routeKey: string }) {
+  return (
+    <motion.div
+      key={routeKey}
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -10 }}
+      transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+    >
+      {children}
+    </motion.div>
+  )
+}
+
 function Router() {
   const [path, setPath] = useState(window.location.hash)
 
@@ -40,13 +55,46 @@ function Router() {
   }, [])
 
   const basePath = path.split('?')[0]
-  if (basePath === '#/privacy') return <Privacy />
-  if (basePath === '#/terms') return <Terms />
-  if (basePath === '#/data-deletion') return <DataDeletion />
-  if (basePath === '#/get-started') return <GetStarted />
-  if (basePath === '#/features') return <Features />
-  if (basePath === '#/devlog') return <Devlog />
-  return <App />
+
+  return (
+    <AnimatePresence mode="wait">
+      {basePath === '#/privacy' && (
+        <PageTransition routeKey="privacy">
+          <Privacy />
+        </PageTransition>
+      )}
+      {basePath === '#/terms' && (
+        <PageTransition routeKey="terms">
+          <Terms />
+        </PageTransition>
+      )}
+      {basePath === '#/data-deletion' && (
+        <PageTransition routeKey="data-deletion">
+          <DataDeletion />
+        </PageTransition>
+      )}
+      {basePath === '#/get-started' && (
+        <PageTransition routeKey="get-started">
+          <GetStarted />
+        </PageTransition>
+      )}
+      {basePath === '#/features' && (
+        <PageTransition routeKey="features">
+          <Features />
+        </PageTransition>
+      )}
+      {basePath === '#/devlog' && (
+        <PageTransition routeKey="devlog">
+          <Devlog />
+        </PageTransition>
+      )}
+      {!['#/privacy', '#/terms', '#/data-deletion', '#/get-started', '#/features', '#/devlog'].includes(basePath) && (
+        <PageTransition routeKey="home">
+          <App />
+        </PageTransition>
+      )}
+    </AnimatePresence>
+  )
 }
 
 createRoot(document.getElementById('root')!).render(
