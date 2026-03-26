@@ -10,22 +10,25 @@
 
 :root {
   /* --- Backgrounds --- */
-  --bg-page: #FAFAF9;
-  --bg-section-alt: #F5F4F0;
+  --bg-page: #F4F3F0;
+  --bg-section-alt: #ECEAE6;
   --bg-card: #FFFFFF;
+  --bg-elevated: #ECEAE6;
   --bg-dark: #1C1917;
 
-  /* --- Accent (teal) ---
+  /* --- Brand accent (warm amber) ---
        IMPORTANT: Do NOT define --accent or --border here!
        index.css defines --accent as HSL components "40 6% 94%" for
        Tailwind/shadcn (bg-accent, text-accent-foreground, etc).
-       Overwriting with hex "#0D9488" breaks hsl(var(--accent)).
+       Overwriting with hex breaks hsl(var(--accent)).
        Same for --border: index.css uses HSL "36 10% 88%".
-       Landing components use var(--accent) expecting teal — we provide
+       Landing components use var(--accent) expecting brand color — we provide
        it scoped to the landing page wrapper below. */
-  --accent-hex: #0D9488;
-  --accent-dim: rgba(13, 148, 136, 0.08);
-  --accent-hover: #0F766E;
+  --brand: oklch(0.62 0.16 65);
+  --brand-soft: oklch(0.62 0.16 65 / 0.08);
+  --accent-hex: oklch(0.62 0.16 65);
+  --accent-dim: oklch(0.62 0.16 65 / 0.08);
+  --accent-hover: oklch(0.55 0.16 65);
 
   /* --- Functional Colors --- */
   --violet: #7C3AED;
@@ -45,6 +48,14 @@
   --text: #1C1917;
   --text-2: #57534E;
   --text-3: #A8A29E;
+  --text-primary: #1C1917;
+  --text-secondary: #57534E;
+  --text-muted: #A8A29E;
+
+  /* --- Shadows --- */
+  --shadow-sm: 0 1px 3px oklch(0.30 0.02 80 / 0.06);
+  --shadow-md: 0 4px 12px oklch(0.30 0.02 80 / 0.08);
+  --shadow-lg: 0 8px 24px oklch(0.30 0.02 80 / 0.12);
 
   /* --- Borders ---
        --border-landing is the hex token for landing components.
@@ -54,7 +65,7 @@
 
   /* --- Fonts --- */
   --font-display: 'Bricolage Grotesque', sans-serif;
-  --font-body: 'Space Grotesk', sans-serif;
+  --font-body: 'Plus Jakarta Sans', sans-serif;
   --font-accent: 'Fraunces', serif;
   --font-mono: 'JetBrains Mono', monospace;
 
@@ -103,6 +114,17 @@ body {
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
   line-height: 1.6;
+}
+
+/* Film grain overlay */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.032;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
 }
 
 /* Selection */
@@ -368,9 +390,9 @@ video {
   background: var(--border);
 }
 
-.app-frame-dot:nth-child(1) { background: #FCA5A5; }
-.app-frame-dot:nth-child(2) { background: #FCD34D; }
-.app-frame-dot:nth-child(3) { background: #86EFAC; }
+.app-frame-dot:nth-child(1) { background: var(--border-landing); }
+.app-frame-dot:nth-child(2) { background: var(--border-landing); }
+.app-frame-dot:nth-child(3) { background: var(--border-landing); }
 
 .app-frame-content {
   padding: 0;

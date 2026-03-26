@@ -143,9 +143,9 @@ function SceneShell({
       <div className="ft-scene-shell__grid" />
       <div className="relative z-10 flex items-center gap-2 border-b border-[var(--border-light)] bg-[var(--bg-alt)] px-4 py-3">
         <div className="flex gap-1.5">
-          <span className="h-[10px] w-[10px] rounded-full bg-[#FF5F57]" />
-          <span className="h-[10px] w-[10px] rounded-full bg-[#FEBC2E]" />
-          <span className="h-[10px] w-[10px] rounded-full bg-[#28C840]" />
+          <span className="h-[10px] w-[10px] rounded-full bg-[var(--border-light)]" />
+          <span className="h-[10px] w-[10px] rounded-full bg-[var(--border-light)]" />
+          <span className="h-[10px] w-[10px] rounded-full bg-[var(--border-light)]" />
         </div>
         <div className="flex-1 text-center font-mono text-[11px] text-[var(--text-3)]">app.coopr.studio</div>
       </div>
@@ -313,12 +313,6 @@ function DiscoverScene({ animate, progress = 0 }: Omit<FlagshipSceneProps, 'step
     'Maya’s proof-first reels hold better when the visual contrast lands before 8s.',
     'The niche is active, but the before/after reveal format still looks underused.',
   ]
-  const flowStops: CursorStop[] = [
-    { x: '31%', y: '28%', label: 'evaluate idea' },
-    { x: '72%', y: '34%', label: 'pick angle' },
-    { x: '73%', y: '82%', label: 'lock concept' },
-  ]
-
   return (
     <SceneShell stepKey="discover" caption="Concept evaluation -> winning angle selected">
       <Stage animate={animate} delay={110} className="relative rounded-[26px] border border-[rgba(17,17,17,0.08)] bg-[linear-gradient(180deg,#fcfcfb,#f4f4f1)] p-3 shadow-[0_18px_48px_rgba(17,17,17,0.08)] lg:h-full">
@@ -570,7 +564,6 @@ function ScriptScene({ animate, progress = 0 }: Omit<FlagshipSceneProps, 'stepKe
     { x: '39%', y: '43%', label: 'rewrite block' },
     { x: '73%', y: '80%', label: 'open teleprompter' },
   ]
-
   return (
     <SceneShell stepKey="script" caption="Selected hook -> Script editor -> teleprompter handoff">
       <div className="relative">
@@ -1047,12 +1040,6 @@ function CadenceScene({ animate, progress = 0 }: Omit<FlagshipSceneProps, 'stepK
     ['Thu', '8:10 PM', 'best'],
     ['Sat', '5:45 PM', 'crowded'],
   ] as const
-  const flowStops: CursorStop[] = [
-    { x: '34%', y: '28%', label: 'review forecast' },
-    { x: '72%', y: '28%', label: 'pick slot' },
-    { x: '74%', y: '78%', label: 'export caption' },
-  ]
-
   return (
     <SceneShell stepKey="cadence" caption="Publish step -> best slot selected">
       <Stage animate={animate} delay={100} className="relative rounded-[26px] border border-[rgba(17,17,17,0.08)] bg-[linear-gradient(180deg,#fffaf4,#f4f4f1)] p-3 shadow-[0_18px_48px_rgba(17,17,17,0.08)] lg:h-full">

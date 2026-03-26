@@ -14,6 +14,119 @@ export interface DevlogEntry {
  */
 export const DEVLOG_ENTRIES: DevlogEntry[] = [
   {
+    date: '2026-03-26',
+    slug: 'insights-page',
+    title: 'Insights: your full performance picture in one panel',
+    summary:
+      'The Insights panel is now live — 19 components across three sections. See your numbers, reach, retention, hook analysis, content pillars, hashtag velocity, correlation heatmap, demand radar, audience demographics, competitor breakdowns, and top content — all in one place.',
+    tags: ['new'],
+    alsoShipped: [
+      'Format and hook type performance breakdown',
+      'Content pillar radar with niche demand overlay',
+      'Hashtag velocity and engagement stripes',
+      'Win-loss competitor comparison',
+      'Audience demographics from Instagram insights',
+    ],
+  },
+  {
+    date: '2026-03-26',
+    slug: 'chat-blocks-overhaul',
+    title: 'Chat answers now arrive as rich cards',
+    summary:
+      'Ask COOPR anything and the response surfaces the right format automatically — creator profiles, knowledge insights, media kit previews, image grids, and more. 38 tool types now produce structured visual blocks instead of plain text.',
+    tags: ['new', 'improved'],
+    alsoShipped: [
+      'Creator discovery results as profile snapshot cards',
+      'Caption, hashtag, and outlier report blocks',
+      'Campaign, niche research, and production workflow blocks',
+      'Smart per-tier timeouts so slow searches never block fast responses',
+    ],
+  },
+  {
+    date: '2026-03-25',
+    slug: 'dna-voice-and-correlations',
+    title: 'Creative DNA now shows how your voice evolves over time',
+    summary:
+      'Your DNA panel gained a voice EQ analyzer, a correlation engine that maps which content styles drive your best numbers, niche dimension scoring, and an editorial narrative section that describes your creative identity in plain language.',
+    tags: ['new', 'improved'],
+    alsoShipped: [
+      'Voice dimensions rebuilt from your actual hooks and titles',
+      'Technique frequency and performance spectrum',
+      'Niche opportunity scoring against market demand',
+      'Creativity trend line over time',
+    ],
+  },
+  {
+    date: '2026-03-24',
+    slug: 'creative-dna-constellation',
+    title: 'Creative DNA gets a constellation view',
+    summary:
+      'DNA v6 ships a new visual hero — a living network diagram that maps how your creative signals connect. Plus seven identity sections that expand as your fingerprint fills in.',
+    tags: ['improved'],
+    alsoShipped: [
+      'Interconnected node graph with center fade',
+      'Golden-angle node distribution for visual balance',
+      'DNA always shows something useful — smart fallbacks from video topics',
+    ],
+  },
+  {
+    date: '2026-03-24',
+    slug: 'niche-intelligence',
+    title: 'Niche intelligence: see where you stand in your space',
+    summary:
+      'COOPR now scores your positioning across multiple dimensions of your niche using Bayesian scoring. You can ask COOPR about your niche in chat and get structured competitor placement and opportunity gap analysis.',
+    tags: ['new'],
+    alsoShipped: [
+      'Bayesian niche dimension scoring',
+      'Chat blocks for niche positioning queries',
+      'Competitor scatter and win-loss tracking',
+      'Follower growth history for any tracked creator',
+    ],
+  },
+  {
+    date: '2026-03-23',
+    slug: 'production-speed',
+    title: 'The dashboard is significantly faster',
+    summary:
+      'A performance sprint cut query round-trips by 60-80% across every panel. Overview, Library, Pulse, Creative DNA, Studio, and Inspiration all load independently and cache results between sessions.',
+    tags: ['improved'],
+    alsoShipped: [
+      'React Query caching across all panels',
+      'Overview: 19 round-trips down to 5',
+      'Library: 11 round-trips down to 5',
+      'Knowledge summary: up to 20 round-trips down to 6',
+      'Per-creator cache warmup on first load',
+    ],
+  },
+  {
+    date: '2026-03-23',
+    slug: 'worker-separation',
+    title: 'Heavy background work no longer slows the app',
+    summary:
+      'Intelligence processing — embeddings, sync steps, frame analysis — now runs in a dedicated worker service, completely separate from the API. The dashboard stays fast even when COOPR is actively building your content fingerprint.',
+    tags: ['improved'],
+    alsoShipped: [
+      'Dedicated background worker process',
+      'Priority job queue: fast ops never blocked by slow batch work',
+      'Session authentication survives server deploys without logout',
+      'Instagram Stories data now collected automatically',
+    ],
+  },
+  {
+    date: '2026-03-21',
+    slug: 'auth-reliability',
+    title: 'Login is now rock solid',
+    summary:
+      'Six weeks of auth fixes shipped in one week. Sessions survive server deploys, Instagram OAuth works end-to-end in production, new creators land on onboarding instead of a blank screen, and the registry self-heals after database resets.',
+    tags: ['fixed'],
+    alsoShipped: [
+      'Sessions persist across API worker rotations',
+      'Instagram token stored and refreshed correctly',
+      'New signups redirected to onboarding automatically',
+      'Duplicate content check fixed',
+    ],
+  },
+  {
     date: '2026-03-20',
     slug: 'photo-carousel-intelligence',
     title: 'COOPR now understands photos and carousels',

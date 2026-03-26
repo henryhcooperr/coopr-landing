@@ -184,7 +184,7 @@ export default function LearnSection() {
           {/* Active step description */}
           <p
             style={{
-              fontFamily: "var(--font-body, 'Space Grotesk', sans-serif)",
+              fontFamily: "var(--font-body, 'Plus Jakarta Sans', sans-serif)",
               fontSize: 14,
               color: "var(--text-2, #57534E)",
               textAlign: "center",
@@ -406,7 +406,7 @@ const styles: Record<string, CSSProperties> = {
     marginBottom: 4,
   },
   stepDesc: {
-    fontFamily: "var(--font-body, 'Space Grotesk', sans-serif)",
+    fontFamily: "var(--font-body, 'Plus Jakarta Sans', sans-serif)",
     fontSize: 14,
     color: "var(--text-2, #57534E)",
     lineHeight: 1.5,
@@ -513,7 +513,7 @@ const styles: Record<string, CSSProperties> = {
     lineHeight: 1.3,
   },
   timelineDesc: {
-    fontFamily: "var(--font-body, 'Space Grotesk', sans-serif)",
+    fontFamily: "var(--font-body, 'Plus Jakarta Sans', sans-serif)",
     fontSize: 13,
     color: "var(--text-2, #57534E)",
     lineHeight: 1.5,

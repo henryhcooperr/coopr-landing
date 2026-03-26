@@ -19,56 +19,56 @@ const SIGNALS = [
 
 const HOOKS = [
   {
-    text: "I found something in Tokyo that travel blogs won't tell you about",
-    strategy: "Curiosity gap + POV",
+    text: "The one thing I changed that doubled my watch time",
+    strategy: "Curiosity gap + result",
     rate: 83.7,
   },
   {
-    text: "The locals tried to stop me from filming this street",
-    strategy: "Story hook + tension",
+    text: "I tested the most popular format in my niche for 30 days",
+    strategy: "Story hook + experiment",
     rate: 78.9,
   },
   {
-    text: "3 streets you'll never find on Google Maps",
-    strategy: "List + exclusivity",
+    text: "Nobody talks about this editing trick",
+    strategy: "Exclusivity + insider",
     rate: 74.2,
   },
   {
-    text: "What happens when you turn left instead of right in Shibuya",
-    strategy: "Curiosity + location",
+    text: "What my worst-performing post taught me about my audience",
+    strategy: "Vulnerability + insight",
     rate: 71.3,
   },
   {
-    text: "POV: you stumble into the best ramen of your life",
-    strategy: "POV + food",
+    text: "POV: you find the shot you've been planning for months",
+    strategy: "POV + payoff",
     rate: 67.8,
   },
 ] as const;
 
 const COMPETITORS = [
   {
-    name: "SoloNomad",
-    handle: "@solonomad.tv",
+    name: "CreativeStudio",
+    handle: "@creativestudio",
     er: "4.8%",
     growth: "+12%/mo",
     gradient: "linear-gradient(135deg, var(--accent), #06b6d4)",
-    initials: "SN",
+    initials: "CS",
   },
   {
-    name: "WanderLena",
-    handle: "@wanderlena",
+    name: "MakerPulse",
+    handle: "@makerpulse",
     er: "3.2%",
     growth: "+8%/mo",
     gradient: "linear-gradient(135deg, var(--violet), #a78bfa)",
-    initials: "WL",
+    initials: "MP",
   },
   {
-    name: "TokyoJay",
-    handle: "@tokyojay",
+    name: "ContentFlow",
+    handle: "@contentflow",
     er: "7.1%",
     growth: "+31%/mo",
     gradient: "linear-gradient(135deg, var(--amber), #fbbf24)",
-    initials: "TJ",
+    initials: "CF",
   },
 ] as const;
 
@@ -177,9 +177,9 @@ function AppFrame({
   return (
     <div style={{ ...s.appFrame, ...outerStyle }}>
       <div style={s.appFrameBar}>
-        <span style={{ ...s.appFrameDot, background: "#FF5F57" }} />
-        <span style={{ ...s.appFrameDot, background: "#FFBD2E" }} />
-        <span style={{ ...s.appFrameDot, background: "#27C93F" }} />
+        <span style={{ ...s.appFrameDot, background: "var(--border-landing, #E7E5E4)" }} />
+        <span style={{ ...s.appFrameDot, background: "var(--border-landing, #E7E5E4)" }} />
+        <span style={{ ...s.appFrameDot, background: "var(--border-landing, #E7E5E4)" }} />
         <span style={s.appFrameTitle}>{title}</span>
       </div>
       <div style={s.appFrameContent}>{children}</div>
@@ -282,7 +282,7 @@ function IdeaScoringCard({ active }: { active: boolean }) {
               marginBottom: 4,
             }}
           >
-            "Hidden gem walking tour format"
+            "Behind-the-process reveal format"
           </div>
           <div
             style={{
@@ -292,7 +292,7 @@ function IdeaScoringCard({ active }: { active: boolean }) {
               lineHeight: 1.5,
             }}
           >
-            Strong trend signal, low competition. Your storytelling style is a natural fit.
+            Strong trend signal, low competition. Your content style is a natural fit.
           </div>
         </div>
 
@@ -466,7 +466,7 @@ function NicheTrendsCard({ active }: { active: boolean }) {
           marginBottom: 8,
         }}
       >
-        Hidden gem POV format surging
+        Behind-the-process format surging
       </div>
       <span className="badge badge-emerald" style={{ marginBottom: 12 }}>
         +2.8x lift
@@ -474,7 +474,7 @@ function NicheTrendsCard({ active }: { active: boolean }) {
 
       {/* Tags */}
       <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginTop: 8 }}>
-        {["POV format", "Solo travel", "Discovery"].map((tag) => (
+        {["POV format", "Process reveal", "Authenticity"].map((tag) => (
           <span key={tag} className="mock-tag">
             {tag}
           </span>

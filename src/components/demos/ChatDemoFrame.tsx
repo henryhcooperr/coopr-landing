@@ -78,15 +78,15 @@ function IdeaEvalBlock() {
           className="text-[12px] leading-relaxed mb-3"
           style={{ color: "var(--fg-2, #57534E)" }}
         >
-          High search volume for form correction content. Your coaching
-          background gives authority here. Gap exists in short-form
-          &ldquo;mistake reveal&rdquo; format.
+          High search volume for this format. Your existing content style is a
+          strong fit. Gap exists in short-form
+          &ldquo;mistake reveal&rdquo; structure.
         </p>
         <div className="flex flex-wrap gap-1.5">
           {[
             { label: "Niche fit: 92%", color: "var(--teal, #0D9488)", bg: "var(--teal-soft, rgba(13,148,136,0.08))" },
             { label: "Gap: Medium", color: "var(--amber, #D97706)", bg: "var(--amber-soft, rgba(245,158,11,0.08))" },
-            { label: "Strength: Form", color: "var(--violet, #7C3AED)", bg: "var(--violet-soft, rgba(124,62,237,0.08))" },
+            { label: "Strength: Process", color: "var(--violet, #7C3AED)", bg: "var(--violet-soft, rgba(124,62,237,0.08))" },
           ].map((tag) => (
             <span
               key={tag.label}
@@ -118,7 +118,7 @@ function HookCardsBlock() {
         <div className="flex items-start justify-between gap-3">
           <div className="flex-1 min-w-0">
             <p className="text-[12px] font-medium leading-snug" style={{ color: "var(--fg, #1C1917)" }}>
-              &ldquo;The exercise everyone does wrong &mdash; and the tiny fix that
+              &ldquo;The one mistake everyone makes &mdash; and the tiny fix that
               changes everything&rdquo;
             </p>
           </div>
@@ -144,8 +144,8 @@ function HookCardsBlock() {
         <div className="flex items-start justify-between gap-3">
           <div className="flex-1 min-w-0">
             <p className="text-[12px] font-medium leading-snug" style={{ color: "var(--fg, #1C1917)" }}>
-              &ldquo;3 mistakes killing your progress — most coaches
-              won&apos;t tell you #2&rdquo;
+              &ldquo;3 things silently hurting your results &mdash; most creators
+              skip #2 entirely&rdquo;
             </p>
           </div>
           <span
@@ -187,7 +187,7 @@ function ResearchReportBlock() {
       <div className="px-4 pt-3.5 pb-3">
         <div className="flex items-center justify-between mb-1">
           <span className="font-display text-[13px] font-bold" style={{ color: "var(--fg, #1C1917)" }}>
-            Solo Travel Niche Report
+            Niche Trend Analysis
           </span>
           <span
             className="font-mono text-[9px] font-semibold px-2 py-0.5 rounded-full"
@@ -205,21 +205,21 @@ function ResearchReportBlock() {
         {/* Finding 1 */}
         <div className="mb-2.5">
           <p className="text-[11px] font-semibold mb-0.5" style={{ color: "var(--fg, #1C1917)" }}>
-            1. Hidden-gem POV format surging
+            1. Behind-the-process format surging
           </p>
           <p className="text-[11px] leading-relaxed" style={{ color: "var(--fg-2, #57534E)" }}>
-            First-person &ldquo;I found this place&rdquo; Reels outperform
-            traditional travel guides by 2.4x on saves.
+            First-person &ldquo;how I made this&rdquo; Reels outperform
+            polished showcase posts by 2.4x on saves.
           </p>
         </div>
         {/* Finding 2 */}
         <div>
           <p className="text-[11px] font-semibold mb-0.5" style={{ color: "var(--fg, #1C1917)" }}>
-            2. Food + location mashups trending
+            2. Story-first hooks trending up
           </p>
           <p className="text-[11px] leading-relaxed" style={{ color: "var(--fg-2, #57534E)" }}>
-            Combining local cuisine with destination reveals drives 38% higher
-            share rate vs pure travel content.
+            Opening with a personal failure or mistake before the reveal drives 38% higher
+            share rate vs straight-to-value content.
           </p>
         </div>
       </div>
@@ -231,31 +231,31 @@ function ResearchReportBlock() {
 function CreatorCardsBlock() {
   const creators = [
     {
-      name: "SoloNomad",
+      name: "CreativeStudio",
       type: "Competitor",
       color: "var(--teal, #0D9488)",
       bg: "var(--teal-soft, rgba(13,148,136,0.08))",
       borderColor: "rgba(13,148,136,0.18)",
       stats: "82K \u00B7 4.8% eng",
-      initial: "SN",
+      initial: "CS",
     },
     {
-      name: "WanderLena",
+      name: "MakerPulse",
       type: "Inspiration",
       color: "var(--violet, #7C3AED)",
       bg: "var(--violet-soft, rgba(124,62,237,0.08))",
       borderColor: "rgba(124,62,237,0.18)",
       stats: "210K \u00B7 3.2% eng",
-      initial: "WL",
+      initial: "MP",
     },
     {
-      name: "TokyoJay",
+      name: "ContentFlow",
       type: "Rising",
       color: "var(--amber, #D97706)",
       bg: "var(--amber-soft, rgba(245,158,11,0.08))",
       borderColor: "rgba(217,119,6,0.18)",
       stats: "31K \u00B7 7.1% eng",
-      initial: "TJ",
+      initial: "CF",
     },
   ];
 
@@ -303,8 +303,8 @@ interface SidebarConvo {
 
 function Sidebar({ activeIndex }: { activeIndex: number }) {
   const convos: SidebarConvo[] = [
-    { label: "Form mistakes video", sub: "Working on hooks\u2026", dotColor: "var(--teal, #0D9488)" },
-    { label: "Solo travel trends", sub: "8 creators found", dotColor: "var(--blue, #2563EB)" },
+    { label: "Workout hook ideas", sub: "Working on hooks\u2026", dotColor: "var(--teal, #0D9488)" },
+    { label: "Niche trend research", sub: "8 creators found", dotColor: "var(--blue, #2563EB)" },
   ];
 
   const pages = [
@@ -474,7 +474,7 @@ export default function ChatDemoFrame() {
   const [inputTyping, setInputTyping] = useState(false);
   const [activeConvo, setActiveConvo] = useState(0);
   const [toolCount, setToolCount] = useState(0);
-  const [convoTitle, setConvoTitle] = useState("Form mistakes video");
+  const [convoTitle, setConvoTitle] = useState("Workout hook ideas");
   /* Generation counter: increments on every mount. Async work checks its
      captured generation against the current ref — if they diverge, it means
      the effect was cleaned up (StrictMode remount or real unmount). */
@@ -582,14 +582,14 @@ export default function ChatDemoFrame() {
   const runScenario1 = useCallback(async (gen: number) => {
     if (isCancelled(gen)) return;
     setActiveConvo(0);
-    setConvoTitle("Form mistakes video");
+    setConvoTitle("Workout hook ideas");
     setToolCount(0);
     setMessages([]);
     setInputText("");
 
     // 1. User types in input
     await typeInInput(
-      "I have an idea \u2014 common gym form mistakes that most people don't realize",
+      "I have an idea \u2014 workout mistakes most people make without realizing",
       gen,
     );
     if (isCancelled(gen)) return;
@@ -598,7 +598,7 @@ export default function ChatDemoFrame() {
     addMessage({
       role: "user",
       content:
-        "I have an idea \u2014 common gym form mistakes that most people don\u2019t realize",
+        "I have an idea \u2014 workout mistakes most people make without realizing",
     });
     setInputText("");
     if (await guardedSleep(400, gen)) return;
@@ -637,14 +637,14 @@ export default function ChatDemoFrame() {
   const runScenario2 = useCallback(async (gen: number) => {
     if (isCancelled(gen)) return;
     setActiveConvo(1);
-    setConvoTitle("Solo travel trends");
+    setConvoTitle("Niche trend research");
     setToolCount(0);
     setMessages([]);
     setInputText("");
 
     // 1. User types
     await typeInInput(
-      "What\u2019s trending in solo travel right now? Who should I watch?",
+      "What\u2019s trending in my niche right now? Who should I watch?",
       gen,
     );
     if (isCancelled(gen)) return;
@@ -652,7 +652,7 @@ export default function ChatDemoFrame() {
     // 2. User message
     addMessage({
       role: "user",
-      content: "What\u2019s trending in solo travel right now? Who should I watch?",
+      content: "What\u2019s trending in my niche right now? Who should I watch?",
     });
     setInputText("");
     if (await guardedSleep(400, gen)) return;
@@ -674,7 +674,7 @@ export default function ChatDemoFrame() {
 
     // 6. COOPR types a response
     await typeAsCoopr(
-      "Saved. TokyoJay is worth watching closely \u2014 7.1% engagement at 31K is exceptional.",
+      "Saved. ContentFlow is worth watching closely \u2014 7.1% engagement at 31K is exceptional.",
       gen,
     );
     if (isCancelled(gen)) return;
@@ -713,7 +713,7 @@ export default function ChatDemoFrame() {
   return (
     <div
       className="flex w-full h-full overflow-hidden select-none"
-      style={{ background: "#fff", fontFamily: "'Space Grotesk', system-ui, sans-serif" }}
+      style={{ background: "var(--bg-page, #F4F3F0)", fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif" }}
     >
       {/* Sidebar */}
       <Sidebar activeIndex={activeConvo} />
