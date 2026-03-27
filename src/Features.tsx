@@ -234,8 +234,14 @@ export default function Features() {
       <header className="relative mx-auto max-w-[980px] px-6 pb-10 pt-20 text-center lg:pb-14 lg:pt-28">
         <BlurFade delay={0} inView>
           <h1
-            className="mx-auto max-w-[760px] text-balance leading-[0.96] tracking-[-0.06em]"
-            style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(2.8rem, 6vw, 4.8rem)', fontWeight: 800 }}
+            className="mx-auto max-w-[760px] text-balance leading-[0.96]"
+            style={{
+              fontFamily: "var(--font-hero, 'Advercase', sans-serif)",
+              fontSize: 'clamp(2.8rem, 6vw, 4.8rem)',
+              fontWeight: 800,
+              textTransform: 'uppercase',
+              letterSpacing: '0.02em',
+            }}
           >
             Everything COOPR does for you.
           </h1>
@@ -262,6 +268,7 @@ export default function Features() {
                     onClick={() => setActiveTab(tab.key)}
                     className="relative flex items-center gap-2 rounded-full px-4 py-2.5 text-[13px] font-semibold transition-all duration-300"
                     style={{
+                      fontFamily: "var(--font-display, 'Bricolage Grotesque', sans-serif)",
                       color: isActive ? 'var(--text, #1C1917)' : 'var(--text-3, #A8A29E)',
                       background: isActive ? 'var(--bg-page, #F4F3F0)' : 'transparent',
                     }}
@@ -315,7 +322,10 @@ export default function Features() {
                         </div>
                         <h3
                           className="text-[15px] font-bold leading-snug tracking-[-0.01em]"
-                          style={{ color: 'var(--text, #1C1917)' }}
+                          style={{
+                            fontFamily: "var(--font-display, 'Bricolage Grotesque', sans-serif)",
+                            color: 'var(--text, #1C1917)',
+                          }}
                         >
                           {feature.name}
                         </h3>
@@ -343,8 +353,14 @@ export default function Features() {
         <div className="mx-auto max-w-[740px] px-6 text-center">
           <BlurFade delay={0} inView>
             <h2
-              className="text-balance leading-[1.05] tracking-[-0.04em]"
-              style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(2rem, 4vw, 3rem)', fontWeight: 800 }}
+              className="text-balance leading-[1.05]"
+              style={{
+                fontFamily: "var(--font-hero, 'Advercase', sans-serif)",
+                fontSize: 'clamp(2rem, 4vw, 3rem)',
+                fontWeight: 800,
+                textTransform: 'uppercase',
+                letterSpacing: '0.02em',
+              }}
             >
               Built different.
             </h2>

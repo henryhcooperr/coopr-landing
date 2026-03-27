@@ -842,16 +842,16 @@ video {
 
 /* MorphingText inline sizing — fits within the headline flow */
 .hero-morph-text {
-  /* Override MorphingText defaults for inline use */
+  display: inline-block;
   height: 1.1em;
+  min-width: 4ch;
+  vertical-align: baseline;
   font-size: inherit;
   font-family: var(--font-hero);
   font-weight: 700;
   line-height: inherit;
   letter-spacing: inherit;
   color: var(--brand);
-  max-width: none;
-  text-align: left;
   text-transform: uppercase;
 }
 
