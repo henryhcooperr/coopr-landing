@@ -1,6 +1,5 @@
 import { motion, type Variants } from "motion/react";
 import { MorphingText } from "@/components/ui/morphing-text";
-import { AnimatedGradientText } from "@/components/ui/animated-gradient-text";
 import { ShimmerButton } from "@/components/ui/shimmer-button";
 import { AvatarCircles } from "@/components/ui/avatar-circles";
 import { BlurFade } from "@/components/ui/blur-fade";
@@ -71,19 +70,6 @@ export default function HeroSection({ onCTAClick }: HeroSectionProps) {
         initial="hidden"
         animate="visible"
       >
-        {/* Badge */}
-        <motion.div variants={item}>
-          <span className="hero-badge">
-            <AnimatedGradientText
-              colorFrom="#d97706"
-              colorTo="#f59e0b"
-              speed={1.5}
-            >
-              Now in Early Access
-            </AnimatedGradientText>
-          </span>
-        </motion.div>
-
         {/* Headline — two lines, both centered */}
         <motion.div variants={item} className="mt-8 w-full text-center">
           <h1 className="hero-h1">KNOW WHAT TO</h1>
