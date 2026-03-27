@@ -186,7 +186,7 @@ const TABS: TabDefinition[] = [
     features: [
       {
         icon: Binoculars,
-        name: 'Competitor Intelligence',
+        name: 'Inspiration Intelligence',
         description: 'Track any creator and see their engagement, hooks, and growth patterns.',
       },
       {
