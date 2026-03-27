@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import { BlurFade } from '@/components/ui/blur-fade'
-import { ShineBorder } from '@/components/ui/shine-border'
 import { BrandLockup, HeaderActionCluster } from '@/components/shared/Brand'
 import {
   Brain,
@@ -466,35 +465,19 @@ export default function Features() {
                       transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
                     >
                       <div
-                        className="relative h-full overflow-hidden rounded-[20px] border"
+                        className="relative h-full rounded-[16px]"
                         style={{
-                          borderColor: 'var(--border-landing, #E7E5E4)',
                           background: 'var(--bg-card, #fff)',
-                          boxShadow: 'var(--shadow-sm, 0 1px 3px rgba(0,0,0,0.04))',
-                          transition: 'box-shadow 0.3s ease, border-color 0.3s ease',
+                          boxShadow: '0 1px 3px rgba(28,25,23,0.06), 0 4px 14px rgba(28,25,23,0.04)',
+                          transition: 'box-shadow 0.3s ease, transform 0.3s ease',
                         }}
                         onMouseEnter={(e) => {
-                          e.currentTarget.style.boxShadow = `0 12px 32px ${accent.soft}, 0 2px 8px rgba(0,0,0,0.04)`
-                          e.currentTarget.style.borderColor = accent.border
+                          e.currentTarget.style.boxShadow = '0 2px 6px rgba(28,25,23,0.08), 0 8px 24px rgba(28,25,23,0.06)'
                         }}
                         onMouseLeave={(e) => {
-                          e.currentTarget.style.boxShadow = 'var(--shadow-sm, 0 1px 3px rgba(0,0,0,0.04))'
-                          e.currentTarget.style.borderColor = 'var(--border-landing, #E7E5E4)'
+                          e.currentTarget.style.boxShadow = '0 1px 3px rgba(28,25,23,0.06), 0 4px 14px rgba(28,25,23,0.04)'
                         }}
                       >
-                        <ShineBorder
-                          shineColor={[accent.hex, 'transparent', accent.hex]}
-                          duration={12}
-                          className="opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                        />
-                        {/* Accent top stripe */}
-                        <div
-                          style={{
-                            height: 3,
-                            background: `linear-gradient(90deg, ${accent.hex}, ${accent.hex}40, transparent)`,
-                            opacity: 0.6,
-                          }}
-                        />
                         <div className="p-6 pt-5">
                           {/* Number + Title row */}
                           <div className="flex items-baseline gap-3 mb-2">
