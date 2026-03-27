@@ -187,9 +187,9 @@ export default function Devlog() {
   const years = Array.from(new Set(DEVLOG_ENTRIES.map(e => yearOf(e.date))))
 
   return (
-    <div ref={wrapRef} className="min-h-screen bg-[var(--bg)] text-[var(--text)]">
+    <div ref={wrapRef} className="min-h-screen text-[var(--text)]" style={{ background: 'var(--bg-page, #F4F3F0)' }}>
       {/* Nav */}
-      <nav className="sticky top-0 z-50 border-b border-[var(--border-light)] bg-[var(--bg)]/82 backdrop-blur-md">
+      <nav className="sticky top-0 z-50 border-b border-[var(--border-light)] backdrop-blur-md" style={{ background: 'color-mix(in srgb, var(--bg-page, #F4F3F0) 82%, transparent)' }}>
         <div className="mx-auto flex h-[72px] max-w-[1380px] items-center justify-between px-6">
           <a
             href="#"
@@ -217,7 +217,16 @@ export default function Devlog() {
 
       {/* Hero */}
       <header className="dl-reveal opacity-0 translate-y-6 transition-all duration-700 [transition-timing-function:cubic-bezier(0.16,1,0.3,1)] [&.vis]:opacity-100 [&.vis]:translate-y-0 mx-auto max-w-[720px] px-6 pb-6 pt-20 text-center sm:pt-24">
-        <h1 className="font-display text-[clamp(2.2rem,5vw,3.2rem)] font-bold leading-[1.05] tracking-[-0.04em]">
+        <h1
+          className="leading-[1.05]"
+          style={{
+            fontFamily: "var(--font-hero, 'Advercase', sans-serif)",
+            fontSize: 'clamp(2.2rem,5vw,3.2rem)',
+            fontWeight: 800,
+            textTransform: 'uppercase',
+            letterSpacing: '0.02em',
+          }}
+        >
           Dev Log
         </h1>
         <p className="mt-3 font-accent text-[clamp(1.05rem,2vw,1.3rem)] italic text-[var(--text-2)]">
@@ -233,8 +242,15 @@ export default function Devlog() {
           return (
             <section key={year}>
               {/* Year header */}
-              <div className="sticky top-[72px] z-10 bg-[var(--bg)] pb-3 pt-4">
-                <span className="font-mono text-[13px] font-medium tracking-widest text-[var(--text-3)]">
+              <div className="sticky top-[72px] z-10 pb-3 pt-4" style={{ background: 'var(--bg-page, #F4F3F0)' }}>
+                <span
+                  className="text-[13px] font-medium text-[var(--text-3)]"
+                  style={{
+                    fontFamily: "var(--font-hero, 'Advercase', sans-serif)",
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.1em',
+                  }}
+                >
                   {year}
                 </span>
               </div>

@@ -24,15 +24,15 @@ export default function PulseDemoFrame({
         border: "1px solid var(--border-raw)",
         borderRadius: 16,
         overflow: "hidden",
-        background: "var(--bg-white, #fff)",
+        background: "var(--bg-page, #F4F3F0)",
       }}
     >
       {/* Title bar */}
       <div style={styles.titleBar}>
         <div style={styles.dots}>
-          <span style={{ ...styles.dot, background: "#FF5F57" }} />
-          <span style={{ ...styles.dot, background: "#FFBD2E" }} />
-          <span style={{ ...styles.dot, background: "#27C93F" }} />
+          <span style={{ ...styles.dot, background: "var(--border-landing, #E7E5E4)" }} />
+          <span style={{ ...styles.dot, background: "var(--border-landing, #E7E5E4)" }} />
+          <span style={{ ...styles.dot, background: "var(--border-landing, #E7E5E4)" }} />
         </div>
         <span style={styles.titleText}>COOPR / Pulse / Performance</span>
       </div>

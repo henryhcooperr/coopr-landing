@@ -14,6 +14,111 @@ export interface DevlogEntry {
  */
 export const DEVLOG_ENTRIES: DevlogEntry[] = [
   {
+    date: '2026-03-26',
+    slug: 'insights-page',
+    title: 'Insights: your full performance picture in one place',
+    summary:
+      'See everything that matters about your content in one panel — reach, retention, engagement, content pillars, hashtag performance, audience demographics, competitor comparisons, and what to create next.',
+    tags: ['new'],
+    alsoShipped: [
+      'Performance breakdown by format and hook type',
+      'Content pillar strengths vs what your niche wants',
+      'Hashtag performance over time',
+      'Side-by-side competitor comparison',
+    ],
+  },
+  {
+    date: '2026-03-26',
+    slug: 'chat-blocks-overhaul',
+    title: 'Chat responses got a major upgrade',
+    summary:
+      'Ask COOPR anything and it responds with the right format — visual creator profiles, performance cards, media kit previews, image grids, and more. Answers are structured and actionable, not walls of text.',
+    tags: ['new', 'improved'],
+    alsoShipped: [
+      'Creator discovery shows visual profile cards',
+      'Captions, hashtags, and reports as formatted cards',
+      'Production and research answers auto-formatted',
+    ],
+  },
+  {
+    date: '2026-03-25',
+    slug: 'dna-voice-evolution',
+    title: 'See how your creative voice evolves over time',
+    summary:
+      'Your Creative DNA now tracks how your style, voice, and strengths change as you create. See which content approaches drive your best numbers, where your niche has opportunity, and read a plain-language summary of what makes your content unique.',
+    tags: ['new', 'improved'],
+    alsoShipped: [
+      'Voice profile built from your real hooks and titles',
+      'See which techniques perform best for you',
+      'Niche opportunity scoring',
+      'Creative style trend line',
+    ],
+  },
+  {
+    date: '2026-03-24',
+    slug: 'creative-dna-constellation',
+    title: 'Your creative identity, visualized',
+    summary:
+      'Creative DNA now opens with a living map of how your content signals connect — topics, formats, techniques, and audience patterns all linked together. Your identity sections fill in as COOPR learns more about you.',
+    tags: ['improved'],
+    alsoShipped: [
+      'Interactive signal map that grows with your content',
+      'Identity sections that expand as your profile deepens',
+    ],
+  },
+  {
+    date: '2026-03-24',
+    slug: 'niche-intelligence',
+    title: 'See where you stand in your niche',
+    summary:
+      'COOPR now maps your positioning across the dimensions that matter in your space. Ask about your niche in chat and get a clear picture of where you lead, where competitors are strong, and where the gaps are.',
+    tags: ['new'],
+    alsoShipped: [
+      'Multi-dimensional niche positioning',
+      'Ask about your niche directly in chat',
+      'Competitor tracking with growth history',
+    ],
+  },
+  {
+    date: '2026-03-23',
+    slug: 'production-speed',
+    title: 'Everything loads faster',
+    summary:
+      'Every panel in the dashboard got a speed upgrade. Pages load independently, results are cached between sessions, and switching between panels feels instant.',
+    tags: ['improved'],
+    alsoShipped: [
+      'All panels load independently',
+      'Results cached between sessions',
+      'Faster first load for new sessions',
+    ],
+  },
+  {
+    date: '2026-03-23',
+    slug: 'background-processing',
+    title: 'COOPR learns in the background without slowing you down',
+    summary:
+      'Content analysis and profile building now happen entirely in the background. The dashboard stays fast and responsive even while COOPR is processing your latest posts.',
+    tags: ['improved'],
+    alsoShipped: [
+      'Background processing never blocks the dashboard',
+      'Stay logged in across updates',
+      'Instagram Stories collected automatically',
+    ],
+  },
+  {
+    date: '2026-03-21',
+    slug: 'auth-reliability',
+    title: 'Login and sessions are now reliable',
+    summary:
+      'Major reliability improvements to login and session management. Stay logged in across updates, Instagram connection works smoothly, and new creators go straight to onboarding.',
+    tags: ['fixed'],
+    alsoShipped: [
+      'Stay logged in even after app updates',
+      'Instagram connection works end-to-end',
+      'New creators go straight to onboarding',
+    ],
+  },
+  {
     date: '2026-03-20',
     slug: 'photo-carousel-intelligence',
     title: 'COOPR now understands photos and carousels',

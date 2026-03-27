@@ -27,15 +27,15 @@ export default function VoiceDemoFrame({
         border: "1px solid var(--border-raw)",
         borderRadius: 16,
         overflow: "hidden",
-        background: "var(--bg-white, #fff)",
+        background: "var(--bg-page, #F4F3F0)",
       }}
     >
       {/* Title bar */}
       <div style={styles.titleBar}>
         <div style={styles.dots}>
-          <span style={{ ...styles.dot, background: "#FF5F57" }} />
-          <span style={{ ...styles.dot, background: "#FFBD2E" }} />
-          <span style={{ ...styles.dot, background: "#27C93F" }} />
+          <span style={{ ...styles.dot, background: "var(--border-landing, #E7E5E4)" }} />
+          <span style={{ ...styles.dot, background: "var(--border-landing, #E7E5E4)" }} />
+          <span style={{ ...styles.dot, background: "var(--border-landing, #E7E5E4)" }} />
         </div>
         <span style={styles.titleText}>COOPR / DNA / Voice Profile</span>
       </div>
@@ -107,7 +107,7 @@ const styles: Record<string, CSSProperties> = {
     marginBottom: 10,
   },
   label: {
-    fontFamily: "var(--font-body, 'Space Grotesk', sans-serif)",
+    fontFamily: "var(--font-body, 'Plus Jakarta Sans', sans-serif)",
     fontSize: 12,
     color: "var(--text-2)",
     width: 90,

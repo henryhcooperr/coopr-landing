@@ -5,27 +5,51 @@
 
 
 /* ==========================================================================
+   0. FONT FACES
+   ========================================================================== */
+
+@font-face {
+  font-family: 'Advercase';
+  src: url('/fonts/Advercase-Font-Demo-Bold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Advercase';
+  src: url('/fonts/Advercase-Font-Demo-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+
+/* ==========================================================================
    1. DESIGN TOKENS
    ========================================================================== */
 
 :root {
   /* --- Backgrounds --- */
-  --bg-page: #FAFAF9;
-  --bg-section-alt: #F5F4F0;
+  --bg-page: #F4F3F0;
+  --bg-section-alt: #ECEAE6;
   --bg-card: #FFFFFF;
+  --bg-elevated: #ECEAE6;
   --bg-dark: #1C1917;
 
-  /* --- Accent (teal) ---
+  /* --- Brand accent (warm amber) ---
        IMPORTANT: Do NOT define --accent or --border here!
        index.css defines --accent as HSL components "40 6% 94%" for
        Tailwind/shadcn (bg-accent, text-accent-foreground, etc).
-       Overwriting with hex "#0D9488" breaks hsl(var(--accent)).
+       Overwriting with hex breaks hsl(var(--accent)).
        Same for --border: index.css uses HSL "36 10% 88%".
-       Landing components use var(--accent) expecting teal — we provide
+       Landing components use var(--accent) expecting brand color — we provide
        it scoped to the landing page wrapper below. */
-  --accent-hex: #0D9488;
-  --accent-dim: rgba(13, 148, 136, 0.08);
-  --accent-hover: #0F766E;
+  --brand: oklch(0.62 0.16 65);
+  --brand-soft: oklch(0.62 0.16 65 / 0.08);
+  --accent-hex: oklch(0.62 0.16 65);
+  --accent-dim: oklch(0.62 0.16 65 / 0.08);
+  --accent-hover: oklch(0.55 0.16 65);
 
   /* --- Functional Colors --- */
   --violet: #7C3AED;
@@ -45,6 +69,14 @@
   --text: #1C1917;
   --text-2: #57534E;
   --text-3: #A8A29E;
+  --text-primary: #1C1917;
+  --text-secondary: #57534E;
+  --text-muted: #A8A29E;
+
+  /* --- Shadows --- */
+  --shadow-sm: 0 1px 3px oklch(0.30 0.02 80 / 0.06);
+  --shadow-md: 0 4px 12px oklch(0.30 0.02 80 / 0.08);
+  --shadow-lg: 0 8px 24px oklch(0.30 0.02 80 / 0.12);
 
   /* --- Borders ---
        --border-landing is the hex token for landing components.
@@ -54,9 +86,10 @@
 
   /* --- Fonts --- */
   --font-display: 'Bricolage Grotesque', sans-serif;
-  --font-body: 'Space Grotesk', sans-serif;
+  --font-body: 'Plus Jakarta Sans', sans-serif;
   --font-accent: 'Fraunces', serif;
   --font-mono: 'JetBrains Mono', monospace;
+  --font-hero: 'Advercase', sans-serif;
 
   /* --- Easing --- */
   --ease-premium: cubic-bezier(0.65, 0.05, 0, 1);
@@ -105,6 +138,17 @@ body {
   line-height: 1.6;
 }
 
+/* Film grain overlay */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.032;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+}
+
 /* Selection */
 ::selection {
   background-color: rgba(13, 148, 136, 0.15);
@@ -141,13 +185,22 @@ video {
 
 /* --- Hero Headline --- */
 .hero-h1 {
-  font-family: var(--font-display);
-  font-size: clamp(3rem, 6vw + 0.5rem, 5.5rem);
-  font-weight: 800;
-  letter-spacing: -0.05em;
-  line-height: 1.05;
+  font-family: var(--font-hero);
+  font-size: clamp(3.5rem, 7vw + 1rem, 6.5rem);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  line-height: 1;
   color: var(--text);
+  text-transform: uppercase;
   text-wrap: balance;
+  margin-bottom: 0.15em;
+}
+
+.hero-morph-line {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  line-height: 1;
 }
 
 /* --- Section Headline --- */
@@ -187,6 +240,7 @@ video {
 .font-body    { font-family: var(--font-body); }
 .font-accent  { font-family: var(--font-accent); }
 .font-mono    { font-family: var(--font-mono); }
+.font-hero    { font-family: var(--font-hero); }
 
 /* --- Accent text --- */
 .text-accent  { color: var(--accent); }
@@ -368,9 +422,9 @@ video {
   background: var(--border);
 }
 
-.app-frame-dot:nth-child(1) { background: #FCA5A5; }
-.app-frame-dot:nth-child(2) { background: #FCD34D; }
-.app-frame-dot:nth-child(3) { background: #86EFAC; }
+.app-frame-dot:nth-child(1) { background: var(--border-landing); }
+.app-frame-dot:nth-child(2) { background: var(--border-landing); }
+.app-frame-dot:nth-child(3) { background: var(--border-landing); }
 
 .app-frame-content {
   padding: 0;
@@ -736,6 +790,79 @@ video {
   position: relative;
 }
 
+/* Animated mesh gradient background */
+.hero-mesh-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at 30% 20%, oklch(0.62 0.16 65 / 0.06) 0%, transparent 60%),
+    radial-gradient(ellipse at 70% 80%, oklch(0.75 0.12 80 / 0.05) 0%, transparent 60%),
+    radial-gradient(ellipse at 50% 50%, oklch(0.55 0.10 300 / 0.025) 0%, transparent 70%);
+  background-size: 200% 200%;
+  animation: hero-mesh-drift 20s ease-in-out infinite;
+}
+
+@keyframes hero-mesh-drift {
+  0%, 100% { background-position: 0% 50%; }
+  25%      { background-position: 30% 20%; }
+  50%      { background-position: 70% 80%; }
+  75%      { background-position: 40% 60%; }
+}
+
+/* Warm aurora overlay — CSS-only ambient glow */
+.hero-aurora {
+  position: absolute;
+  inset: -20%;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.5;
+  background:
+    radial-gradient(ellipse 60% 50% at 25% 30%, oklch(0.78 0.14 65 / 0.12) 0%, transparent 70%),
+    radial-gradient(ellipse 50% 45% at 75% 60%, oklch(0.70 0.10 30 / 0.08) 0%, transparent 70%),
+    radial-gradient(ellipse 45% 55% at 50% 80%, oklch(0.72 0.12 50 / 0.06) 0%, transparent 60%);
+  animation: hero-aurora-drift 16s ease-in-out infinite alternate;
+  filter: blur(60px);
+}
+
+@keyframes hero-aurora-drift {
+  0%   { transform: translate(0, 0) scale(1); }
+  33%  { transform: translate(3%, -2%) scale(1.02); }
+  66%  { transform: translate(-2%, 3%) scale(0.98); }
+  100% { transform: translate(1%, -1%) scale(1.01); }
+}
+
+/* Badge pill */
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 16px;
+  border-radius: 100px;
+  border: 1px solid var(--border-landing);
+  background: var(--bg-card);
+  font-family: var(--font-body);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  box-shadow: var(--shadow-sm);
+}
+
+/* MorphingText inline sizing — fits within the headline flow */
+.hero-morph-text {
+  display: block;
+  height: 1.15em;
+  width: 6ch;
+  font-size: clamp(3.5rem, 7vw + 1rem, 6.5rem);
+  font-family: var(--font-hero);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--brand);
+  text-transform: uppercase;
+}
+
 .hero-subtitle {
   font-family: var(--font-body);
   font-size: clamp(1.05rem, 1.2vw + 0.4rem, 1.25rem);
@@ -744,6 +871,48 @@ video {
   max-width: 520px;
   margin: 0 auto;
   text-wrap: balance;
+}
+
+/* CTA button */
+.hero-cta-btn {
+  padding: 14px 32px !important;
+  font-size: 0.9375rem !important;
+  font-family: var(--font-body) !important;
+  font-weight: 600 !important;
+  border-radius: 12px !important;
+}
+
+.hero-cta-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  position: relative;
+  z-index: 1;
+}
+
+/* Social proof avatars */
+.hero-avatars img {
+  border-color: var(--bg-page) !important;
+}
+
+.hero-social-proof-text {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-3);
+  letter-spacing: 0.01em;
+}
+
+/* Browser demo container */
+.hero-browser-container {
+  width: 100%;
+  max-width: 1000px;
+  padding: 0 24px;
+  margin: 0 auto;
+}
+
+.hero-browser-content {
+  height: 560px;
+  overflow: hidden;
 }
 
 .hero-cta-group {
@@ -867,6 +1036,18 @@ video {
     min-height: auto;
     padding-top: 100px;
     padding-bottom: 60px;
+  }
+
+  .hero-browser-container {
+    padding: 0 16px;
+  }
+
+  .hero-browser-content {
+    height: 400px;
+  }
+
+  .hero-morph-text {
+    height: 1.15em;
   }
 
   .hero-cta-group {

@@ -6,19 +6,19 @@ interface DNADemoFrameProps {
 }
 
 const WORDS = [
-  { text: "Plating", size: 34, color: "var(--amber, #D97706)" },
-  { text: "Natural light", size: 18, color: "var(--accent, #0D9488)" },
-  { text: "Warm tones", size: 28, color: "var(--violet, #7C3AED)" },
-  { text: "Recipe dev", size: 40, color: "var(--accent, #0D9488)" },
-  { text: "Overhead shots", size: 15, color: "var(--text-3, #999999)" },
-  { text: "Storytelling", size: 22, color: "var(--rose, #E11D48)" },
-  { text: "Seasonal", size: 16, color: "var(--blue, #2563EB)" },
-  { text: "Comfort food", size: 26, color: "var(--amber, #D97706)" },
-  { text: "Conversational", size: 19, color: "var(--violet, #7C3AED)" },
-  { text: "Process shots", size: 14, color: "var(--text-3, #999999)" },
-  { text: "Farm-to-table", size: 21, color: "var(--accent, #0D9488)" },
-  { text: "Tutorial", size: 16, color: "var(--blue, #2563EB)" },
-  { text: "Slow food", size: 24, color: "var(--emerald, #16A34A)" },
+  { text: "Hook craft", size: 34, color: "var(--amber, #D97706)" },
+  { text: "Authenticity", size: 18, color: "var(--accent, #0D9488)" },
+  { text: "Visual composition", size: 28, color: "var(--violet, #7C3AED)" },
+  { text: "Storytelling", size: 40, color: "var(--accent, #0D9488)" },
+  { text: "B-roll technique", size: 15, color: "var(--text-3, #999999)" },
+  { text: "Pacing", size: 22, color: "var(--rose, #E11D48)" },
+  { text: "Trend awareness", size: 16, color: "var(--blue, #2563EB)" },
+  { text: "Audience connection", size: 26, color: "var(--amber, #D97706)" },
+  { text: "Series thinking", size: 19, color: "var(--violet, #7C3AED)" },
+  { text: "Sound design", size: 14, color: "var(--text-3, #999999)" },
+  { text: "Editing rhythm", size: 21, color: "var(--accent, #0D9488)" },
+  { text: "Consistency", size: 16, color: "var(--blue, #2563EB)" },
+  { text: "Curiosity gap", size: 24, color: "var(--emerald, #16A34A)" },
   { text: "Minimalist", size: 13, color: "var(--text-3, #999999)" },
 ];
 
@@ -30,7 +30,7 @@ export default function DNADemoFrame({
     <div
       className={className}
       style={{
-        background: "#FFFFFF",
+        background: "var(--bg-page, #F4F3F0)",
         border: "1px solid var(--border, #E4E2DD)",
         borderRadius: 16,
         overflow: "hidden",
@@ -120,7 +120,7 @@ export default function DNADemoFrame({
                 fontSize: word.size,
                 color: word.color,
                 fontFamily:
-                  "'Bricolage Grotesque', 'Space Grotesk', sans-serif",
+                  "'Bricolage Grotesque', 'Plus Jakarta Sans', sans-serif",
                 fontWeight: 600,
                 cursor: "default",
                 lineHeight: 1.2,
