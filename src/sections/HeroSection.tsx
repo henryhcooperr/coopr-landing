@@ -84,15 +84,15 @@ export default function HeroSection({ onCTAClick }: HeroSectionProps) {
           </span>
         </motion.div>
 
-        {/* Headline */}
-        <motion.div variants={item} className="mt-8 w-full">
-          <h1 className="hero-h1">
-            KNOW WHAT TO{" "}
+        {/* Headline — two lines, both centered */}
+        <motion.div variants={item} className="mt-8 w-full text-center">
+          <h1 className="hero-h1">KNOW WHAT TO</h1>
+          <div className="hero-morph-line">
             <MorphingText
               texts={MORPH_WORDS}
               className="hero-morph-text"
             />
-          </h1>
+          </div>
         </motion.div>
 
         {/* Subheadline */}

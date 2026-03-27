@@ -193,6 +193,14 @@ video {
   color: var(--text);
   text-transform: uppercase;
   text-wrap: balance;
+  margin-bottom: 0.15em;
+}
+
+.hero-morph-line {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  line-height: 1;
 }
 
 /* --- Section Headline --- */
@@ -842,15 +850,15 @@ video {
 
 /* MorphingText inline sizing — fits within the headline flow */
 .hero-morph-text {
-  display: inline-block;
-  height: 1.1em;
-  min-width: 4ch;
-  vertical-align: baseline;
-  font-size: inherit;
+  display: block;
+  height: 1.15em;
+  width: 6ch;
+  font-size: clamp(3.5rem, 7vw + 1rem, 6.5rem);
   font-family: var(--font-hero);
   font-weight: 700;
-  line-height: inherit;
-  letter-spacing: inherit;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
   color: var(--brand);
   text-transform: uppercase;
 }
