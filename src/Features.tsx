@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import { BlurFade } from '@/components/ui/blur-fade'
-import { MagicCard } from '@/components/ui/magic-card'
+import { ShineBorder } from '@/components/ui/shine-border'
 import { BrandLockup, HeaderActionCluster } from '@/components/shared/Brand'
 import {
   Brain,
@@ -455,51 +455,67 @@ export default function Features() {
             transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
             className="mx-auto max-w-[1100px] pb-24"
           >
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
               {currentTab.features.map((feature, idx) => {
                 const Icon = feature.icon
                 return (
-                  <BlurFade key={feature.name} delay={0.05 * idx} inView>
+                  <BlurFade key={feature.name} delay={0.04 * idx} inView>
                     <motion.div
-                      whileHover={{ y: -3 }}
-                      transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+                      className="group h-full"
+                      whileHover={{ y: -4 }}
+                      transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
                     >
-                      <MagicCard
-                        className="rounded-[20px] h-full"
-                        gradientSize={260}
-                        gradientColor={accent.soft}
-                        gradientFrom={accent.hex}
-                        gradientTo={accent.hex}
-                        gradientOpacity={0.5}
+                      <div
+                        className="relative h-full overflow-hidden rounded-[20px] border p-6"
+                        style={{
+                          borderColor: 'var(--border-landing, #E7E5E4)',
+                          background: `linear-gradient(180deg, ${accent.soft} 0%, var(--bg-card, #fff) 40%)`,
+                          boxShadow: 'var(--shadow-sm, 0 1px 3px rgba(0,0,0,0.04))',
+                          transition: 'box-shadow 0.3s ease, border-color 0.3s ease',
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.boxShadow = `0 12px 32px ${accent.soft}, 0 2px 8px rgba(0,0,0,0.04)`
+                          e.currentTarget.style.borderColor = accent.border
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.boxShadow = 'var(--shadow-sm, 0 1px 3px rgba(0,0,0,0.04))'
+                          e.currentTarget.style.borderColor = 'var(--border-landing, #E7E5E4)'
+                        }}
                       >
-                        <div className="relative z-40 p-6">
-                          <div
-                            className="mb-4 inline-flex h-11 w-11 items-center justify-center rounded-[14px] border"
-                            style={{
-                              background: `linear-gradient(135deg, ${accent.soft} 0%, rgba(255,255,255,0.6) 100%)`,
-                              borderColor: accent.border,
-                              boxShadow: `0 1px 3px ${accent.soft}, inset 0 1px 0 rgba(255,255,255,0.9)`,
-                            }}
-                          >
-                            <Icon size={20} strokeWidth={1.6} style={{ color: accent.hex }} />
-                          </div>
-                          <h3
-                            className="text-[15px] font-bold leading-snug tracking-[-0.01em]"
-                            style={{
-                              fontFamily: "var(--font-display, 'Bricolage Grotesque', sans-serif)",
-                              color: 'var(--text, #1C1917)',
-                            }}
-                          >
-                            {feature.name}
-                          </h3>
-                          <p
-                            className="mt-1.5 text-[14px] leading-relaxed"
-                            style={{ color: 'var(--text-2, #57534E)' }}
-                          >
-                            {feature.description}
-                          </p>
+                        <ShineBorder
+                          shineColor={[accent.hex, 'transparent', accent.hex]}
+                          duration={12}
+                          className="opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                        />
+                        {/* Icon */}
+                        <div
+                          className="mb-4 inline-flex h-11 w-11 items-center justify-center rounded-[14px]"
+                          style={{
+                            background: `linear-gradient(145deg, ${accent.soft} 0%, transparent 80%)`,
+                            boxShadow: `inset 3px 0 0 ${accent.hex}20, 0 1px 3px rgba(0,0,0,0.04)`,
+                            border: `1px solid ${accent.border}`,
+                          }}
+                        >
+                          <Icon size={20} strokeWidth={1.5} style={{ color: accent.hex }} />
                         </div>
-                      </MagicCard>
+                        {/* Title */}
+                        <h3
+                          className="text-[15px] font-bold leading-snug tracking-[-0.01em]"
+                          style={{
+                            fontFamily: "var(--font-display, 'Bricolage Grotesque', sans-serif)",
+                            color: 'var(--text, #1C1917)',
+                          }}
+                        >
+                          {feature.name}
+                        </h3>
+                        {/* Description */}
+                        <p
+                          className="mt-2 text-[14px] leading-relaxed"
+                          style={{ color: 'var(--text-2, #57534E)' }}
+                        >
+                          {feature.description}
+                        </p>
+                      </div>
                     </motion.div>
                   </BlurFade>
                 )
