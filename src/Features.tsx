@@ -6,25 +6,44 @@ import { BrandLockup, HeaderActionCluster } from '@/components/shared/Brand'
 import {
   Brain,
   AudioWaveform,
-  Radar,
-  BookOpen,
+  ScanEye,
+  Library,
+  UsersRound,
   Fingerprint,
-  TrendingUp,
-  Clapperboard,
+  GraduationCap,
+  Activity,
+  Lightbulb,
   Sparkles,
   FileText,
-  MapPin,
+  ListChecks,
   Film,
-  Layers,
+  Bookmark,
+  FolderKanban,
+  LayoutGrid,
+  Music,
   MessageSquareText,
-  Clock,
-  CalendarRange,
-  Link2,
+  Binoculars,
+  FlaskConical,
+  Radar,
+  TrendingUp,
   BarChart3,
-  Users,
-  PieChart,
-  Lightbulb,
+  Clock,
+  Thermometer,
+  CalendarRange,
+  Gauge,
+  Search,
+  LineChart,
+  Hash,
+  LayoutDashboard,
+  GitCompareArrows,
   Target,
+  Clapperboard,
+  CalendarDays,
+  Briefcase,
+  Link2,
+  Send,
+  MonitorPlay,
+  UserCog,
   type LucideIcon,
 } from 'lucide-react'
 
@@ -32,7 +51,7 @@ import {
 /*  Tab + feature data                                                        */
 /* -------------------------------------------------------------------------- */
 
-type TabKey = 'intelligence' | 'production' | 'publishing' | 'analytics'
+type TabKey = 'understand' | 'create' | 'grow' | 'analyze' | 'manage'
 
 interface FeatureItem {
   icon: LucideIcon
@@ -47,137 +66,247 @@ interface TabDefinition {
   features: FeatureItem[]
 }
 
+const TAB_ACCENTS: Record<TabKey, { hex: string; soft: string; border: string }> = {
+  understand: { hex: '#D97706', soft: 'rgba(217,119,6,0.08)',  border: 'rgba(217,119,6,0.16)'  },
+  create:     { hex: '#0D9488', soft: 'rgba(13,148,136,0.08)', border: 'rgba(13,148,136,0.16)' },
+  grow:       { hex: '#7C3AED', soft: 'rgba(124,58,237,0.08)', border: 'rgba(124,58,237,0.16)' },
+  analyze:    { hex: '#2563EB', soft: 'rgba(37,99,235,0.08)',  border: 'rgba(37,99,235,0.16)'  },
+  manage:     { hex: '#16A34A', soft: 'rgba(22,163,74,0.08)',  border: 'rgba(22,163,74,0.16)'  },
+}
+
 const TABS: TabDefinition[] = [
   {
-    key: 'intelligence',
-    label: 'Intelligence',
+    key: 'understand',
+    label: 'Understand',
     icon: Brain,
     features: [
       {
         icon: Brain,
         name: 'Creative DNA',
-        description: 'Your creative identity, visualized as a living constellation.',
+        description: 'Your content fingerprint builds a living model of your voice and style, updated with every post.',
       },
       {
         icon: AudioWaveform,
         name: 'Voice Profile',
-        description: '8 dimensions of your voice so every script sounds like you.',
+        description: '8 dimensions of your speaking patterns, scored against your real content.',
       },
       {
-        icon: Radar,
-        name: 'Niche Intelligence',
-        description: 'Bayesian scoring of your positioning vs competitors.',
+        icon: ScanEye,
+        name: 'Visual Analysis',
+        description: 'Frame-by-frame breakdown of what you are showing and why it works.',
       },
       {
-        icon: BookOpen,
-        name: 'Knowledge System',
-        description: 'Every conversation builds a searchable knowledge base.',
+        icon: Library,
+        name: 'Content Library',
+        description: 'Every post indexed and searchable by topic, format, and performance.',
+      },
+      {
+        icon: UsersRound,
+        name: 'Audience Intelligence',
+        description: 'Who your engaged followers are, what they care about, who is new.',
       },
       {
         icon: Fingerprint,
         name: 'Content Fingerprint',
-        description: 'Signals from your content compiled into a unique fingerprint.',
+        description: 'Signals from all your content compiled into a profile that evolves.',
       },
       {
-        icon: TrendingUp,
-        name: 'Trend Detection',
-        description: 'Spots what\'s working before you do.',
+        icon: GraduationCap,
+        name: 'Teach COOPR',
+        description: 'Tell it your preferences explicitly and watch the model sharpen.',
+      },
+      {
+        icon: Activity,
+        name: 'Voice Evolution',
+        description: 'Track how your creative voice changes month over month.',
       },
     ],
   },
   {
-    key: 'production',
-    label: 'Production',
-    icon: Clapperboard,
+    key: 'create',
+    label: 'Create',
+    icon: Sparkles,
     features: [
       {
-        icon: Clapperboard,
-        name: 'Studio Pipeline',
-        description: '5-stage production flow from spark to published.',
+        icon: Lightbulb,
+        name: 'Idea Generation',
+        description: 'Surfaces ideas from the gap between what your audience wants and what you haven\'t made.',
       },
       {
         icon: Sparkles,
         name: 'Hook Lab',
-        description: 'Generate and score hooks with predicted hold rates.',
+        description: 'Generate and score hooks across 4 layers: opening shot, text, voiceover, and energy.',
       },
       {
         icon: FileText,
-        name: 'Script Editor',
-        description: 'Write scripts with pacing feedback in your voice.',
+        name: 'Script Development',
+        description: 'Turn any concept into a timed script structured for your format, in your voice.',
       },
       {
-        icon: MapPin,
-        name: 'Shoot Planner',
-        description: 'Shot lists, locations, and timing from your script.',
+        icon: ListChecks,
+        name: 'Shot List & Planning',
+        description: 'Scene-by-scene shot lists built from patterns in your winning content.',
       },
       {
         icon: Film,
         name: 'Clip Lab',
-        description: 'Upload any clip for deep analysis and improvement suggestions.',
+        description: 'Upload any clip and get a scored breakdown with prioritized improvements.',
       },
       {
-        icon: Layers,
-        name: 'Series Management',
-        description: 'Group content into narrative series.',
+        icon: Bookmark,
+        name: 'Inspiration Board',
+        description: 'Save any video, get a deep format breakdown, and adapt it for your niche.',
       },
-    ],
-  },
-  {
-    key: 'publishing',
-    label: 'Publishing',
-    icon: CalendarRange,
-    features: [
+      {
+        icon: FolderKanban,
+        name: 'Projects & Storyboard',
+        description: 'Hold everything together: concept, scenes, script, notes, assets.',
+      },
+      {
+        icon: LayoutGrid,
+        name: 'Viral Format Library',
+        description: 'Proven format patterns with step-by-step filming instructions.',
+      },
+      {
+        icon: Music,
+        name: 'Audio & Music Intelligence',
+        description: 'What sounds you use, what\'s trending, what correlates with performance.',
+      },
       {
         icon: MessageSquareText,
         name: 'Caption Generation',
-        description: 'Captions that match your voice with A/B variations.',
-      },
-      {
-        icon: Clock,
-        name: 'Optimal Timing',
-        description: 'Best time to post based on your audience patterns.',
-      },
-      {
-        icon: CalendarRange,
-        name: 'Content Calendar',
-        description: 'Visual calendar with topic spacing intelligence.',
-      },
-      {
-        icon: Link2,
-        name: 'Link in Bio',
-        description: 'Performance-aware link page builder.',
+        description: 'Captions that match your voice with A/B variations and optimal hashtags.',
       },
     ],
   },
   {
-    key: 'analytics',
-    label: 'Analytics',
-    icon: BarChart3,
+    key: 'grow',
+    label: 'Grow',
+    icon: TrendingUp,
     features: [
       {
+        icon: Binoculars,
+        name: 'Competitor Intelligence',
+        description: 'Track any creator and see their engagement, hooks, and growth patterns.',
+      },
+      {
+        icon: FlaskConical,
+        name: 'Pattern Lab',
+        description: 'Extract proven techniques from creators you admire, ranked by performance lift.',
+      },
+      {
+        icon: Radar,
+        name: 'Niche Intelligence',
+        description: 'Map your positioning across the dimensions that matter in your space.',
+      },
+      {
+        icon: TrendingUp,
+        name: 'Trend Engine',
+        description: 'Rising hooks, topics, and formats personalized to your niche.',
+      },
+      {
         icon: BarChart3,
-        name: 'Insights Panel',
-        description: '19 components: retention curves, format breakdown, hashtag velocity.',
+        name: 'Growth Analytics',
+        description: 'Follower trends, platform comparisons, and velocity alerts.',
       },
       {
-        icon: Users,
-        name: 'Competitor Tracking',
-        description: 'Win-loss comparison, growth history, strategy analysis.',
+        icon: Clock,
+        name: 'Posting Time Optimizer',
+        description: 'Best time to post based on your audience and content type.',
       },
       {
-        icon: PieChart,
-        name: 'Audience Demographics',
-        description: 'Age, gender, location from platform insights.',
+        icon: Thermometer,
+        name: 'Content Fatigue Detection',
+        description: 'Know when topics or formats are getting stale before your audience tells you.',
       },
       {
-        icon: Lightbulb,
-        name: 'Performance Correlations',
-        description: 'Which content styles drive your best numbers.',
+        icon: CalendarRange,
+        name: 'Seasonal Calendar',
+        description: 'What\'s relevant right now and what\'s coming up in your niche.',
+      },
+    ],
+  },
+  {
+    key: 'analyze',
+    label: 'Analyze',
+    icon: LayoutDashboard,
+    features: [
+      {
+        icon: Gauge,
+        name: 'Performance Prediction',
+        description: 'Predict how a video will perform before posting, with evidence.',
+      },
+      {
+        icon: Search,
+        name: 'Outlier Detection',
+        description: 'Find and explain content that dramatically outperformed your averages.',
+      },
+      {
+        icon: LineChart,
+        name: 'Retention Analysis',
+        description: 'Diagnose where viewers drop off and how to fix it before posting.',
+      },
+      {
+        icon: Hash,
+        name: 'Hashtag Intelligence',
+        description: 'Full performance rankings with trend data and optimal suggestions.',
+      },
+      {
+        icon: LayoutDashboard,
+        name: 'Insights Dashboard',
+        description: 'Retention curves, format breakdown, hashtag velocity, competitor comparison.',
+      },
+      {
+        icon: GitCompareArrows,
+        name: 'Correlation Engine',
+        description: 'Which content styles, formats, and topics drive your best numbers.',
       },
       {
         icon: Target,
         name: 'Demand Radar',
         description: 'What your audience wants that you haven\'t made yet.',
+      },
+    ],
+  },
+  {
+    key: 'manage',
+    label: 'Manage',
+    icon: Clapperboard,
+    features: [
+      {
+        icon: Clapperboard,
+        name: 'Studio Pipeline',
+        description: 'Kanban production board: Spark through Published with next-action suggestions.',
+      },
+      {
+        icon: CalendarDays,
+        name: 'Content Calendar',
+        description: 'Monthly plan built on your cadence patterns and seasonal signals.',
+      },
+      {
+        icon: Briefcase,
+        name: 'Brand Campaigns',
+        description: 'Track partnerships from pitch to payment with rate suggestions.',
+      },
+      {
+        icon: Link2,
+        name: 'Link in Bio',
+        description: 'Performance-aware link page builder with analytics.',
+      },
+      {
+        icon: Send,
+        name: 'Publishing Queue',
+        description: 'Schedule posts with optimal timing suggestions.',
+      },
+      {
+        icon: MonitorPlay,
+        name: 'DaVinci Integration',
+        description: 'Push storyboards and cut plans directly into Resolve.',
+      },
+      {
+        icon: UserCog,
+        name: 'Multi-Creator Profiles',
+        description: 'Switch between creator profiles with separate fingerprints.',
       },
     ],
   },
@@ -187,10 +316,24 @@ const TABS: TabDefinition[] = [
 /*  Differentiator bullets                                                    */
 /* -------------------------------------------------------------------------- */
 
-const DIFFERENTIATORS = [
-  '285+ AI tools, not just dashboards',
-  'Learns your voice, doesn\'t just analyze numbers',
-  'Closes the loop from insight to publish to analysis',
+interface Differentiator {
+  headline: string
+  body: string
+}
+
+const DIFFERENTIATORS: Differentiator[] = [
+  {
+    headline: 'Learns you, doesn\'t just count likes',
+    body: 'COOPR builds a model of your creative identity that sharpens with every post you make.',
+  },
+  {
+    headline: 'Suggests, doesn\'t decide',
+    body: 'Every recommendation is a starting point, not a final answer. You stay in control.',
+  },
+  {
+    headline: 'Closes the loop',
+    body: 'From insight to idea to post to analysis, everything connects.',
+  },
 ]
 
 /* -------------------------------------------------------------------------- */
@@ -198,20 +341,27 @@ const DIFFERENTIATORS = [
 /* -------------------------------------------------------------------------- */
 
 export default function Features() {
-  const [activeTab, setActiveTab] = useState<TabKey>('intelligence')
+  const [activeTab, setActiveTab] = useState<TabKey>('understand')
 
   useEffect(() => {
     window.scrollTo(0, 0)
   }, [])
 
   const currentTab = TABS.find(t => t.key === activeTab)!
+  const accent = TAB_ACCENTS[activeTab]
 
   return (
     <div className="min-h-screen" style={{ background: 'var(--bg-page, #F4F3F0)', color: 'var(--text, #1C1917)' }}>
       {/* ---------- Ambient glow ---------- */}
       <div className="pointer-events-none absolute inset-x-0 top-0 h-[520px] overflow-hidden">
-        <div className="absolute left-[-4rem] top-20 h-[240px] w-[240px] rounded-full blur-[120px]" style={{ background: 'rgba(13,148,136,0.08)' }} />
-        <div className="absolute right-[-4rem] top-24 h-[220px] w-[220px] rounded-full blur-[120px]" style={{ background: 'rgba(37,99,235,0.06)' }} />
+        <div
+          className="absolute left-[-4rem] top-20 h-[240px] w-[240px] rounded-full blur-[120px] transition-colors duration-700"
+          style={{ background: accent.soft }}
+        />
+        <div
+          className="absolute right-[-4rem] top-24 h-[220px] w-[220px] rounded-full blur-[120px] transition-colors duration-700"
+          style={{ background: accent.soft }}
+        />
       </div>
 
       {/* ---------- Nav ---------- */}
@@ -243,12 +393,16 @@ export default function Features() {
               letterSpacing: '0.02em',
             }}
           >
-            Everything COOPR does for you.
+            Everything COOPR does for you
           </h1>
         </BlurFade>
         <BlurFade delay={0.1} inView>
-          <p className="mx-auto mt-5 max-w-[600px] text-[16px] leading-relaxed sm:text-[17px]" style={{ color: 'var(--text-2, #57534E)' }}>
-            Intelligence, production, publishing, and analytics — in one creative engine.
+          <p
+            className="mx-auto mt-5 max-w-[640px] text-[16px] leading-relaxed sm:text-[17px]"
+            style={{ color: 'var(--text-2, #57534E)', fontFamily: "var(--font-body, 'Plus Jakarta Sans', sans-serif)" }}
+          >
+            Your creative engine. Every tool works together to help you understand your content,
+            create with confidence, and grow your audience.
           </p>
         </BlurFade>
       </header>
@@ -261,6 +415,7 @@ export default function Features() {
               {TABS.map(tab => {
                 const Icon = tab.icon
                 const isActive = activeTab === tab.key
+                const tabAccent = TAB_ACCENTS[tab.key]
                 return (
                   <button
                     key={tab.key}
@@ -273,13 +428,13 @@ export default function Features() {
                       background: isActive ? 'var(--bg-page, #F4F3F0)' : 'transparent',
                     }}
                   >
-                    <Icon size={15} strokeWidth={2} />
+                    <Icon size={15} strokeWidth={2} style={isActive ? { color: tabAccent.hex } : undefined} />
                     <span className="hidden sm:inline">{tab.label}</span>
                     {isActive && (
                       <motion.div
                         layoutId="tab-underline"
                         className="absolute inset-x-3 -bottom-px h-[2px] rounded-full"
-                        style={{ background: 'var(--amber, #D97706)' }}
+                        style={{ background: tabAccent.hex }}
                         transition={{ type: 'spring', stiffness: 400, damping: 30 }}
                       />
                     )}
@@ -305,38 +460,47 @@ export default function Features() {
                 const Icon = feature.icon
                 return (
                   <BlurFade key={feature.name} delay={0.05 * idx} inView>
-                    <MagicCard
-                      className="rounded-[20px] h-full"
-                      gradientSize={260}
-                      gradientColor="rgba(13,148,136,0.06)"
-                      gradientFrom="var(--amber, #D97706)"
-                      gradientTo="var(--teal, #0D9488)"
-                      gradientOpacity={0.5}
+                    <motion.div
+                      whileHover={{ y: -3 }}
+                      transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
                     >
-                      <div className="relative z-40 p-6">
-                        <div
-                          className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl"
-                          style={{ background: 'var(--teal-soft, rgba(13,148,136,0.08))' }}
-                        >
-                          <Icon size={20} strokeWidth={1.75} style={{ color: 'var(--teal, #0D9488)' }} />
+                      <MagicCard
+                        className="rounded-[20px] h-full"
+                        gradientSize={260}
+                        gradientColor={accent.soft}
+                        gradientFrom={accent.hex}
+                        gradientTo={accent.hex}
+                        gradientOpacity={0.5}
+                      >
+                        <div className="relative z-40 p-6">
+                          <div
+                            className="mb-4 inline-flex h-11 w-11 items-center justify-center rounded-[14px] border"
+                            style={{
+                              background: `linear-gradient(135deg, ${accent.soft} 0%, rgba(255,255,255,0.6) 100%)`,
+                              borderColor: accent.border,
+                              boxShadow: `0 1px 3px ${accent.soft}, inset 0 1px 0 rgba(255,255,255,0.9)`,
+                            }}
+                          >
+                            <Icon size={20} strokeWidth={1.6} style={{ color: accent.hex }} />
+                          </div>
+                          <h3
+                            className="text-[15px] font-bold leading-snug tracking-[-0.01em]"
+                            style={{
+                              fontFamily: "var(--font-display, 'Bricolage Grotesque', sans-serif)",
+                              color: 'var(--text, #1C1917)',
+                            }}
+                          >
+                            {feature.name}
+                          </h3>
+                          <p
+                            className="mt-1.5 text-[14px] leading-relaxed"
+                            style={{ color: 'var(--text-2, #57534E)' }}
+                          >
+                            {feature.description}
+                          </p>
                         </div>
-                        <h3
-                          className="text-[15px] font-bold leading-snug tracking-[-0.01em]"
-                          style={{
-                            fontFamily: "var(--font-display, 'Bricolage Grotesque', sans-serif)",
-                            color: 'var(--text, #1C1917)',
-                          }}
-                        >
-                          {feature.name}
-                        </h3>
-                        <p
-                          className="mt-1.5 text-[14px] leading-relaxed"
-                          style={{ color: 'var(--text-2, #57534E)' }}
-                        >
-                          {feature.description}
-                        </p>
-                      </div>
-                    </MagicCard>
+                      </MagicCard>
+                    </motion.div>
                   </BlurFade>
                 )
               })}
@@ -367,28 +531,39 @@ export default function Features() {
           </BlurFade>
           <BlurFade delay={0.1} inView>
             <p className="mx-auto mt-5 max-w-[560px] text-[16px] leading-relaxed sm:text-[17px]" style={{ color: 'var(--text-2, #57534E)' }}>
-              Other tools show you what happened. COOPR tells you what to do next — and helps you do it.
+              Other tools show you what happened. COOPR helps you figure out what to do next — and helps you do it.
             </p>
           </BlurFade>
-          <div className="mt-10 flex flex-col gap-4 sm:items-center">
-            {DIFFERENTIATORS.map((text, idx) => (
-              <BlurFade key={text} delay={0.15 + idx * 0.08} inView>
+          <div className="mt-10 flex flex-col gap-5 sm:items-center">
+            {DIFFERENTIATORS.map((item, idx) => (
+              <BlurFade key={item.headline} delay={0.15 + idx * 0.08} inView>
                 <div
-                  className="inline-flex items-center gap-3 rounded-full border px-5 py-3"
+                  className="inline-flex flex-col gap-1.5 rounded-2xl border px-6 py-4 text-left sm:text-center"
                   style={{
                     borderColor: 'var(--border-raw, #E4E2DD)',
                     background: 'white',
                   }}
                 >
-                  <span
-                    className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[11px] font-bold"
-                    style={{ background: 'var(--teal-soft, rgba(13,148,136,0.08))', color: 'var(--teal, #0D9488)' }}
-                  >
-                    {idx + 1}
-                  </span>
-                  <span className="text-[14px] font-medium" style={{ color: 'var(--text, #1C1917)' }}>
-                    {text}
-                  </span>
+                  <div className="flex items-center gap-3">
+                    <span
+                      className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[11px] font-bold"
+                      style={{ background: 'var(--teal-soft, rgba(13,148,136,0.08))', color: 'var(--teal, #0D9488)' }}
+                    >
+                      {idx + 1}
+                    </span>
+                    <span
+                      className="text-[14px] font-bold"
+                      style={{
+                        fontFamily: "var(--font-display, 'Bricolage Grotesque', sans-serif)",
+                        color: 'var(--text, #1C1917)',
+                      }}
+                    >
+                      {item.headline}
+                    </span>
+                  </div>
+                  <p className="pl-8 text-[13px] leading-relaxed sm:pl-0" style={{ color: 'var(--text-2, #57534E)' }}>
+                    {item.body}
+                  </p>
                 </div>
               </BlurFade>
             ))}
