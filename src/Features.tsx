@@ -480,7 +480,7 @@ export default function Features() {
                       >
                         <div className="p-6 pt-5">
                           {/* Number + Title row */}
-                          <div className="flex items-baseline gap-3 mb-2">
+                          <div className="flex items-center gap-3 mb-2">
                             <span
                               style={{
                                 fontFamily: "var(--font-hero, 'Advercase', sans-serif)",
