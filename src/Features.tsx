@@ -457,7 +457,7 @@ export default function Features() {
           >
             <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
               {currentTab.features.map((feature, idx) => {
-                const Icon = feature.icon
+                const num = String(idx + 1).padStart(2, '0')
                 return (
                   <BlurFade key={feature.name} delay={0.04 * idx} inView>
                     <motion.div
@@ -466,10 +466,10 @@ export default function Features() {
                       transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
                     >
                       <div
-                        className="relative h-full overflow-hidden rounded-[20px] border p-6"
+                        className="relative h-full overflow-hidden rounded-[20px] border"
                         style={{
                           borderColor: 'var(--border-landing, #E7E5E4)',
-                          background: `linear-gradient(180deg, ${accent.soft} 0%, var(--bg-card, #fff) 40%)`,
+                          background: 'var(--bg-card, #fff)',
                           boxShadow: 'var(--shadow-sm, 0 1px 3px rgba(0,0,0,0.04))',
                           transition: 'box-shadow 0.3s ease, border-color 0.3s ease',
                         }}
@@ -487,34 +487,50 @@ export default function Features() {
                           duration={12}
                           className="opacity-0 group-hover:opacity-100 transition-opacity duration-500"
                         />
-                        {/* Icon */}
+                        {/* Accent top stripe */}
                         <div
-                          className="mb-4 inline-flex h-11 w-11 items-center justify-center rounded-[14px]"
                           style={{
-                            background: `linear-gradient(145deg, ${accent.soft} 0%, transparent 80%)`,
-                            boxShadow: `inset 3px 0 0 ${accent.hex}20, 0 1px 3px rgba(0,0,0,0.04)`,
-                            border: `1px solid ${accent.border}`,
+                            height: 3,
+                            background: `linear-gradient(90deg, ${accent.hex}, ${accent.hex}40, transparent)`,
+                            opacity: 0.6,
                           }}
-                        >
-                          <Icon size={20} strokeWidth={1.5} style={{ color: accent.hex }} />
+                        />
+                        <div className="p-6 pt-5">
+                          {/* Number + Title row */}
+                          <div className="flex items-baseline gap-3 mb-2">
+                            <span
+                              style={{
+                                fontFamily: "var(--font-hero, 'Advercase', sans-serif)",
+                                fontSize: '28px',
+                                fontWeight: 700,
+                                lineHeight: 1,
+                                color: accent.hex,
+                                opacity: 0.18,
+                              }}
+                            >
+                              {num}
+                            </span>
+                            <h3
+                              className="text-[15px] font-bold leading-snug tracking-[-0.01em]"
+                              style={{
+                                fontFamily: "var(--font-display, 'Bricolage Grotesque', sans-serif)",
+                                color: 'var(--text, #1C1917)',
+                              }}
+                            >
+                              {feature.name}
+                            </h3>
+                          </div>
+                          {/* Description */}
+                          <p
+                            className="text-[14px] leading-relaxed"
+                            style={{
+                              color: 'var(--text-2, #57534E)',
+                              paddingLeft: 42,
+                            }}
+                          >
+                            {feature.description}
+                          </p>
                         </div>
-                        {/* Title */}
-                        <h3
-                          className="text-[15px] font-bold leading-snug tracking-[-0.01em]"
-                          style={{
-                            fontFamily: "var(--font-display, 'Bricolage Grotesque', sans-serif)",
-                            color: 'var(--text, #1C1917)',
-                          }}
-                        >
-                          {feature.name}
-                        </h3>
-                        {/* Description */}
-                        <p
-                          className="mt-2 text-[14px] leading-relaxed"
-                          style={{ color: 'var(--text-2, #57534E)' }}
-                        >
-                          {feature.description}
-                        </p>
                       </div>
                     </motion.div>
                   </BlurFade>
