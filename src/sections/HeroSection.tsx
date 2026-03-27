@@ -36,7 +36,7 @@ const itemScale: Variants = {
 
 /* ---------- Static Data ---------- */
 
-const MORPH_WORDS = ["create.", "film.", "post.", "share."];
+const MORPH_WORDS = ["CREATE.", "FILM.", "POST.", "SHARE."];
 
 const AVATAR_URLS = [
   { imageUrl: "https://i.pravatar.cc/80?img=12", profileUrl: "#" },
@@ -87,7 +87,7 @@ export default function HeroSection({ onCTAClick }: HeroSectionProps) {
         {/* Headline */}
         <motion.div variants={item} className="mt-8 w-full">
           <h1 className="hero-h1">
-            <span>Know what to </span>
+            <span>KNOW WHAT TO </span>
             <span className="inline-block relative">
               <MorphingText
                 texts={MORPH_WORDS}

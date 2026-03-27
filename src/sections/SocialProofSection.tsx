@@ -6,9 +6,32 @@ import { Marquee } from "@/components/ui/marquee";
 // ─── Data ────────────────────────────────────────────────────────────────────
 
 const STATS = [
-  { value: 285, suffix: "+", label: "AI tools powering your workflow" },
-  { value: 40, suffix: "+", label: "Rich block types in chat" },
-  { value: 9, suffix: "", label: "Integrated dashboard panels" },
+  { value: 5, suffix: "", label: "Production stages, idea to publish" },
+  { value: 8, suffix: "", label: "Voice dimensions, so it sounds like you" },
+  { value: 1, suffix: "", label: "Place for everything. Yours." },
+] as const;
+
+const CAPABILITY_TICKER = [
+  "Hook scoring",
+  "Script writing",
+  "Shoot planning",
+  "Clip analysis",
+  "Caption generation",
+  "Niche mapping",
+  "Voice matching",
+  "Performance tracking",
+  "Trend detection",
+  "Competitor intel",
+  "Content calendar",
+  "Audience insights",
+  "Media kit",
+  "Link in bio",
+  "Semantic search",
+  "Knowledge base",
+  "Idea scoring",
+  "Format breakdown",
+  "Optimal timing",
+  "Creative DNA",
 ] as const;
 
 const NICHES = [
@@ -35,7 +58,7 @@ const styles: Record<string, CSSProperties> = {
   inner: {
     maxWidth: 1080,
     margin: "0 auto",
-    padding: "64px 24px 0",
+    padding: "var(--section-padding, 80px) 24px 0",
   },
   statsRow: {
     display: "flex",
@@ -47,7 +70,7 @@ const styles: Record<string, CSSProperties> = {
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    padding: "0 40px",
+    padding: "0 48px",
     borderRight: "1px solid var(--border-raw)",
   },
   statNumber: {
@@ -81,7 +104,7 @@ const styles: Record<string, CSSProperties> = {
     width: 40,
     height: 1,
     background: "var(--border-raw)",
-    margin: "48px auto",
+    margin: "56px auto",
   },
   quoteBlock: {
     maxWidth: 640,
@@ -132,8 +155,42 @@ const styles: Record<string, CSSProperties> = {
     letterSpacing: "0.03em",
     fontFamily: "'JetBrains Mono', monospace",
   },
+  capTickerSection: {
+    padding: "40px 0",
+    borderTop: "1px solid var(--border-raw)",
+    textAlign: "center" as const,
+  },
+  capTickerLabel: {
+    fontFamily: "'JetBrains Mono', monospace",
+    fontSize: 11,
+    fontWeight: 600,
+    textTransform: "uppercase" as const,
+    letterSpacing: "0.1em",
+    color: "var(--fg-2)",
+    marginBottom: 16,
+  },
+  capTickerItem: {
+    fontFamily: "'Plus Jakarta Sans', sans-serif",
+    fontSize: 14,
+    fontWeight: 500,
+    color: "var(--fg-2)",
+    whiteSpace: "nowrap" as const,
+    display: "inline-flex",
+    alignItems: "center",
+    gap: 16,
+    paddingRight: 16,
+  },
+  capTickerDot: {
+    width: 4,
+    height: 4,
+    borderRadius: "50%",
+    background: "var(--teal)",
+    opacity: 0.4,
+    flexShrink: 0,
+    display: "inline-block",
+  },
   marqueeSection: {
-    marginTop: 48,
+    marginTop: 24,
     position: "relative",
   },
   marqueeFadeLeft: {
@@ -261,6 +318,26 @@ export default function SocialProofSection() {
             </a>
           </div>
         </motion.div>
+      </div>
+
+      {/* ── Capabilities ticker ──────────────────────────────── */}
+      <div style={styles.capTickerSection}>
+        <div style={styles.capTickerLabel}>What COOPR does for you</div>
+        <div style={{ position: "relative", overflow: "hidden" }}>
+          <div style={styles.marqueeFadeLeft} aria-hidden="true" />
+          <div style={styles.marqueeFadeRight} aria-hidden="true" />
+          <Marquee
+            pauseOnHover
+            className="[--duration:25s] [--gap:0px]"
+          >
+            {CAPABILITY_TICKER.map((cap) => (
+              <span key={cap} style={styles.capTickerItem}>
+                {cap}
+                <span style={styles.capTickerDot} aria-hidden="true" />
+              </span>
+            ))}
+          </Marquee>
+        </div>
       </div>
 
       {/* ── Niche marquee ──────────────────────────────────────── */}

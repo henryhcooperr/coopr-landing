@@ -84,8 +84,8 @@ const styles: Record<string, CSSProperties> = {
       "background 0.35s cubic-bezier(0.65, 0.05, 0, 1), border-color 0.35s cubic-bezier(0.65, 0.05, 0, 1), box-shadow 0.35s cubic-bezier(0.65, 0.05, 0, 1), backdrop-filter 0.35s cubic-bezier(0.65, 0.05, 0, 1)",
   },
   logo: {
-    fontFamily: "var(--font-display)",
-    fontSize: 16,
+    fontFamily: "var(--font-hero, 'Advercase', sans-serif)",
+    fontSize: 15,
     fontWeight: 700,
     color: "var(--text)",
     textDecoration: "none",
@@ -93,6 +93,7 @@ const styles: Record<string, CSSProperties> = {
     alignItems: "center",
     gap: 6,
     flexShrink: 0,
+    letterSpacing: "0.04em",
   },
   navLinks: {
     display: "flex",

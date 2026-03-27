@@ -70,11 +70,11 @@ export default function LearnSection() {
       style={{
         maxWidth: 1100,
         paddingTop: "var(--section-padding, 120px)",
-        paddingBottom: "clamp(40px, 6vh, 80px)",
+        paddingBottom: "var(--section-padding, 120px)",
       }}
     >
       {/* ---------- Header ---------- */}
-      <div className="flex flex-col items-center text-center mb-16">
+      <div className="flex flex-col items-center text-center mb-20">
         <BlurFade delay={0} inView>
           <span className="section-label">Your Creative Fingerprint</span>
         </BlurFade>
@@ -113,7 +113,7 @@ export default function LearnSection() {
       </div>
 
       {/* ---------- Steps: 2-column grid ---------- */}
-      <div className="flex flex-col gap-12 md:gap-20">
+      <div className="flex flex-col gap-16 md:gap-24">
         {STEPS.map((step, i) => {
           const isEven = i % 2 === 0;
           return (
@@ -135,16 +135,17 @@ export default function LearnSection() {
                 >
                   <div className="p-8 md:p-10">
                     <span
-                      className="font-mono"
+                      className="font-hero"
                       style={{
-                        fontSize: 11,
-                        fontWeight: 600,
-                        letterSpacing: "0.08em",
+                        fontSize: 28,
+                        fontWeight: 700,
+                        letterSpacing: "0.04em",
                         color: "var(--brand, oklch(0.62 0.16 65))",
-                        textTransform: "uppercase",
+                        opacity: 0.25,
+                        lineHeight: 1,
                       }}
                     >
-                      Step {step.number}
+                      {step.number}
                     </span>
 
                     <h3

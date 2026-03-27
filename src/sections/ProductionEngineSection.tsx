@@ -269,13 +269,13 @@ const s: Record<string, CSSProperties> = {
 
   /* Section Label */
   sectionLabel: {
-    fontFamily: "var(--font-mono)",
-    fontSize: 11,
-    fontWeight: 600,
+    fontFamily: "var(--font-hero, 'Advercase', sans-serif)",
+    fontSize: 14,
+    fontWeight: 400,
     textTransform: "uppercase" as const,
-    letterSpacing: "0.1em",
+    letterSpacing: "0.12em",
     color: "oklch(0.62 0.16 65)",
-    marginBottom: 12,
+    marginBottom: 16,
     display: "block",
   },
 
@@ -312,9 +312,9 @@ const s: Record<string, CSSProperties> = {
   statsRow: {
     display: "flex",
     justifyContent: "center",
-    gap: 48,
-    marginTop: 36,
-    marginBottom: 8,
+    gap: 56,
+    marginTop: 40,
+    marginBottom: 12,
   },
   statItem: {
     display: "flex",
@@ -342,9 +342,9 @@ const s: Record<string, CSSProperties> = {
   featureGrid: {
     display: "grid",
     gridTemplateColumns: "1fr 1fr",
-    gap: 16,
+    gap: 20,
     maxWidth: 840,
-    margin: "32px auto 0",
+    margin: "40px auto 0",
     width: "100%",
   },
 

@@ -191,8 +191,8 @@ const styles: Record<string, CSSProperties> = {
     fontSize: "clamp(1rem, 2vw, 1.125rem)",
     color: "var(--text-2, #6b6b5f)",
     maxWidth: 480,
-    marginBottom: 40,
-    lineHeight: 1.6,
+    marginBottom: 48,
+    lineHeight: 1.7,
   },
   formOuter: {
     width: "100%",

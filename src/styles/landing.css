@@ -5,6 +5,27 @@
 
 
 /* ==========================================================================
+   0. FONT FACES
+   ========================================================================== */
+
+@font-face {
+  font-family: 'Advercase';
+  src: url('/fonts/Advercase-Font-Demo-Bold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Advercase';
+  src: url('/fonts/Advercase-Font-Demo-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+
+/* ==========================================================================
    1. DESIGN TOKENS
    ========================================================================== */
 
@@ -68,6 +89,7 @@
   --font-body: 'Plus Jakarta Sans', sans-serif;
   --font-accent: 'Fraunces', serif;
   --font-mono: 'JetBrains Mono', monospace;
+  --font-hero: 'Advercase', sans-serif;
 
   /* --- Easing --- */
   --ease-premium: cubic-bezier(0.65, 0.05, 0, 1);
@@ -163,12 +185,13 @@ video {
 
 /* --- Hero Headline --- */
 .hero-h1 {
-  font-family: var(--font-display);
-  font-size: clamp(3rem, 6vw + 0.5rem, 5.5rem);
-  font-weight: 800;
-  letter-spacing: -0.05em;
-  line-height: 1.05;
+  font-family: var(--font-hero);
+  font-size: clamp(3.5rem, 7vw + 1rem, 6.5rem);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  line-height: 1;
   color: var(--text);
+  text-transform: uppercase;
   text-wrap: balance;
 }
 
@@ -209,6 +232,7 @@ video {
 .font-body    { font-family: var(--font-body); }
 .font-accent  { font-family: var(--font-accent); }
 .font-mono    { font-family: var(--font-mono); }
+.font-hero    { font-family: var(--font-hero); }
 
 /* --- Accent text --- */
 .text-accent  { color: var(--accent); }
@@ -821,13 +845,14 @@ video {
   /* Override MorphingText defaults for inline use */
   height: 1.1em;
   font-size: inherit;
-  font-family: inherit;
-  font-weight: inherit;
+  font-family: var(--font-hero);
+  font-weight: 700;
   line-height: inherit;
   letter-spacing: inherit;
   color: var(--brand);
   max-width: none;
   text-align: left;
+  text-transform: uppercase;
 }
 
 .hero-subtitle {

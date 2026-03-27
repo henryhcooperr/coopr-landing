@@ -425,9 +425,9 @@ const s: Record<string, CSSProperties> = {
     display: "grid",
     gridTemplateColumns: "1.2fr 1fr",
     gridTemplateRows: "auto auto",
-    gap: 16,
+    gap: 20,
     maxWidth: 1000,
-    margin: "32px auto 0",
+    margin: "48px auto 0",
     width: "100%",
   },
   cardInner: {

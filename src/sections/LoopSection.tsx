@@ -2,7 +2,7 @@ import { useRef, useEffect, useState, type CSSProperties } from "react";
 import { motion, useInView } from "motion/react";
 import { BlurFade } from "../components/ui/blur-fade";
 import { AnimatedBeam } from "../components/ui/animated-beam";
-import { NumberTicker } from "../components/ui/number-ticker";
+import { Marquee } from "../components/ui/marquee";
 import {
   Eye,
   Lightbulb,
@@ -23,72 +23,89 @@ const STEPS = [
     id: 1,
     icon: Eye,
     label: "Pulse Briefing",
-    desc: "See what's working in your niche right now.",
+    desc: "Trend detection, competitor analysis, and niche gaps surfaced daily.",
     color: "var(--accent)",
     colorDim: "var(--accent-dim)",
   },
   {
     id: 2,
     icon: Lightbulb,
-    label: "Spark an Idea",
-    desc: "Capture concepts before they disappear.",
+    label: "Spark + Score Ideas",
+    desc: "Capture concepts, score them against 6 signals. Know what's worth making.",
     color: "var(--amber)",
     colorDim: "var(--amber-dim)",
   },
   {
     id: 3,
     icon: PenLine,
-    label: "Write Hooks + Script",
-    desc: "In your voice. Every line, on-brand.",
+    label: "Hooks, Scripts + Captions",
+    desc: "Voice-matched writing with predicted retention. A/B caption variants included.",
     color: "var(--violet)",
     colorDim: "var(--violet-dim)",
   },
   {
     id: 4,
     icon: MapPin,
-    label: "Plan Your Shoot",
-    desc: "Shot lists and locations, ready to go.",
+    label: "Shot Lists + Calendar",
+    desc: "Shoot planner, content calendar, and optimal posting times in one view.",
     color: "var(--emerald)",
     colorDim: "var(--emerald-dim)",
   },
   {
     id: 5,
     icon: Video,
-    label: "Film",
-    desc: "Guided by everything COOPR prepared.",
+    label: "Film + Capture",
+    desc: "Guided by everything COOPR prepared. Every clip lands in your smart library.",
     color: "var(--blue)",
     colorDim: "var(--blue-dim)",
   },
   {
     id: 6,
     icon: Send,
-    label: "Edit + Publish",
-    desc: "Post at the moment your audience is online.",
+    label: "Publish + Distribute",
+    desc: "Optimal timing, link in bio, and auto-populated media kit. One tap.",
     color: "var(--rose)",
     colorDim: "var(--rose-dim)",
   },
   {
     id: 7,
     icon: BarChart2,
-    label: "Analyze Performance",
-    desc: "Clip Lab digs into every second of footage.",
+    label: "Deep Analysis",
+    desc: "Clip Lab breakdown, retention curves, hashtag velocity, and format insights.",
     color: "var(--emerald)",
     colorDim: "var(--emerald-dim)",
   },
   {
     id: 8,
     icon: RefreshCcw,
-    label: "Learn + Improve",
-    desc: "Patterns flow back into your next Pulse Briefing.",
+    label: "Learn + Evolve",
+    desc: "Every post sharpens your Creative DNA. The loop gets smarter each cycle.",
     color: "var(--accent)",
     colorDim: "var(--accent-dim)",
   },
 ] as const;
 
-const STATS = [
-  { value: 285, suffix: "+", label: "AI tools" },
-  { value: 40, suffix: "+", label: "rich block types" },
-  { value: 9, suffix: "", label: "integrated panels" },
+const CAPABILITIES = [
+  "Hook scoring",
+  "Script writing",
+  "Shoot planning",
+  "Clip analysis",
+  "Caption generation",
+  "Niche mapping",
+  "Voice matching",
+  "Performance tracking",
+  "Trend detection",
+  "Competitor intel",
+  "Content calendar",
+  "Audience insights",
+  "Media kit",
+  "Link in bio",
+  "Semantic search",
+  "Knowledge base",
+  "Idea scoring",
+  "Format breakdown",
+  "Optimal timing",
+  "Creative DNA",
 ] as const;
 
 /* ==========================================================================
@@ -161,22 +178,25 @@ export default function LoopSection() {
         />
       )}
 
-      {/* ---------- Stats row ---------- */}
+      {/* ---------- Capabilities ticker ---------- */}
       <BlurFade delay={0.3} inView duration={0.5}>
-        <div style={styles.statsRow}>
-          {STATS.map((stat, i) => (
-            <div key={stat.label} style={styles.statItem}>
-              <div style={styles.statNumber}>
-                <NumberTicker
-                  value={stat.value}
-                  delay={0.4 + i * 0.1}
-                  style={styles.statTicker as CSSProperties}
-                />
-                <span style={styles.statSuffix}>{stat.suffix}</span>
-              </div>
-              <div style={styles.statLabel}>{stat.label}</div>
-            </div>
-          ))}
+        <div style={styles.tickerSection}>
+          <div style={styles.tickerLabel}>Everything in one place</div>
+          <div style={styles.tickerWrap}>
+            <div style={styles.tickerFadeLeft} />
+            <div style={styles.tickerFadeRight} />
+            <Marquee
+              pauseOnHover
+              className="[--duration:30s] [--gap:0px]"
+            >
+              {CAPABILITIES.map((cap) => (
+                <span key={cap} style={styles.tickerItem}>
+                  {cap}
+                  <span style={styles.tickerDot} aria-hidden="true" />
+                </span>
+              ))}
+            </Marquee>
+          </div>
         </div>
       </BlurFade>
     </section>
@@ -537,7 +557,7 @@ const styles: Record<string, CSSProperties> = {
     marginLeft: "auto",
     marginRight: "auto",
     paddingTop: "var(--section-padding, 120px)",
-    paddingBottom: "clamp(40px, 6vh, 80px)",
+    paddingBottom: "var(--section-padding, 120px)",
     paddingLeft: 24,
     paddingRight: 24,
     position: "relative",
@@ -549,16 +569,17 @@ const styles: Record<string, CSSProperties> = {
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    marginBottom: 64,
+    marginBottom: 72,
   },
   heading: {
-    fontFamily: "var(--font-display, 'Bricolage Grotesque', sans-serif)",
-    fontSize: "clamp(28px, 4vw, 48px)",
-    fontWeight: 800,
+    fontFamily: "var(--font-hero, 'Advercase', sans-serif)",
+    fontSize: "clamp(28px, 4vw, 52px)",
+    fontWeight: 700,
     color: "var(--text, #1C1917)",
-    lineHeight: 1.15,
-    margin: "12px 0 0",
-    letterSpacing: "-0.02em",
+    lineHeight: 1.1,
+    margin: "16px 0 0",
+    letterSpacing: "0.02em",
+    textTransform: "uppercase" as const,
   },
   subheading: {
     fontFamily: "var(--font-body, 'Plus Jakarta Sans', sans-serif)",
@@ -573,7 +594,7 @@ const styles: Record<string, CSSProperties> = {
   /* ---- Desktop wrapper ---- */
   desktopWrapper: {
     position: "relative",
-    marginBottom: 56,
+    marginBottom: 64,
   },
   sideArrow: {
     position: "absolute",
@@ -606,7 +627,7 @@ const styles: Record<string, CSSProperties> = {
     display: "flex",
     flexDirection: "column",
     gap: 8,
-    padding: "20px 18px",
+    padding: "22px 20px",
     borderRadius: 14,
     background: "var(--bg-card, #FFFFFF)",
     cursor: "default",
@@ -614,10 +635,13 @@ const styles: Record<string, CSSProperties> = {
     overflow: "visible",
   },
   stepNum: {
-    fontSize: 10,
+    fontFamily: "var(--font-hero, 'Advercase', sans-serif)",
+    fontSize: 18,
     fontWeight: 700,
-    letterSpacing: "0.08em",
+    letterSpacing: "0.04em",
     marginBottom: 4,
+    opacity: 0.2,
+    lineHeight: 1,
   },
   iconWrap: {
     width: 32,
@@ -709,12 +733,14 @@ const styles: Record<string, CSSProperties> = {
     flex: 1,
   },
   mobileStepNum: {
-    fontFamily: "var(--font-mono, 'JetBrains Mono', monospace)",
-    fontSize: 10,
+    fontFamily: "var(--font-hero, 'Advercase', sans-serif)",
+    fontSize: 16,
     fontWeight: 700,
-    letterSpacing: "0.08em",
+    letterSpacing: "0.04em",
     color: "var(--text-3, #A8A29E)",
+    opacity: 0.3,
     marginBottom: 2,
+    lineHeight: 1,
   },
   mobileStepLabel: {
     fontFamily: "var(--font-display, 'Bricolage Grotesque', sans-serif)",
@@ -730,46 +756,63 @@ const styles: Record<string, CSSProperties> = {
     lineHeight: 1.5,
   },
 
-  /* ---- Stats row ---- */
-  statsRow: {
-    display: "flex",
-    justifyContent: "center",
-    gap: "clamp(32px, 6vw, 80px)",
+  /* ---- Capabilities ticker ---- */
+  tickerSection: {
     paddingTop: 48,
     borderTop: "1px solid var(--border-landing, #E7E5E4)",
-    flexWrap: "wrap",
   },
-  statItem: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    gap: 4,
-  },
-  statNumber: {
-    display: "flex",
-    alignItems: "baseline",
-    gap: 2,
-  },
-  statTicker: {
-    fontFamily: "var(--font-display, 'Bricolage Grotesque', sans-serif)",
-    fontSize: "clamp(28px, 4vw, 40px)",
-    fontWeight: 800,
-    color: "var(--text, #1C1917)",
-    letterSpacing: "-0.02em",
-    lineHeight: 1,
-  },
-  statSuffix: {
-    fontFamily: "var(--font-display, 'Bricolage Grotesque', sans-serif)",
-    fontSize: "clamp(22px, 3vw, 32px)",
-    fontWeight: 800,
-    color: "var(--accent)",
-    letterSpacing: "-0.02em",
-    lineHeight: 1,
-  },
-  statLabel: {
-    fontFamily: "var(--font-body, 'Plus Jakarta Sans', sans-serif)",
-    fontSize: 13,
+  tickerLabel: {
+    fontFamily: "var(--font-mono, 'JetBrains Mono', monospace)",
+    fontSize: 11,
+    fontWeight: 600,
+    textTransform: "uppercase" as const,
+    letterSpacing: "0.1em",
     color: "var(--text-3, #A8A29E)",
-    letterSpacing: "0.01em",
+    textAlign: "center" as const,
+    marginBottom: 20,
+  },
+  tickerWrap: {
+    position: "relative" as const,
+    overflow: "hidden",
+  },
+  tickerFadeLeft: {
+    position: "absolute" as const,
+    top: 0,
+    left: 0,
+    width: 60,
+    height: "100%",
+    background: "linear-gradient(to right, var(--bg-page, #F4F3F0), transparent)",
+    zIndex: 1,
+    pointerEvents: "none" as const,
+  },
+  tickerFadeRight: {
+    position: "absolute" as const,
+    top: 0,
+    right: 0,
+    width: 60,
+    height: "100%",
+    background: "linear-gradient(to left, var(--bg-page, #F4F3F0), transparent)",
+    zIndex: 1,
+    pointerEvents: "none" as const,
+  },
+  tickerItem: {
+    fontFamily: "var(--font-body, 'Plus Jakarta Sans', sans-serif)",
+    fontSize: 14,
+    fontWeight: 500,
+    color: "var(--text-2, #57534E)",
+    whiteSpace: "nowrap" as const,
+    display: "inline-flex",
+    alignItems: "center",
+    gap: 16,
+    paddingRight: 16,
+  },
+  tickerDot: {
+    width: 4,
+    height: 4,
+    borderRadius: "50%",
+    background: "var(--accent)",
+    opacity: 0.4,
+    flexShrink: 0,
+    display: "inline-block",
   },
 };
