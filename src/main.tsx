@@ -9,6 +9,7 @@ import DataDeletion from './DataDeletion.tsx'
 import GetStarted from './GetStarted.tsx'
 import Features from './Features.tsx'
 import Devlog from './Devlog.tsx'
+import Principles from './Principles.tsx'
 
 // Map of clean paths to hash routes — used to support both /privacy and #/privacy
 const ROUTE_MAP: Record<string, string> = {
@@ -18,6 +19,7 @@ const ROUTE_MAP: Record<string, string> = {
   '/get-started': '#/get-started',
   '/features': '#/features',
   '/devlog': '#/devlog',
+  '/principles': '#/principles',
 }
 
 // On initial load, if we have a clean pathname (e.g. /privacy) but no hash,
@@ -88,7 +90,12 @@ function Router() {
           <Devlog />
         </PageTransition>
       )}
-      {!['#/privacy', '#/terms', '#/data-deletion', '#/get-started', '#/features', '#/devlog'].includes(basePath) && (
+      {basePath === '#/principles' && (
+        <PageTransition routeKey="principles">
+          <Principles />
+        </PageTransition>
+      )}
+      {!['#/privacy', '#/terms', '#/data-deletion', '#/get-started', '#/features', '#/devlog', '#/principles'].includes(basePath) && (
         <PageTransition routeKey="home">
           <App />
         </PageTransition>
