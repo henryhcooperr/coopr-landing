@@ -30,6 +30,7 @@ export default function WordmarkFooter() {
 
   const navLinks = [
     { label: "Features", href: "#/features" },
+    { label: "Principles", href: "#/principles" },
     { label: "Dev Log", href: "#/devlog" },
     { label: "Get Started", href: "#/get-started" },
     { label: "Terms", href: "#/terms" },

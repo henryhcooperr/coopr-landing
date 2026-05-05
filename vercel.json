@@ -9,6 +9,7 @@
     { "source": "/data-deletion", "destination": "/" },
     { "source": "/get-started", "destination": "/" },
     { "source": "/features", "destination": "/" },
-    { "source": "/devlog", "destination": "/" }
+    { "source": "/devlog", "destination": "/" },
+    { "source": "/principles", "destination": "/" }
   ]
 }
